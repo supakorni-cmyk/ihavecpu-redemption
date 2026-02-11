@@ -41,10 +41,16 @@ export async function POST(req: Request) {
   try {
     const { email } = await req.json();
 
+    const formatPrivateKey = (key: string | undefined) => {
+      if (!key) return undefined;
+      // This removes extra quotes and fixes the newline characters
+      return key.replace(/\\n/g, '\n').replace(/^"|"$/g, '');
+    };
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        private_key: formatPrivateKey(process.env.GOOGLE_PRIVATE_KEY),
       },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
