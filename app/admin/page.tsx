@@ -66,16 +66,35 @@ export default function AdminDashboard() {
   };
 
   // 4. Handle Approve (Basic version for now)
-  const handleApprove = async (id: string) => {
-    if (!confirm("Approve this receipt? (Google Sheets integration coming next)")) return;
+  const handleApprove = async (id: string, userEmail: string) => {
+    if (!confirm(`Approve receipt and generate code for ${userEmail}?`)) return;
 
     try {
+      // 1. Ask our backend to grab a code from the Google Sheet
+      const res = await fetch("/api/dispense-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userEmail }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Failed to get code");
+
+      // 2. Code acquired! Now update Firestore so the user can see it.
       const submissionRef = doc(db, "submissions", id);
-      // For now, we just update the status. In Phase 4, we will fetch the code here.
-      await updateDoc(submissionRef, { status: "approved" });
+      await updateDoc(submissionRef, { 
+        status: "approved",
+        rewardCode: data.code 
+      });
+
+      // 3. Remove it from the Admin UI
       setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
-    } catch (error) {
+      alert(`Success! Code ${data.code} was sent to the user.`);
+      
+    } catch (error: any) {
       console.error("Error approving:", error);
+      alert(error.message);
     }
   };
 
@@ -139,7 +158,7 @@ export default function AdminDashboard() {
                     </td>
                     <td className="p-3 flex space-x-2">
                       <button 
-                        onClick={() => handleApprove(sub.id)}
+                        onClick={() => handleApprove(sub.id, sub.userEmail)}
                         className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
                       >
                         Approve
