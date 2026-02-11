@@ -1,0 +1,122 @@
+// app/tales-runner/page.tsx
+"use client";
+
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { db, storage } from "@/lib/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Link from "next/link";
+
+export default function TalesRunnerPromo() {
+  const { data: session } = useSession();
+  
+  const [name, setName] = useState("");
+  const [channel, setChannel] = useState("Website");
+  const [tel, setTel] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  // If user is not logged in, they shouldn't be here
+  if (!session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Please <Link href="/" className="text-blue-600 underline">log in</Link> first.</p>
+      </div>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file) return alert("Please upload a receipt.");
+
+    setLoading(true);
+
+    try {
+      // 1. Upload receipt to Firebase Storage
+      const storageRef = ref(storage, `receipts/${Date.now()}_${file.name}`);
+      const uploadResult = await uploadBytes(storageRef, file);
+      const receiptUrl = await getDownloadURL(uploadResult.ref);
+
+      // 2. Save data to Firestore Database
+      await addDoc(collection(db, "submissions"), {
+        userEmail: session.user?.email,
+        promo: "Tales Runner",
+        name,
+        channel,
+        tel,
+        receiptUrl,
+        status: "pending", // Important: sets default status for Admin review
+        rewardCode: null,
+        createdAt: serverTimestamp(),
+      });
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error submitting form: ", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-black">
+        <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md">
+          <h2 className="text-2xl font-bold text-green-600 mb-4">Submission Successful!</h2>
+          <p className="mb-4">Your receipt has been uploaded and is currently <strong>Pending</strong> review by our team.</p>
+          <p className="text-sm text-gray-500 mb-6">Check back later to see your unique code.</p>
+          <Link href="/">
+            <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">Return Home</button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen p-10 flex flex-col items-center bg-gray-50 text-black">
+      <div className="max-w-xl w-full bg-white p-8 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold mb-6">Tales Runner - Code Redemption</h1>
+        
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Email (Auto-filled)</label>
+            <input type="email" value={session.user?.email || ""} disabled className="w-full border p-2 rounded bg-gray-100" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Full Name</label>
+            <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full border p-2 rounded" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Buying Channel</label>
+            <select value={channel} onChange={(e) => setChannel(e.target.value)} className="w-full border p-2 rounded">
+              <option value="Website">Website</option>
+              <option value="In-Game Store">In-Game Store</option>
+              <option value="Retail">Retail Partner</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Telephone Number</label>
+            <input type="tel" required value={tel} onChange={(e) => setTel(e.target.value)} className="w-full border p-2 rounded" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Upload Receipt</label>
+            <input type="file" required accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="w-full border p-2 rounded" />
+          </div>
+
+          <button type="submit" disabled={loading} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400">
+            {loading ? "Submitting..." : "Submit Receipt"}
+          </button>
+        </form>
+      </div>
+    </main>
+  );
+}
