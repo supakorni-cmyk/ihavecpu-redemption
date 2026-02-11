@@ -78,7 +78,7 @@ export default function Home() {
               </p>
               
               <Link href="/tales-runner" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
-                Redeem Here &rarr;
+                ดูรายละเอียดเพิ่มเติม &rarr;
               </Link>
             </div>
           </div>

@@ -1,137 +1,79 @@
 // app/tales-runner/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useSession } from "next-auth/react";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
+import { useSession, signIn } from "next-auth/react";
 
-export default function TalesRunnerPromo() {
+export default function TalesRunnerLanding() {
   const { data: session } = useSession();
-  
-  const [name, setName] = useState("");
-  const [channel, setChannel] = useState("Website");
-  const [tel, setTel] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  // If user is not logged in, they shouldn't be here
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Please <Link href="/" className="text-blue-600 underline">log in</Link> first.</p>
-      </div>
-    );
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) return alert("Please upload a receipt.");
-
-    setLoading(true);
-
-    try {
-      // 1. Upload receipt to Cloudinary
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "receipt_uploads"); // Use the exact preset name you created
-
-      // Replace YOUR_CLOUD_NAME with your actual Cloudinary Cloud Name
-      const cloudinaryRes = await fetch(
-        `https://api.cloudinary.com/v1_1/dlukdk7wu/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const cloudinaryData = await cloudinaryRes.json();
-      
-      if (!cloudinaryRes.ok) {
-        throw new Error(cloudinaryData.error?.message || "Image upload failed");
-      }
-
-      const receiptUrl = cloudinaryData.secure_url; // This is the public link to the image
-
-      // 2. Save data to Firestore Database (This part stays exactly the same!)
-      await addDoc(collection(db, "submissions"), {
-        userEmail: session.user?.email,
-        promo: "Tales Runner",
-        name,
-        channel,
-        tel,
-        receiptUrl, // Saving the new Cloudinary URL here
-        status: "pending",
-        rewardCode: null,
-        createdAt: serverTimestamp(),
-      });
-
-      setSubmitted(true);
-    } catch (error) {
-      console.error("Error submitting form: ", error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (submitted) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-black">
-        <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md">
-          <h2 className="text-2xl font-bold text-green-600 mb-4">Submission Successful!</h2>
-          <p className="mb-4">Your receipt has been uploaded and is currently <strong>Pending</strong> review by our team.</p>
-          <p className="text-sm text-gray-500 mb-6">Check back later to see your unique code.</p>
-          <Link href="/">
-            <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">Return Home</button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <main className="min-h-screen p-10 flex flex-col items-center bg-gray-50 text-black">
-      <div className="max-w-xl w-full bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6">Tales Runner - Code Redemption</h1>
-        
-        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Email (Auto-filled)</label>
-            <input type="email" value={session.user?.email || ""} disabled className="w-full border p-2 rounded bg-gray-100" />
+    <main className="min-h-screen bg-gray-50 pb-20">
+      {/* Promo Hero Banner */}
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-16">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+            Tales Runner x IHAVECPU
+          </h1>
+          <p className="text-xl text-blue-200">
+            Exclusive In-Game Item Redemption
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12">
+          
+          {/* Main Content & Rules */}
+          <div className="prose max-w-none text-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mb-4">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
+            <p className="mb-6">
+              ซื้อสินค้าที่ร่วมรายการจาก IHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
+              (Buy participating products from IHAVECPU and redeem your receipt for 2 exclusive Tales Runner item codes!)
+            </p>
+
+            <h3 className="text-xl font-bold text-gray-900 mb-2">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
+            <ul className="list-disc pl-5 mb-8 space-y-2">
+              <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก IHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
+              <li>ใบเสร็จ 1 ใบ สามารถใช้แลกรับสิทธิ์ได้เพียง 1 ครั้งเท่านั้น (1 Receipt = 1 Redemption)</li>
+              <li>โค้ดไอเทมไม่สามารถแลกเปลี่ยนเป็นเงินสดได้</li>
+              <li>บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงเงื่อนไขโดยไม่ต้องแจ้งให้ทราบล่วงหน้า</li>
+            </ul>
+
+            <h3 className="text-xl font-bold text-gray-900 mb-2">ขั้นตอนการแลกรับ (Instructions)</h3>
+            <ol className="list-decimal pl-5 mb-10 space-y-2">
+              <li>เตรียมรูปถ่ายใบเสร็จที่เห็นวันที่และรายการสินค้าชัดเจน</li>
+              <li>เข้าสู่ระบบ (Log in) ด้วยบัญชี Google ของคุณ</li>
+              <li>กรอกข้อมูลและอัปโหลดรูปภาพใบเสร็จในหน้า Redeem</li>
+              <li>รอทีมงานตรวจสอบ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
+              <li>รับโค้ดในหน้า <strong>My Rewards</strong> ของคุณ</li>
+            </ol>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Full Name</label>
-            <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full border p-2 rounded" />
+          {/* Action Button Section */}
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-6 text-center mt-8">
+            <h4 className="text-lg font-bold text-gray-900 mb-4">พร้อมแลกรับสิทธิ์แล้วหรือยัง?</h4>
+            
+            {session ? (
+              <Link href="/tales-runner/redeem">
+                <button className="w-full md:w-auto bg-blue-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-blue-700 shadow-md transition-transform hover:scale-105">
+                  Redeem Now (แลกรับสิทธิ์)
+                </button>
+              </Link>
+            ) : (
+              <div className="flex flex-col items-center">
+                <p className="text-gray-500 mb-4 text-sm">กรุณาเข้าสู่ระบบก่อนทำการแลกรับสิทธิ์</p>
+                <button 
+                  onClick={() => signIn("google")}
+                  className="w-full md:w-auto bg-gray-900 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-800 shadow-md transition-transform hover:scale-105"
+                >
+                  Log In to Redeem
+                </button>
+              </div>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Buying Channel</label>
-            <select value={channel} onChange={(e) => setChannel(e.target.value)} className="w-full border p-2 rounded">
-              <option value="Website">Website</option>
-              <option value="In-Game Store">In-Game Store</option>
-              <option value="Retail">Retail Partner</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Telephone Number</label>
-            <input type="tel" required value={tel} onChange={(e) => setTel(e.target.value)} className="w-full border p-2 rounded" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Upload Receipt</label>
-            <input type="file" required accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="w-full border p-2 rounded" />
-          </div>
-
-          <button type="submit" disabled={loading} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400">
-            {loading ? "Submitting..." : "Submit Receipt"}
-          </button>
-        </form>
+        </div>
       </div>
     </main>
   );
