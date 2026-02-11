@@ -57,11 +57,11 @@ export default function Home() {
           {/* Promo Card 1: Tales Runner */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
             {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
-            <div className="h-48 bg-gradient-to-r from-margenta-500 to-red-500 flex items-center justify-center">
+            <div className="h-48 flex items-center justify-center">
               <img src="/tr-banner.jpg" />
             </div>
-            <div className="h-14 bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xl">TALES RUNNER</span>
+            <div className="h-14 bg-gradient-to-r from-margenta-500 to-red-500 flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">TALES RUNNER</span>
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
