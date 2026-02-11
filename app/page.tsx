@@ -21,7 +21,7 @@ export default function Home() {
             </span>
           </h1>
           <p className="mt-4 max-w-2xl text-lg md:text-xl text-gray-300 mx-auto mb-10">
-            Claim exclusive game codes, digital loot, and special rewards with your eligible IHAVECPU purchases.
+            Claim exclusive game codes, digital loot, and special rewards with your eligible iHAVECPU purchases.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -107,7 +107,7 @@ export default function Home() {
             <div className="bg-white p-8 rounded-2xl shadow-sm">
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold mb-6">1</div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Make a Purchase</h3>
-              <p className="text-gray-600">Buy an eligible item from IHAVECPU online, in-store, or through retail partners.</p>
+              <p className="text-gray-600">Buy an eligible item from iHAVECPU online, in-store, or through retail partners.</p>
             </div>
 
             {/* Step 2 */}
