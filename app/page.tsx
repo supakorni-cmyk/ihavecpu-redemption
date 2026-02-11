@@ -15,9 +15,9 @@ export default function Home() {
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
-            IHAVECPU <br />
+            Level Up Your Gear, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-              Redemption Center
+              Claim Your Rewards
             </span>
           </h1>
           <p className="mt-4 max-w-2xl text-lg md:text-xl text-gray-300 mx-auto mb-10">
@@ -61,7 +61,7 @@ export default function Home() {
               <img src="/tr-banner.jpg" />
             </div>
             <div className="h-14 bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
-              <span className="text-white font-black text-3xl tracking-wider shadow-sm">TALES RUNNER</span>
+              <span className="text-white font-bold text-xl">TALES RUNNER</span>
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
