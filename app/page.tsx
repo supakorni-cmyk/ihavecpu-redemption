@@ -39,6 +39,9 @@ export default function Home() {
                   Redeem Now
                 </button>
               </Link>
+              <Link href="/my-rewards" className="text-blue-600 underline mt-4 block">
+                Check My Reward Status
+              </Link>
             </div>
 
             <button
