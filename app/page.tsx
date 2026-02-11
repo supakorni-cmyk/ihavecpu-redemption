@@ -16,7 +16,7 @@ export default function Home() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
             Level Up Your Gear.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-800">
               Claim Your Epic Loot.
             </span>
           </h1>
