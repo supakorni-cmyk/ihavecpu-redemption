@@ -58,6 +58,9 @@ export async function POST(req: Request) {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
 
+    // ADD THIS DEBUG LINE HERE:
+    console.log("DEBUG: Looking for Sheet ID:", spreadsheetId);
+
     // Change "Item1" and "Item2" to match the exact names of your tabs at the bottom of Google Sheets
     const code1 = await getAndMarkCode(sheets, spreadsheetId, "Item1", email);
     const code2 = await getAndMarkCode(sheets, spreadsheetId, "Item2", email);
