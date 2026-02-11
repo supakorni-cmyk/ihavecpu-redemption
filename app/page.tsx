@@ -59,7 +59,9 @@ export default function Home() {
             {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
             <div className="h-48 bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
               <img src="/tr-banner.jpg" />
-               <span className="text-white font-black text-3xl tracking-wider shadow-sm">TALES RUNNER</span>
+            </div>
+            <div className="h-14 bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
+              <span className="text-white font-black text-3xl tracking-wider shadow-sm">TALES RUNNER</span>
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
