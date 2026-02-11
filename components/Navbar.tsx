@@ -19,8 +19,16 @@ export default function Navbar() {
           
           {/* Brand / Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-              IHAVECPU <span className="text-white text-lg font-medium tracking-normal">Rewards</span>
+            <Link href="/" className="flex items-center gap-2">
+            {/* The leading slash tells Next.js to look in the public folder */}
+            <img 
+                src="/logo.png" 
+                alt="IHAVECPU Logo" 
+                className="h-8 w-auto object-contain" 
+            />
+            <span className="text-white text-xl font-medium tracking-normal border-l pl-2 border-gray-600">
+                Redemption
+            </span>
             </Link>
           </div>
 
