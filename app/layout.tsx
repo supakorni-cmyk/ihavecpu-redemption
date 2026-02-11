@@ -2,23 +2,33 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "@/components/Providers";
+import { Providers } from "@/components/Providers"; // Assuming you have this from Phase 1
+import Navbar from "@/components/Navbar"; // <-- Import the new Navbar
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Game Code Redemption",
+  title: "IHAVECPU Reward Redemption",
+  description: "Redeem your exclusive game codes here.",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+      <body className={`${inter.className} bg-gray-50 min-h-screen flex flex-col`}>
+        <Providers>
+          {/* Add the Navbar right here above children */}
+          <Navbar /> 
+          
+          {/* The main content of your pages will render inside here */}
+          <div className="flex-grow">
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );
