@@ -67,10 +67,9 @@ export default function AdminDashboard() {
 
   // 4. Handle Approve (Basic version for now)
   const handleApprove = async (id: string, userEmail: string) => {
-    if (!confirm(`Approve receipt and generate code for ${userEmail}?`)) return;
+    if (!confirm(`Approve receipt and generate codes for ${userEmail}?`)) return;
 
     try {
-      // 1. Ask our backend to grab a code from the Google Sheet
       const res = await fetch("/api/dispense-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,25 +78,25 @@ export default function AdminDashboard() {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || "Failed to get code");
+      if (!res.ok) throw new Error(data.error || "Failed to get codes");
 
-      // 2. Code acquired! Now update Firestore so the user can see it.
+      // 🚨 THIS IS THE PART WE FIXED 🚨
+      // We are now explicitly saving code1 and code2 to Firebase
       const submissionRef = doc(db, "submissions", id);
       await updateDoc(submissionRef, { 
         status: "approved",
-        rewardCode: data.code 
+        rewardCode1: data.code1, 
+        rewardCode2: data.code2  
       });
 
-      // 3. Remove it from the Admin UI
       setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
-      alert(`Success! Code ${data.code} was sent to the user.`);
+      alert(`Success! Codes dispensed: \n1: ${data.code1}\n2: ${data.code2}`);
       
     } catch (error: any) {
       console.error("Error approving:", error);
       alert(error.message);
     }
   };
-
   // --- UI Rendering ---
   
   if (sessionStatus === "loading") return <div className="p-10">Loading...</div>;
