@@ -3,9 +3,8 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Link from "next/link";
 
 export default function TalesRunnerPromo() {
@@ -35,20 +34,37 @@ export default function TalesRunnerPromo() {
     setLoading(true);
 
     try {
-      // 1. Upload receipt to Firebase Storage
-      const storageRef = ref(storage, `receipts/${Date.now()}_${file.name}`);
-      const uploadResult = await uploadBytes(storageRef, file);
-      const receiptUrl = await getDownloadURL(uploadResult.ref);
+      // 1. Upload receipt to Cloudinary
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "receipt_uploads"); // Use the exact preset name you created
 
-      // 2. Save data to Firestore Database
+      // Replace YOUR_CLOUD_NAME with your actual Cloudinary Cloud Name
+      const cloudinaryRes = await fetch(
+        `https://api.cloudinary.com/v1_1/dlukdk7wu/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const cloudinaryData = await cloudinaryRes.json();
+      
+      if (!cloudinaryRes.ok) {
+        throw new Error(cloudinaryData.error?.message || "Image upload failed");
+      }
+
+      const receiptUrl = cloudinaryData.secure_url; // This is the public link to the image
+
+      // 2. Save data to Firestore Database (This part stays exactly the same!)
       await addDoc(collection(db, "submissions"), {
         userEmail: session.user?.email,
         promo: "Tales Runner",
         name,
         channel,
         tel,
-        receiptUrl,
-        status: "pending", // Important: sets default status for Admin review
+        receiptUrl, // Saving the new Cloudinary URL here
+        status: "pending",
         rewardCode: null,
         createdAt: serverTimestamp(),
       });
