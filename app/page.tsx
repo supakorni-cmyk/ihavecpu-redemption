@@ -60,7 +60,7 @@ export default function Home() {
             <div className="h-48 flex items-center justify-center">
               <img src="/tr-banner.jpg" />
             </div>
-            <div className="h-14 bg-gradient-to-r from-margenta-500 to-red-500 flex items-center justify-center">
+            <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
               <span className="text-white font-bold text-2xl">TALES RUNNER</span>
             </div>
             
@@ -68,7 +68,13 @@ export default function Home() {
               <span className="text-xs font-bold tracking-wide text-blue-600 uppercase mb-2">Game Loot</span>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive In-Game Items</h3>
               <p className="text-gray-600 text-sm mb-6 flex-grow">
-                Upload your receipt from any participating purchase to receive two exclusive Tales Runner item codes.
+                ซื้อ Computer Set Tales Runner เซ็ตใดก็ได้ 1 เซ็ต รับโค้ดพิเศษจากเกมส์ Tales Runner<br />
+                • Code 1: ไอเทมระดับ SS Tier ได้ครบทั้งชุด<br />
+                • Code 2: กล่องสุ่มไอเทมพิเศษ 90 กล่อง<br />
+              </p>
+              <p className="text-gray-600 text-sm mb-6 flex-grow">
+                *ของรางวัลมีจำนวนจำกัด<br />
+                *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
               </p>
               
               <Link href="/tales-runner" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
