@@ -68,8 +68,13 @@ export async function POST(req: Request) {
     // Return both codes securely to the frontend
     return NextResponse.json({ code1, code2 });
 
-  } catch (error: any) {
-    console.error("Google Sheets Error:", error);
-    return NextResponse.json({ error: error.message || "Failed to connect to Google Sheets" }, { status: 500 });
+} catch (error: any) {
+    // This will print the EXACT Google error details in your VS Code terminal
+    console.error("🔥 DETAILED GOOGLE ERROR:", error.response?.data?.error || error.message);
+    
+    return NextResponse.json(
+      { error: error.response?.data?.error?.message || error.message || "Failed to connect to Google Sheets" }, 
+      { status: 500 }
+    );
   }
 }
