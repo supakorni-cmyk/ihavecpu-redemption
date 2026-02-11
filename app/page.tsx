@@ -57,7 +57,7 @@ export default function Home() {
           {/* Promo Card 1: Tales Runner */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
             {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
-            <div className="h-48 bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
+            <div className="h-48 bg-gradient-to-r from-margenta-500 to-red-500 flex items-center justify-center">
               <img src="/tr-banner.jpg" />
             </div>
             <div className="h-14 bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
@@ -71,7 +71,7 @@ export default function Home() {
                 Upload your receipt from any participating purchase to receive two exclusive Tales Runner item codes.
               </p>
               
-              <Link href="/tales-runner" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-blue-600 transition-colors">
+              <Link href="/tales-runner" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
                 Redeem Here &rarr;
               </Link>
             </div>
