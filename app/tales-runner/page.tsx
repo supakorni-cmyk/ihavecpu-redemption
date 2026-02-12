@@ -28,7 +28,7 @@ export default function TalesRunnerLanding() {
         {/* Content (Sitting on top of overlay) */}
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
-            Tales Runner x IHAVECPU
+            Tales Runner x iHAVECPU
           </h1>
           <p className="text-xl text-blue-100 drop-shadow-md">
             Exclusive In-Game Item Redemption
