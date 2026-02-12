@@ -38,12 +38,7 @@ export default function TalesRunnerLanding() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12">
-          <Image
-            src="/cover1x1.jpg" 
-            alt="1x1 banner"
-            fill
-            className="object-cover"
-          />
+          
           {/* Main Content & Rules */}
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mb-4">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
