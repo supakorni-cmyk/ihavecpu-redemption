@@ -8,8 +8,8 @@ import Navbar from "@/components/Navbar"; // <-- Import the new Navbar
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "IHAVECPU Reward Redemption",
-  description: "Redeem your exclusive game codes here.",
+  title: "iHAVECPU Reward Redemption",
+  description: "Redeem your exclusive rewards here.",
 };
 
 export default function RootLayout({

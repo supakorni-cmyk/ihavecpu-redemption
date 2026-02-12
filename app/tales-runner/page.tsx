@@ -11,9 +11,10 @@ export default function TalesRunnerLanding() {
     <main className="min-h-screen bg-gray-50 pb-20">
       {/* Promo Hero Banner */}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-16">
+        <img src="/tr-banner.jpg" />
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
-            Tales Runner x IHAVECPU
+            Tales Runner x iHAVECPU
           </h1>
           <p className="text-xl text-blue-200">
             Exclusive In-Game Item Redemption
@@ -28,13 +29,15 @@ export default function TalesRunnerLanding() {
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mb-4">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
             <p className="mb-6">
-              ซื้อสินค้าที่ร่วมรายการจาก IHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
-              (Buy participating products from IHAVECPU and redeem your receipt for 2 exclusive Tales Runner item codes!)
+              ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
+              (Buy participating products from iHAVECPU and redeem your receipt for 2 exclusive Tales Runner item codes!)
+              • Code 1: ไอเทมระดับ SS Tier ได้ครบทั้งชุด<br />
+              • Code 2: กล่องสุ่มไอเทมพิเศษ 90 กล่อง
             </p>
 
             <h3 className="text-xl font-bold text-gray-900 mb-2">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-2">
-              <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก IHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
+              <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก iHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
               <li>ใบเสร็จ 1 ใบ สามารถใช้แลกรับสิทธิ์ได้เพียง 1 ครั้งเท่านั้น (1 Receipt = 1 Redemption)</li>
               <li>โค้ดไอเทมไม่สามารถแลกเปลี่ยนเป็นเงินสดได้</li>
               <li>บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงเงื่อนไขโดยไม่ต้องแจ้งให้ทราบล่วงหน้า</li>

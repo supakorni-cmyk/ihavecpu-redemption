@@ -61,8 +61,7 @@ export default function Home() {
               <img src="/tr-banner.jpg" />
             </div>
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">Tales Runner<br /></span>
-               <span className="text-white text-l">The Hall Of Fame</span>
+              <span className="text-white font-bold text-2xl">Tales Runner</span>
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
