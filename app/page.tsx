@@ -11,12 +11,12 @@ export default function Home() {
     <main className="min-h-screen bg-white">
       {/* Hero Section (Generalized for the whole Redemption Center) */}
       <div className="relative bg-gray-900 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 to-purple-900/50 z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900/50 to-red-700/50 z-0 pointer-events-none" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
             Level Up Your Gear, <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-600">
               Claim Your Rewards
             </span>
           </h1>
