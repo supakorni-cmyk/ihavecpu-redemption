@@ -35,7 +35,7 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
-            <Link href="/tales-runner" className="text-gray-300 hover:text-white transition-colors">Redeem</Link>
+            {/* <Link href="/tales-runner" className="text-gray-300 hover:text-white transition-colors">Redeem</Link> */}
             
             {session && (
               <Link href="/my-rewards" className="text-gray-300 hover:text-white transition-colors">My Rewards</Link>
@@ -59,7 +59,7 @@ export default function Navbar() {
             ) : (
               <button 
                 onClick={() => signIn("google")}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-md font-medium transition-colors shadow-md shadow-blue-900/20"
+                className="bg-red-600 hover:bg-red-500 text-white px-5 py-2 rounded-md font-medium transition-colors shadow-md shadow-blue-900/20"
               >
                 Sign In
               </button>
