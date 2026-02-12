@@ -65,8 +65,8 @@ export default function TalesRunnerLanding() {
               <li>รับโค้ดในหน้า <strong>My Rewards</strong> ของคุณ</li>
               <li>
                 นำโค้ดที่ได้รับไปลงทะเบียนต่อที่: 
-                <Link href="https://member.thehof.gg/talesrunner" target="_blank">
-                  Link
+                 <Link href="https://member.thehof.gg/talesrunner" target="_blank">
+                  <strong>Link</strong>
               </Link>
               </li>
             </ol>
