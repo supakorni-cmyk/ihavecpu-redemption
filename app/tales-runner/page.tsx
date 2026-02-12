@@ -10,7 +10,7 @@ export default function TalesRunnerLanding() {
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
       {/* Promo Hero Banner with Background Image */}
-      <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900">
+      <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900 mb-8">
         
         {/* The Background Image */}
         {/* Ensure your image file is in the 'public' folder named exactly this: */}
@@ -36,7 +36,7 @@ export default function TalesRunnerLanding() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto my-4 px-4 sm:px-6 lg:px-8 -mt-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12">
           
           {/* Main Content & Rules */}
