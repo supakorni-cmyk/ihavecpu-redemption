@@ -43,7 +43,7 @@ export default function TalesRunnerLanding() {
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mb-4">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
             <p className="mb-6">
-              ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! <br />
+              ซื้อสินค้า Computer Set Tales Runner จาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! <br />
               • Code 1: ไอเทมระดับ SS Tier ได้ครบทั้งชุด<br />
               • Code 2: กล่องสุ่มไอเทมพิเศษ 90 กล่อง
             </p>
@@ -63,6 +63,12 @@ export default function TalesRunnerLanding() {
               <li>กรอกข้อมูลและอัปโหลดรูปภาพใบเสร็จในหน้า Redeem</li>
               <li>รอทีมงานตรวจสอบ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับโค้ดในหน้า <strong>My Rewards</strong> ของคุณ</li>
+              <li>
+                นำโค้ดที่ได้รับไปลงทะเบียนต่อที่:
+                <Link href="https://member.thehof.gg/talesrunner">
+                  https://member.thehof.gg/talesrunner
+              </Link>
+              </li>
             </ol>
           </div>
 
