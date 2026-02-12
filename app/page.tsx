@@ -48,7 +48,7 @@ export default function Home() {
         <div className="flex justify-between items-end mb-10">
           <div>
             <h2 className="text-3xl font-bold text-gray-900">Active Promotions</h2>
-            <p className="text-gray-600 mt-2">Select a campaign below to redeem your receipt.</p>
+            <p className="text-gray-600 mt-2">Select a campaign below to redeem your rewards.</p>
           </div>
         </div>
         
@@ -107,21 +107,21 @@ export default function Home() {
             <div className="bg-white p-8 rounded-2xl shadow-sm">
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold mb-6">1</div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Make a Purchase</h3>
-              <p className="text-gray-600">Buy an eligible item from iHAVECPU online, in-store, or through retail partners.</p>
+              <p className="text-gray-600">ซื้อสินค้า iHAVECPU รุ่นที่ร่วมรายการ</p>
             </div>
 
             {/* Step 2 */}
             <div className="bg-white p-8 rounded-2xl shadow-sm">
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold mb-6">2</div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Upload Receipt</h3>
-              <p className="text-gray-600">Select the active campaign above and securely upload a photo of your receipt.</p>
+              <p className="text-gray-600">เลือกแคมเปญที่ต้องการรับของรางวัล อัพโหลดรูปใบเสร็จการซื้อสินค้า</p>
             </div>
 
             {/* Step 3 */}
             <div className="bg-white p-8 rounded-2xl shadow-sm">
               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold mb-6">3</div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Get Your Reward</h3>
-              <p className="text-gray-600">Once our team verifies your receipt, your unique reward codes will appear in your dashboard!</p>
+              <p className="text-gray-600">หลังจากที่ทีมงานได้ตรวจสอบใบเสร็จเรียบร้อยแล้ว ของรางวัลจะปรากฎขึ้นที่หน้า My Rewards</p>
             </div>
           </div>
         </div>
