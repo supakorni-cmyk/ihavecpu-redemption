@@ -28,7 +28,7 @@ export default function Home() {
             {!session ? (
               <button 
                 onClick={() => signIn("google")}
-                className="w-full sm:w-auto px-8 py-4 text-lg font-bold rounded-full bg-blue-600 hover:bg-blue-500 transition-transform hover:scale-105 shadow-lg shadow-blue-600/30"
+                className="w-full sm:w-auto px-8 py-4 text-lg font-bold rounded-full bg-red-600 hover:bg-red-500 transition-transform hover:scale-105 shadow-lg shadow-blue-600/30"
               >
                 Log In to Get Started
               </button>
@@ -61,7 +61,8 @@ export default function Home() {
               <img src="/tr-banner.jpg" />
             </div>
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">TALES RUNNER</span>
+              <span className="text-white font-bold text-2xl">Tales Runner</span>
+               <span className="text-white text-l">The Hall Of Fame</span>
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
