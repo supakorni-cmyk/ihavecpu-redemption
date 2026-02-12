@@ -9,9 +9,8 @@ export default function TalesRunnerLanding() {
 
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
-      {/* Promo Hero Banner */}
+      {<img src="/tr-banner.jpg" />}
       <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-16">
-        <img src="/tr-banner.jpg" />
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
             Tales Runner x iHAVECPU
