@@ -64,9 +64,9 @@ export default function TalesRunnerLanding() {
               <li>รอทีมงานตรวจสอบ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับโค้ดในหน้า <strong>My Rewards</strong> ของคุณ</li>
               <li>
-                นำโค้ดที่ได้รับไปลงทะเบียนต่อที่: 
+                นำโค้ดที่ได้รับไปลงทะเบียนต่อที่
                  <Link href="https://member.thehof.gg/talesrunner" target="_blank">
-                  <strong>Link</strong>
+                  <strong> Link</strong>
               </Link>
               </li>
             </ol>
