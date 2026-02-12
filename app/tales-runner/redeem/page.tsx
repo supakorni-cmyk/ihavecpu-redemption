@@ -96,7 +96,7 @@ export default function TalesRunnerPromo() {
   return (
     <main className="min-h-screen p-10 flex flex-col items-center bg-gray-50 text-black">
       <div className="max-w-xl w-full bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6">Tales Runner - Code Redemption</h1>
+        <h1 className="text-2xl font-bold mb-6 flex items-center justify-center mx-auto">Tales Runner - Code Redemption</h1>
         
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <div>
@@ -113,8 +113,8 @@ export default function TalesRunnerPromo() {
             <label className="block text-sm font-medium mb-1">Buying Channel</label>
             <select value={channel} onChange={(e) => setChannel(e.target.value)} className="w-full border p-2 rounded">
               <option value="Website">Website</option>
-              <option value="In-Game Store">In-Game Store</option>
-              <option value="Retail">Retail Partner</option>
+              <option value="In-Game Store">หน้าร้าน iHAVECPU</option>
+              <option value="Retail">Shopee/Lazada</option>
             </select>
           </div>
 
@@ -128,8 +128,8 @@ export default function TalesRunnerPromo() {
             <input type="file" required accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="w-full border p-2 rounded" />
           </div>
 
-          <button type="submit" disabled={loading} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400">
-            {loading ? "Submitting..." : "Submit Receipt"}
+          <button type="submit" disabled={loading} className="mt-4 bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 disabled:bg-gray-400">
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </form>
       </div>
