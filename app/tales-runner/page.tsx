@@ -1,6 +1,6 @@
 // app/tales-runner/page.tsx
 "use client";
-
+import Image from "next/image";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 
@@ -9,27 +9,41 @@ export default function TalesRunnerLanding() {
 
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
-      {/* Promo Hero Banner */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white py-16">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+      {/* Promo Hero Banner with Background Image */}
+      <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900 mb-8">
+        
+        {/* The Background Image */}
+        {/* Ensure your image file is in the 'public' folder named exactly this: */}
+        <Image
+          src="/tr-banner2.jpg" 
+          alt="Tales Runner Promotion Background"
+          fill
+          className="object-cover"
+          priority // Loads image quickly as it's above the fold
+        />
+
+        {/* Dark Overlay - Adjust 'bg-black/60' to make it darker/lighter if needed */}
+        <div className="absolute inset-0 bg-black/60 z-10" />
+
+        {/* Content (Sitting on top of overlay) */}
+        <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
             Tales Runner x iHAVECPU
           </h1>
-          <p className="text-xl text-blue-200">
+          <p className="text-xl text-blue-100 drop-shadow-md">
             Exclusive In-Game Item Redemption
           </p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 md:p-12">
           
           {/* Main Content & Rules */}
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-2xl font-bold text-gray-900 border-b pb-2 mb-4">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
             <p className="mb-6">
-              ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
-              (Buy participating products from iHAVECPU and redeem your receipt for 2 exclusive Tales Runner item codes!)
+              ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! <br />
               • Code 1: ไอเทมระดับ SS Tier ได้ครบทั้งชุด<br />
               • Code 2: กล่องสุ่มไอเทมพิเศษ 90 กล่อง
             </p>
