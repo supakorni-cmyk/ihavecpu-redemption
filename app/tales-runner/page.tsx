@@ -42,7 +42,7 @@ export default function TalesRunnerLanding() {
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
-            Tales Runner x IHAVECPU
+            Tales Runner x iHAVECPU
           </h1>
           <p className="text-xl text-blue-100 drop-shadow-md">
             Exclusive In-Game Item Redemption
@@ -57,12 +57,13 @@ export default function TalesRunnerLanding() {
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-3xl font-bold text-gray-900 border-b pb-4 mb-6">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
             <p className="mb-6 text-lg leading-relaxed">
-              ซื้อสินค้าที่ร่วมรายการจาก IHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
+              ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
             </p>
-
+            <h3>Set Promotion ที่เข้าร่วม</h3>
+            <p>Click <Link href="https://ihavecpu.com/category/promotion?addition=740}">Link</Link> </p>
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
-              <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก IHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
+              <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก iHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
               <li>ใบเสร็จ 1 ใบ สามารถใช้แลกรับสิทธิ์ได้เพียง 1 ครั้งเท่านั้น (1 Receipt = 1 Redemption)</li>
               <li>โค้ดไอเทมไม่สามารถแลกเปลี่ยนเป็นเงินสดได้</li>
               <li>บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงเงื่อนไขโดยไม่ต้องแจ้งให้ทราบล่วงหน้า</li>
@@ -75,6 +76,7 @@ export default function TalesRunnerLanding() {
               <li>กรอกข้อมูลและอัปโหลดรูปภาพใบเสร็จในหน้า Redeem</li>
               <li>รอทีมงานตรวจสอบ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับโค้ดในหน้า <strong>My Rewards</strong> ของคุณ</li>
+              <li>นำโค้ดที่ได้ไปลงทะเบียนต่อที่ <strong><Link href="https://member.thehof.gg/talesrunner">Link</Link> </strong></li>
             </ol>
           </div>
 
