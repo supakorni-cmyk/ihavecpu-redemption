@@ -33,7 +33,7 @@ export default function TalesRunnerLanding() {
       {/* Promo Hero Banner with Background Image */}
       <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900">
         <Image
-          src="/tales-runner-bg.jpg" 
+          src="/tr-banner2.jpg" 
           alt="Tales Runner Promotion Background"
           fill
           className="object-cover"
