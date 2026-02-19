@@ -42,7 +42,7 @@ export default function TalesRunnerLanding() {
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
-            Tales Runner x IHAVECPU
+            Tales Runner x iHAVECPU
           </h1>
           <p className="text-xl text-blue-100 drop-shadow-md">
             Exclusive In-Game Item Redemption
@@ -57,7 +57,7 @@ export default function TalesRunnerLanding() {
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-3xl font-bold text-gray-900 border-b pb-4 mb-6">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
             <p className="mb-6 text-lg leading-relaxed">
-              ซื้อสินค้าที่ร่วมรายการจาก IHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
+              ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
             </p>
 
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
