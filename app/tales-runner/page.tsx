@@ -60,7 +60,7 @@ export default function TalesRunnerLanding() {
               ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
             </p>
             <h3>Set Promotion ที่เข้าร่วม</h3>
-            <p>Click <Link href="https://ihavecpu.com/category/promotion?addition=740}">Link</Link> </p>
+            <p><strong><Link href="https://ihavecpu.com/category/promotion?addition=740}">Link</Link> </strong></p>
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
               <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก iHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
