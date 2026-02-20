@@ -10,6 +10,14 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "iHAVECPU Reward Redemption",
   description: "Redeem your exclusive rewards here.",
+  icons: {
+    icon: [
+      {
+        url:'/iHAVECPU_COM (1).png',
+        href: 'iHAVECPU_COM (1).png',
+      }
+    ]
+  }
 };
 
 export default function RootLayout({
