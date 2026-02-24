@@ -8,12 +8,14 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import Link from "next/link";
 
 // Define the shape of our data
+// Define the shape of our data
 type Submission = {
   id: string;
   promo: string;
   status: string;
   rewardCode1?: string;
   rewardCode2?: string;
+  rejectReason?: string; // <-- Add this line
   createdAt: any;
 };
 
@@ -96,9 +98,15 @@ export default function MyRewards() {
                   )}
                   
                   {sub.status === "rejected" && (
-                    <span className="bg-red-100 text-red-800 px-4 py-2 rounded-full text-sm font-medium border border-red-200">
-                      ❌ Receipt Rejected
-                    </span>
+                    <div className="bg-red-50 border border-red-200 p-4 rounded-md text-left mt-2 md:mt-0 shadow-sm w-full md:max-w-xs">
+                      <p className="text-red-800 font-bold mb-2 flex items-center">
+                        <span className="mr-2">❌</span> Receipt Rejected
+                      </p>
+                      <div className="bg-white px-3 py-2 rounded border border-red-100">
+                        <p className="text-xs text-red-400 font-semibold uppercase mb-1">Reason:</p>
+                        <p className="text-sm text-red-600">{sub.rejectReason || "No reason provided"}</p>
+                      </div>
+                    </div>
                   )}
 
                   {sub.status === "approved" && (

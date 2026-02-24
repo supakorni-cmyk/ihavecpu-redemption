@@ -10,7 +10,8 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Check if the logged-in user is the admin
-  const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "").split(",").map(email => email.trim());
+  const isAdmin = session?.user?.email ? adminEmails.includes(session.user.email) : false;
 
   return (
     <nav className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">

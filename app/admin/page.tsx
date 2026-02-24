@@ -1,38 +1,44 @@
-// app/admin/page.tsx
 "use client";
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
-import Link from "next/link";
 
 // Define the shape of our data
 type Submission = {
   id: string;
   userEmail: string;
-  name: string;
-  channel: string;
+  fullName: string;
+  buyingChannel: string;
   tel: string;
   receiptUrl: string;
+  promo: string;
   status: string;
+  createdAt: any;
 };
 
 export default function AdminDashboard() {
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: session, status } = useSession();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Security Check: Only allow the admin email
-  const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  // 1. Check if the logged-in user is in our comma-separated admin list
+  const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase());
+    
+  const isAdmin = session?.user?.email 
+    ? adminEmails.includes(session.user.email.toLowerCase()) 
+    : false;
 
+  // 2. Fetch pending receipts
   useEffect(() => {
     if (isAdmin) {
       fetchPendingSubmissions();
     }
   }, [isAdmin]);
 
-  // 2. Fetch all "pending" submissions from Firestore
   const fetchPendingSubmissions = async () => {
     try {
       const q = query(collection(db, "submissions"), where("status", "==", "pending"));
@@ -42,7 +48,9 @@ export default function AdminDashboard() {
       querySnapshot.forEach((doc) => {
         fetchedData.push({ id: doc.id, ...doc.data() } as Submission);
       });
-      
+
+      // Sort by newest first
+      fetchedData.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
       setSubmissions(fetchedData);
     } catch (error) {
       console.error("Error fetching submissions:", error);
@@ -51,25 +59,12 @@ export default function AdminDashboard() {
     }
   };
 
-  // 3. Handle Reject
-  const handleReject = async (id: string) => {
-    if (!confirm("Are you sure you want to reject this receipt?")) return;
-    
-    try {
-      const submissionRef = doc(db, "submissions", id);
-      await updateDoc(submissionRef, { status: "rejected" });
-      // Remove it from the UI
-      setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
-    } catch (error) {
-      console.error("Error rejecting:", error);
-    }
-  };
-
-  // 4. Handle Approve (Basic version for now)
+  // 3. Handle Approving & Dispensing Codes
   const handleApprove = async (id: string, userEmail: string) => {
     if (!confirm(`Approve receipt and generate codes for ${userEmail}?`)) return;
 
     try {
+      // Ask our backend to grab codes from the Google Sheet
       const res = await fetch("/api/dispense-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,99 +75,137 @@ export default function AdminDashboard() {
 
       if (!res.ok) throw new Error(data.error || "Failed to get codes");
 
-      // 🚨 THIS IS THE PART WE FIXED 🚨
-      // We are now explicitly saving code1 and code2 to Firebase
+      // Save BOTH codes to Firestore
       const submissionRef = doc(db, "submissions", id);
       await updateDoc(submissionRef, { 
         status: "approved",
-        rewardCode1: data.code1, 
-        rewardCode2: data.code2  
+        rewardCode1: data.code1,
+        rewardCode2: data.code2
       });
 
+      // Remove from UI
       setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
       alert(`Success! Codes dispensed: \n1: ${data.code1}\n2: ${data.code2}`);
       
     } catch (error: any) {
       console.error("Error approving:", error);
-      alert(error.message);
+      alert(`Error: ${error.message}`);
     }
   };
-  // --- UI Rendering ---
-  
-  if (sessionStatus === "loading") return <div className="p-10">Loading...</div>;
-  
-  if (!isAdmin) {
+
+  // 4. Handle Rejecting with a Reason
+  const handleReject = async (id: string) => {
+    // Pop up a text box asking the admin for a reason
+    const reason = window.prompt("Please enter a reason for rejection (e.g., Blurry image, Wrong date):");
+    
+    // If the admin clicks "Cancel", stop the process
+    if (reason === null) return; 
+
+    try {
+      const submissionRef = doc(db, "submissions", id);
+      
+      // Save both the rejected status AND the reason to Firebase
+      await updateDoc(submissionRef, { 
+        status: "rejected",
+        rejectReason: reason || "ไม่ระบุเหตุผล (No reason provided)" 
+      });
+
+      // Remove from UI
+      setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
+      
+    } catch (error) {
+      console.error("Error rejecting:", error);
+      alert("Failed to reject the receipt.");
+    }
+  };
+
+  // 5. Security Check Renders
+  if (status === "loading" || (isAdmin && loading)) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600">Loading Admin Panel...</div>;
+  }
+
+  if (!session || !isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-black">
-        <div className="bg-red-100 p-6 rounded text-red-700">
-          <h1 className="text-xl font-bold">Access Denied</h1>
-          <p>You do not have permission to view this page.</p>
-          <Link href="/" className="underline mt-4 block text-blue-600">Go Home</Link>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-lg shadow-md text-center border border-red-100">
+          <div className="text-red-500 text-5xl mb-4">⛔</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+          <p className="text-gray-600">You do not have administrator privileges to view this page.</p>
         </div>
       </div>
     );
   }
 
+  // 6. Main Admin Dashboard Render
   return (
-    <main className="min-h-screen p-10 bg-gray-50 text-black">
-      <div className="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-        <p className="mb-6 text-gray-600">Review pending Tales Runner receipt submissions.</p>
+    <main className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-2 rounded-full border border-blue-200">
+            {submissions.length} Pending Requests
+          </span>
+        </div>
 
-        {loading ? (
-          <p>Loading submissions...</p>
-        ) : submissions.length === 0 ? (
-          <p className="text-green-600 font-medium">All caught up! No pending submissions.</p>
+        {submissions.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+            <p className="text-gray-500 text-lg">All caught up! No pending receipts to review.</p>
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-100 border-b">
-                  <th className="p-3">User</th>
-                  <th className="p-3">Details</th>
-                  <th className="p-3">Receipt</th>
-                  <th className="p-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.map((sub) => (
-                  <tr key={sub.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">
-                      <p className="font-semibold">{sub.name}</p>
-                      <p className="text-sm text-gray-500">{sub.userEmail}</p>
-                    </td>
-                    <td className="p-3 text-sm">
-                      <p>Channel: {sub.channel}</p>
-                      <p>Tel: {sub.tel}</p>
-                    </td>
-                    <td className="p-3">
-                      <a 
-                        href={sub.receiptUrl} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="text-blue-600 underline text-sm"
-                      >
-                        View Image
-                      </a>
-                    </td>
-                    <td className="p-3 flex space-x-2">
-                      <button 
-                        onClick={() => handleApprove(sub.id, sub.userEmail)}
-                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
-                      >
-                        Approve
-                      </button>
-                      <button 
-                        onClick={() => handleReject(sub.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
-                      >
-                        Reject
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {submissions.map((sub) => (
+              <div key={sub.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                
+                {/* Receipt Image Area */}
+                <div className="bg-gray-100 h-64 border-b border-gray-200 relative group flex items-center justify-center">
+                  <a href={sub.receiptUrl} target="_blank" rel="noreferrer" className="w-full h-full flex items-center justify-center p-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img 
+                      src={sub.receiptUrl} 
+                      alt="Receipt" 
+                      className="max-h-full max-w-full object-contain cursor-zoom-in group-hover:opacity-90 transition-opacity"
+                    />
+                  </a>
+                  <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                    Click to enlarge
+                  </div>
+                </div>
+
+                {/* Submission Details */}
+                <div className="p-6 flex-grow flex flex-col">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">{sub.promo}</h2>
+                      <p className="text-sm text-gray-500">{new Date(sub.createdAt?.toDate()).toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-sm text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6 flex-grow">
+                    <p><span className="font-semibold text-gray-900">Name:</span> {sub.fullName}</p>
+                    <p><span className="font-semibold text-gray-900">Email:</span> {sub.userEmail}</p>
+                    <p><span className="font-semibold text-gray-900">Tel:</span> {sub.tel}</p>
+                    <p><span className="font-semibold text-gray-900">Channel:</span> {sub.buyingChannel}</p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3 mt-auto">
+                    <button 
+                      onClick={() => handleApprove(sub.id, sub.userEmail)}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition-colors"
+                    >
+                      Approve
+                    </button>
+                    <button 
+                      onClick={() => handleReject(sub.id)}
+                      className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2.5 rounded-lg transition-colors border border-red-200"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            ))}
           </div>
         )}
       </div>
