@@ -62,9 +62,6 @@ export default function Home() {
             <Image 
             src="/tr-banner.jpg" 
             alt="tales-runner" 
-            fill
-            className="object-cover"
-            priority 
             />
             </div>
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
@@ -95,10 +92,7 @@ export default function Home() {
             {/* Optional Badge */}
             <Image 
               src="/NVIDIA-CNY-FB.jpg" 
-              alt="tales-runner" 
-              fill
-              className="object-cover"
-              priority 
+              alt="angpao" 
             />
             <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
               NEW!
