@@ -43,10 +43,10 @@ export default function NvidiaLanding() {
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
-            NVIDIA GeForce RTX 50 Series Angpao x iHAVECPU
+            NVIDIA GeForce RTX 50 Series Angpao
           </h1>
           <p className="text-xl text-green-100 drop-shadow-md">
-            Celebrate the launch with exclusive Red Envelope Rewards!
+            Celebrate Chinese New Year with exclusive Red Envelope Rewards!
           </p>
         </div>
       </div>
@@ -58,10 +58,10 @@ export default function NvidiaLanding() {
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-3xl font-bold text-gray-900 border-b pb-4 mb-6">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
             <p className="mb-6 text-lg leading-relaxed text-red-600 font-bold">
-              *จำกัด 1 สิทธิ์ ต่อ 1 บัญชีผู้ใช้เท่านั้น (Strictly 1 redemption per user)*
+              *จำกัด 1 สิทธิ์ ต่อ 1 บัญชีผู้ใช้เท่านั้น*
             </p>
             <p className="mb-6 text-lg leading-relaxed">
-              ซื้อการ์ดจอ NVIDIA GeForce RTX 50 Series ที่ร่วมรายการจาก iHAVECPU มาลงทะเบียนแลกรับอั่งเปาส่วนลดพิเศษทันที! 
+              ส่วนลดพิเศษสำหรับซื้อ Notebook ที่มีการ์ดจอ NVIDIA GeForce RTX 50 Series ที่ iHAVECPU
             </p>
 
             <h3>รุ่นที่เข้าร่วมรายการ (Participating Products)</h3>
@@ -71,6 +71,8 @@ export default function NvidiaLanding() {
               <li>GeForce RTX 5070</li>
               <li>GeForce RTX 5070 Ti</li>
             </ul>
+
+            <p><strong><Link href="https://ihavecpu.com/category/notebook?filter=[[23615,23327,23711,24122]]">ซื้อเลย</Link> </strong></p>
 
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
@@ -86,6 +88,7 @@ export default function NvidiaLanding() {
               <li>กรอกข้อมูลส่วนตัวและเลือกรุ่นการ์ดจอที่ซื้อในหน้า Redeem</li>
               <li>รอทีมงานตรวจสอบข้อมูลการสั่งซื้อ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับอั่งเปาส่วนลดพร้อมโค้ดของคุณในหน้า <strong>My Rewards</strong></li>
+              <li>นำโค้ดที่ได้ไปกรอกในช่องโค้ดส่วนลด ตอนซื้อสินค้า</li>
             </ol>
           </div>
 
