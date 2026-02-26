@@ -64,30 +64,42 @@ export async function POST(req: Request) {
       });
 
       const rows = response.data.values || [];
-      let targetRowIndex = -1;
-      let targetCode = null;
-      let targetDiscount = null;
-
+      
+      // 1. Collect ALL available rows (where Column C is empty)
+      const availableRows = [];
       for (let i = 0; i < rows.length; i++) {
         if (!rows[i][2]) { 
-          targetRowIndex = i + 2;
-          targetCode = rows[i][0];     
-          targetDiscount = rows[i][1]; 
-          break;
+          availableRows.push({
+            rowIndex: i + 2, // +2 because we start at row 2 and arrays are 0-indexed
+            code: rows[i][0],     // Column A
+            discount: rows[i][1]  // Column B
+          });
         }
       }
 
-      if (!targetCode) throw new Error("No NVIDIA codes available!");
+      // 2. If no rows are left, throw an error
+      if (availableRows.length === 0) {
+        throw new Error("No NVIDIA codes available!");
+      }
 
+      // 3. Pick one completely at RANDOM
+      const randomIndex = Math.floor(Math.random() * availableRows.length);
+      const selectedRow = availableRows[randomIndex];
+
+      // 4. Update that specific random row with the user's email
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `Sheet1!C${targetRowIndex}`,
+        range: `Sheet1!C${selectedRow.rowIndex}`,
         valueInputOption: "USER_ENTERED",
         requestBody: { values: [[email]] },
       });
 
-      return NextResponse.json({ code1: targetCode, discount: targetDiscount }); 
-    } 
+      // 5. Return the randomly selected code and discount!
+      return NextResponse.json({ 
+        code1: selectedRow.code, 
+        discount: selectedRow.discount 
+      }); 
+    }
     
     // 🔵 DEFAULT (TALES RUNNER):
     else {
