@@ -91,7 +91,7 @@ export default function Home() {
           {/* Promo Card 2: NVIDIA RTX 50 Series (NEW!) */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col relative">
             {/* Optional Badge */}
-            <div className="h-48 flex items-center justify-center"></div>
+            <div className="h-48 flex items-center justify-center">
               <Image 
                 src="/NVIDIA-CNY-FB.jpg" 
                 alt="angpao" 
