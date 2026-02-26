@@ -61,7 +61,7 @@ export default function NvidiaLanding() {
               *จำกัด 1 สิทธิ์ ต่อ 1 บัญชีผู้ใช้เท่านั้น*
             </p>
             <p className="mb-6 text-lg leading-relaxed">
-              ส่วนลดพิเศษสำหรับซื้อ Notebook ที่มีการ์ดจอ NVIDIA GeForce RTX 50 Series ที่ iHAVECPU
+              ส่วนลดพิเศษสำหรับซื้อ Notebook ที่มีการ์ดจอ NVIDIA GeForce RTX 50 Series ที่ iHAVECPU (เฉพาะช่องทาง Website)
             </p>
 
             <h3><Link href="https://ihavecpu.com/category/notebook?filter=[[23615,23327,23711,24122]]">รุ่นที่เข้าร่วมรายการ (Participating Products)</Link></h3>
@@ -76,7 +76,7 @@ export default function NvidiaLanding() {
 
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
-              <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก iHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
+              <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก Website iHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
               <li>จำกัด 1 สิทธิ์ ต่อ 1 บัญชีผู้ใช้เท่านั้น (1 Account = 1 Redemption)</li>
               <li>อั่งเปาส่วนลดไม่สามารถแลกเปลี่ยนเป็นเงินสดได้</li>
               <li>บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงเงื่อนไขโดยไม่ต้องแจ้งให้ทราบล่วงหน้า</li>
