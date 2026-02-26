@@ -73,6 +73,7 @@ export default function NvidiaLanding() {
             </ul>
 
             <p><strong><Link href="https://ihavecpu.com/category/notebook?filter=[[23615,23327,23711,24122]]">ซื้อเลย</Link> </strong></p>
+            <p>*โค้ดส่วนลดสามารถแลกรับและใช้ได้ถึงวันที่ 15 มีนาคม 2569</p>
 
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
