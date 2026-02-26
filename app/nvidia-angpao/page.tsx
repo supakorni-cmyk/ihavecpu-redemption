@@ -61,7 +61,7 @@ export default function NvidiaLanding() {
               *จำกัด 1 สิทธิ์ ต่อ 1 บัญชีผู้ใช้เท่านั้น*
             </p>
             <p className="mb-6 text-lg leading-relaxed">
-              ส่วนลดพิเศษสำหรับซื้อ Notebook ที่มีการ์ดจอ NVIDIA GeForce RTX 50 Series ที่ iHAVECPU (เฉพาะช่องทาง Website)
+              ส่วนลดพิเศษสำหรับซื้อ Notebook ที่มีการ์ดจอ NVIDIA GeForce RTX 50 Series ที่ iHAVECPU <br /> (เฉพาะช่องทาง Website)
             </p>
 
             <h3><Link href="https://ihavecpu.com/category/notebook?filter=[[23615,23327,23711,24122]]">รุ่นที่เข้าร่วมรายการ (Participating Products)</Link></h3>
