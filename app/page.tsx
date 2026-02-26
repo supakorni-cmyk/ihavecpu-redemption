@@ -58,13 +58,11 @@ export default function Home() {
           {/* Promo Card 1: Tales Runner */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
             {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
-            <div className="h-48 flex items-center justify-center">
               <Image 
               src="/tr-banner.jpg" 
               alt="tales-runner" 
               className="object-fit"
               />
-            </div>
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
               <span className="text-white font-bold text-2xl">Tales Runner</span>
             </div>
@@ -91,13 +89,11 @@ export default function Home() {
           {/* Promo Card 2: NVIDIA RTX 50 Series (NEW!) */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col relative">
             {/* Optional Badge */}
-            <div className="h-48 flex items-center justify-center">
               <Image 
                 src="/NVIDIA-CNY-FB.jpg" 
                 alt="angpao" 
                 className="object-fit"
               />
-            </div>
             <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
               NEW!
             </div>
