@@ -99,7 +99,7 @@ export default function Home() {
             <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
               NEW!
             </div>
-            <div className="h-48 bg-gradient-to-r from-green-600 to-green-900 flex items-center justify-center">
+            <div className="h-14 bg-gradient-to-r from-green-600 to-green-900 flex items-center justify-center">
                <span className="text-white font-black text-2xl tracking-wider shadow-sm px-4 text-center">NVIDIA GeForce RTX 50 SERIES Laptop</span>
             </div>
             <div className="p-6 flex flex-col flex-grow">
