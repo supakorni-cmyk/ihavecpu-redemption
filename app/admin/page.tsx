@@ -3,9 +3,10 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
+// 1. We imported Timestamp here!
+import { collection, query, where, getDocs, doc, updateDoc, Timestamp } from "firebase/firestore";
 
-// Define the shape of our data
+// 2. Updated the type definition (no more 'any')
 type Submission = {
   id: string;
   userEmail: string;
@@ -15,7 +16,11 @@ type Submission = {
   receiptUrl: string;
   promo: string;
   status: string;
-  createdAt: any;
+  rewardCode1?: string;
+  rewardCode2?: string;
+  discountAmount?: string;
+  rejectReason?: string;
+  createdAt: Timestamp | null; // <-- Replaced 'any'
 };
 
 export default function AdminDashboard() {
@@ -23,7 +28,6 @@ export default function AdminDashboard() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Check if the logged-in user is in our comma-separated admin list
   const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "")
     .split(",")
     .map((email) => email.trim().toLowerCase());
@@ -32,7 +36,6 @@ export default function AdminDashboard() {
     ? adminEmails.includes(session.user.email.toLowerCase()) 
     : false;
 
-  // 2. Fetch pending receipts
   useEffect(() => {
     if (isAdmin) {
       fetchPendingSubmissions();
@@ -49,77 +52,73 @@ export default function AdminDashboard() {
         fetchedData.push({ id: doc.id, ...doc.data() } as Submission);
       });
 
-      // Sort by newest first
-      fetchedData.sort((a, b) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
+      // Safely handle sorting without 'any'
+      fetchedData.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
       setSubmissions(fetchedData);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching submissions:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 3. Handle Approving & Dispensing Codes
-  const handleApprove = async (id: string, userEmail: string) => {
+  const handleApprove = async (id: string, userEmail: string, promo: string) => {
     if (!confirm(`Approve receipt and generate codes for ${userEmail}?`)) return;
 
     try {
-      // Ask our backend to grab codes from the Google Sheet
       const res = await fetch("/api/dispense-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: userEmail }),
+        body: JSON.stringify({ email: userEmail, promo }), 
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.error || "Failed to get codes");
 
-      // Save BOTH codes to Firestore
       const submissionRef = doc(db, "submissions", id);
+      
       await updateDoc(submissionRef, { 
         status: "approved",
         rewardCode1: data.code1,
-        rewardCode2: data.code2
+        ...(data.code2 && { rewardCode2: data.code2 }),
+        ...(data.discount && { discountAmount: data.discount }) 
       });
 
-      // Remove from UI
       setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
-      alert(`Success! Codes dispensed: \n1: ${data.code1}\n2: ${data.code2}`);
+      alert(`Success! Code(s) dispensed.`);
       
-    } catch (error: any) {
+    // 3. Replaced 'any' with 'unknown'
+    } catch (error: unknown) {
       console.error("Error approving:", error);
-      alert(`Error: ${error.message}`);
+      if (error instanceof Error) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert("An unknown error occurred while approving.");
+      }
     }
   };
 
-  // 4. Handle Rejecting with a Reason
   const handleReject = async (id: string) => {
-    // Pop up a text box asking the admin for a reason
     const reason = window.prompt("Please enter a reason for rejection (e.g., Blurry image, Wrong date):");
-    
-    // If the admin clicks "Cancel", stop the process
     if (reason === null) return; 
 
     try {
       const submissionRef = doc(db, "submissions", id);
       
-      // Save both the rejected status AND the reason to Firebase
       await updateDoc(submissionRef, { 
         status: "rejected",
         rejectReason: reason || "ไม่ระบุเหตุผล (No reason provided)" 
       });
 
-      // Remove from UI
       setSubmissions((prev) => prev.filter((sub) => sub.id !== id));
       
-    } catch (error) {
+    // 4. Replaced 'any' with 'unknown'
+    } catch (error: unknown) {
       console.error("Error rejecting:", error);
       alert("Failed to reject the receipt.");
     }
   };
 
-  // 5. Security Check Renders
   if (status === "loading" || (isAdmin && loading)) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600">Loading Admin Panel...</div>;
   }
@@ -136,7 +135,6 @@ export default function AdminDashboard() {
     );
   }
 
-  // 6. Main Admin Dashboard Render
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
@@ -156,7 +154,6 @@ export default function AdminDashboard() {
             {submissions.map((sub) => (
               <div key={sub.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
                 
-                {/* Receipt Image Area */}
                 <div className="bg-gray-100 h-64 border-b border-gray-200 relative group flex items-center justify-center">
                   <a href={sub.receiptUrl} target="_blank" rel="noreferrer" className="w-full h-full flex items-center justify-center p-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -171,12 +168,13 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Submission Details */}
                 <div className="p-6 flex-grow flex flex-col">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h2 className="text-lg font-bold text-gray-900">{sub.promo}</h2>
-                      <p className="text-sm text-gray-500">{new Date(sub.createdAt?.toDate()).toLocaleString()}</p>
+                      <p className="text-sm text-gray-500">
+                        {sub.createdAt ? sub.createdAt.toDate().toLocaleString() : "Recently"}
+                      </p>
                     </div>
                   </div>
 
@@ -185,12 +183,15 @@ export default function AdminDashboard() {
                     <p><span className="font-semibold text-gray-900">Email:</span> {sub.userEmail}</p>
                     <p><span className="font-semibold text-gray-900">Tel:</span> {sub.tel}</p>
                     <p><span className="font-semibold text-gray-900">Channel:</span> {sub.buyingChannel}</p>
+                    {/* Display selected product for NVIDIA if it exists */}
+                    {(sub as any).selectedProduct && (
+                       <p><span className="font-semibold text-gray-900">Product:</span> {(sub as any).selectedProduct}</p>
+                    )}
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex space-x-3 mt-auto">
                     <button 
-                      onClick={() => handleApprove(sub.id, sub.userEmail)}
+                      onClick={() => handleApprove(sub.id, sub.userEmail, sub.promo)}
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition-colors"
                     >
                       Approve

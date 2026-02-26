@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
+import Image from "next/image";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -58,7 +59,13 @@ export default function Home() {
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
             {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
             <div className="h-48 flex items-center justify-center">
-              <img src="/tr-banner.jpg" />
+            <Image 
+            src="/tr-banner.jpg" 
+            alt="tales-runner" 
+            fill
+            className="object-cover"
+            priority 
+            />
             </div>
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
               <span className="text-white font-bold text-2xl">Tales Runner</span>
@@ -83,7 +90,40 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Promo Card 2: Coming Soon (Placeholder to show it's a center) */}
+          {/* Promo Card 2: NVIDIA RTX 50 Series (NEW!) */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col relative">
+            {/* Optional Badge */}
+            <Image 
+              src="/NVIDIA-CNY-FB.jpg" 
+              alt="tales-runner" 
+              fill
+              className="object-cover"
+              priority 
+            />
+            <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+              NEW!
+            </div>
+            <div className="h-48 bg-gradient-to-r from-green-600 to-green-900 flex items-center justify-center">
+               <span className="text-white font-black text-2xl tracking-wider shadow-sm px-4 text-center">NVIDIA GeForce RTX 50 SERIES Laptop</span>
+            </div>
+            <div className="p-6 flex flex-col flex-grow">
+              <span className="text-xs font-bold tracking-wide text-green-600 uppercase mb-2">Special Discount</span>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive Angpao Reward</h3>
+              <p className="text-gray-600 text-sm mb-6 flex-grow">
+                ลงทะเบียนรับส่วนลดสำหรับซื้อ Notebook NVIDIA GeForce RTX 50 SERIES สูงสุด 1,000 บาท.
+              </p>
+              <p className="text-gray-600 text-sm mb-6 flex-grow">
+                *ของรางวัลมีจำนวนจำกัด<br />
+                *สำหรับการซื้อบน website iHAVECPU เท่านั้น
+                *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
+              </p>
+              <Link href="/nvidia-angpao" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-green-600 transition-colors">
+                ดูรายละเอียดเพิ่มเติม &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Promo Card 3: Coming Soon (Placeholder to show it's a center) */}
           <div className="bg-gray-50 rounded-2xl border border-dashed border-gray-300 flex flex-col items-center justify-center h-full min-h-[350px] text-center p-6">
             <div className="w-16 h-16 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center text-3xl mb-4">
               🎁

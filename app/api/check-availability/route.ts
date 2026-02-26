@@ -2,8 +2,12 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    // Grab the URL parameters
+    const { searchParams } = new URL(req.url);
+    const promo = searchParams.get("promo");
+
     const formatPrivateKey = (key: string | undefined) => {
       if (!key) return undefined;
       return key.replace(/\\n/g, '\n').replace(/^"|"$/g, '');
@@ -14,30 +18,52 @@ export async function GET() {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
         private_key: formatPrivateKey(process.env.GOOGLE_PRIVATE_KEY),
       },
-      scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"], // Read-only access
+      scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
 
-    // We check the "Item1" tab. If Item1 is out of codes, the promo is over.
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: "Item1!A2:B", 
-    });
+    // 🔴 IF PROMO IS NVIDIA
+    if (promo === "nvidia") {
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID_NVIDIA as string;
+      const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Sheet1!A2:C", 
+      });
 
-    const rows = response.data.values || [];
-    let isAvailable = false;
+      const rows = response.data.values || [];
+      let isAvailable = false;
 
-    // Search for any row where Column B (Used By) is empty
-    for (let i = 0; i < rows.length; i++) {
-      if (!rows[i][1]) { 
-        isAvailable = true;
-        break;
+      // In NVIDIA, Column C (index 2) holds the email
+      for (let i = 0; i < rows.length; i++) {
+        if (!rows[i][2]) { 
+          isAvailable = true;
+          break;
+        }
       }
-    }
+      return NextResponse.json({ available: isAvailable });
+    } 
+    
+    // 🔵 DEFAULT: TALES RUNNER
+    else {
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
+      const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Item1!A2:B", 
+      });
 
-    return NextResponse.json({ available: isAvailable });
+      const rows = response.data.values || [];
+      let isAvailable = false;
+
+      // In Tales Runner, Column B (index 1) holds the email
+      for (let i = 0; i < rows.length; i++) {
+        if (!rows[i][1]) { 
+          isAvailable = true;
+          break;
+        }
+      }
+      return NextResponse.json({ available: isAvailable });
+    }
 
   } catch (error) {
     console.error("Availability Check Error:", error);

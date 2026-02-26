@@ -1,9 +1,14 @@
 // app/api/dispense-code/route.ts
-import { google } from "googleapis";
+import { google, sheets_v4 } from "googleapis"; // <-- Added sheets_v4 type
 import { NextResponse } from "next/server";
 
-// Helper function to find and mark a code in a specific tab
-async function getAndMarkCode(sheets: any, spreadsheetId: string, sheetName: string, email: string) {
+// 1. Properly typed helper function for Tales Runner
+async function getAndMarkCode(
+  sheets: sheets_v4.Sheets, // <-- Replaced 'any' with the official Google type
+  spreadsheetId: string, 
+  sheetName: string, 
+  email: string
+) {
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId,
     range: `${sheetName}!A2:B`, 
@@ -13,10 +18,9 @@ async function getAndMarkCode(sheets: any, spreadsheetId: string, sheetName: str
   let targetRowIndex = -1;
   let targetCode = null;
 
-  // Find the first empty "Used By" cell
   for (let i = 0; i < rows.length; i++) {
-    if (!rows[i][1]) { // If Column B is empty
-      targetRowIndex = i + 2; // +2 because array is 0-indexed and row 1 is headers
+    if (!rows[i][1]) { 
+      targetRowIndex = i + 2; 
       targetCode = rows[i][0];
       break;
     }
@@ -26,7 +30,6 @@ async function getAndMarkCode(sheets: any, spreadsheetId: string, sheetName: str
     throw new Error(`No codes available in the ${sheetName} tab!`);
   }
 
-  // Mark as used
   await sheets.spreadsheets.values.update({
     spreadsheetId,
     range: `${sheetName}!B${targetRowIndex}`,
@@ -39,42 +42,71 @@ async function getAndMarkCode(sheets: any, spreadsheetId: string, sheetName: str
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json();
-
-    const formatPrivateKey = (key: string | undefined) => {
-      if (!key) return undefined;
-      // This removes extra quotes and fixes the newline characters
-      return key.replace(/\\n/g, '\n').replace(/^"|"$/g, '');
-    };
+    const { email, promo } = await req.json();
 
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: formatPrivateKey(process.env.GOOGLE_PRIVATE_KEY),
+        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n').replace(/^"|"$/g, ''),
       },
       scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
 
-    // ADD THIS DEBUG LINE HERE:
-    console.log("DEBUG: Looking for Sheet ID:", spreadsheetId);
+    // 🔴 IF PROMO IS NVIDIA:
+    if (promo === "NVIDIA GeForce RTX 50 Series Angpao") {
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID_NVIDIA as string;
+      
+      const response = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Sheet1!A2:C", 
+      });
 
-    // Change "Item1" and "Item2" to match the exact names of your tabs at the bottom of Google Sheets
-    const code1 = await getAndMarkCode(sheets, spreadsheetId, "Item1", email);
-    const code2 = await getAndMarkCode(sheets, spreadsheetId, "Item2", email);
+      const rows = response.data.values || [];
+      let targetRowIndex = -1;
+      let targetCode = null;
+      let targetDiscount = null;
 
-    // Return both codes securely to the frontend
-    return NextResponse.json({ code1, code2 });
+      for (let i = 0; i < rows.length; i++) {
+        if (!rows[i][2]) { 
+          targetRowIndex = i + 2;
+          targetCode = rows[i][0];     
+          targetDiscount = rows[i][1]; 
+          break;
+        }
+      }
 
-} catch (error: any) {
-    // This will print the EXACT Google error details in your VS Code terminal
-    console.error("🔥 DETAILED GOOGLE ERROR:", error.response?.data?.error || error.message);
+      if (!targetCode) throw new Error("No NVIDIA codes available!");
+
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `Sheet1!C${targetRowIndex}`,
+        valueInputOption: "USER_ENTERED",
+        requestBody: { values: [[email]] },
+      });
+
+      return NextResponse.json({ code1: targetCode, discount: targetDiscount }); 
+    } 
     
-    return NextResponse.json(
-      { error: error.response?.data?.error?.message || error.message || "Failed to connect to Google Sheets" }, 
-      { status: 500 }
-    );
+    // 🔵 DEFAULT (TALES RUNNER):
+    else {
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
+      const code1 = await getAndMarkCode(sheets, spreadsheetId, "Item1", email);
+      const code2 = await getAndMarkCode(sheets, spreadsheetId, "Item2", email);
+      return NextResponse.json({ code1, code2 });
+    }
+
+  // 2. Safely type the error block
+  } catch (error: unknown) { // <-- Replaced 'any' with 'unknown'
+    console.error("API Error:", error);
+    
+    // We check if the unknown error is a standard Error object to safely read its message
+    let errorMessage = "An unknown error occurred";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
