@@ -98,7 +98,7 @@ export default function Home() {
               NEW!
             </div>
             <div className="h-14 bg-gradient-to-r from-green-600 to-green-900 flex items-center justify-center">
-               <span className="text-white font-bold text-2xl tracking-wider shadow-sm px-4 text-center">NVIDIA Angpao Laptop</span>
+               <span className="text-white font-bold text-2xl tracking-wider px-4 text-center">NVIDIA Angpao Laptop</span>
             </div>
             <div className="p-6 flex flex-col flex-grow">
               <span className="text-xs font-bold tracking-wide text-green-600 uppercase mb-2">Special Discount</span>
