@@ -85,7 +85,7 @@ export default function NvidiaLanding() {
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">ขั้นตอนการแลกรับ (Instructions)</h3>
             <ol className="list-decimal pl-5 mb-12 space-y-3 text-lg">
               <li>เข้าสู่ระบบ (Log in) ด้วยบัญชี Google ของคุณ</li>
-              <li>กรอกข้อมูลส่วนตัวและเลือกรุ่นการ์ดจอที่ซื้อในหน้า Redeem</li>
+              <li>กรอกข้อมูลและลงทะเบียน</li>
               <li>รอทีมงานตรวจสอบข้อมูลการสั่งซื้อ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับอั่งเปาส่วนลดพร้อมโค้ดของคุณในหน้า <strong>My Rewards</strong></li>
               <li>นำโค้ดที่ได้ไปกรอกในช่องโค้ดส่วนลด ตอนซื้อสินค้า</li>
