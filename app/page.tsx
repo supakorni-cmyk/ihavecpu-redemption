@@ -91,7 +91,7 @@ export default function Home() {
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col relative">
             {/* Optional Badge */}
             <Image 
-              src="/NVIDIA-CNY-FB.jpg" 
+              src="/NVIDIA-CNY-FB-1800x600.jpg" 
               alt="angpao" 
             />
             <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
