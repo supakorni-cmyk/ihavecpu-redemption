@@ -92,7 +92,7 @@ export default function Home() {
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col relative">
             {/* Optional Badge */}
             <Image 
-              src="/NVIDIA-CNY-FB-1800x600.jpg" 
+              src="/NVIDIA-CNY-FB.jpg" 
               alt="angpao" 
               className="object-fit"
             />
