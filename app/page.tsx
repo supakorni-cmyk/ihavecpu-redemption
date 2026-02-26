@@ -98,7 +98,7 @@ export default function Home() {
               NEW!
             </div>
             <div className="h-14 bg-gradient-to-r from-green-600 to-green-900 flex items-center justify-center">
-               <span className="text-white font-black text-2xl tracking-wider shadow-sm px-4 text-center">NVIDIA GeForce RTX 50 SERIES Laptop</span>
+               <span className="text-white font-bold text-2xl tracking-wider shadow-sm px-4 text-center">NVIDIA Angpao Laptop</span>
             </div>
             <div className="p-6 flex flex-col flex-grow">
               <span className="text-xs font-bold tracking-wide text-green-600 uppercase mb-2">Special Discount</span>
@@ -108,7 +108,7 @@ export default function Home() {
               </p>
               <p className="text-gray-600 text-sm mb-6 flex-grow">
                 *ของรางวัลมีจำนวนจำกัด<br />
-                *สำหรับการซื้อบน website iHAVECPU เท่านั้น
+                *สำหรับการซื้อบน website iHAVECPU เท่านั้น<br />
                 *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
               </p>
               <Link href="/nvidia-angpao" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-green-600 transition-colors">

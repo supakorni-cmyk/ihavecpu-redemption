@@ -14,7 +14,7 @@ export default function NvidiaRedeemForm() {
   const [hasRedeemed, setHasRedeemed] = useState(false);
   const [checkingLimit, setCheckingLimit] = useState(true);
 
-  // Form States (Notice we removed the 'file' state!)
+  // Form States (No file upload needed for this promo!)
   const [fullName, setFullName] = useState("");
   const [tel, setTel] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("GeForce RTX 5050");
@@ -25,13 +25,14 @@ export default function NvidiaRedeemForm() {
   // 1. Check if user has already redeemed this specific promo
   useEffect(() => {
     const checkLimit = async () => {
-      const userEmail = session?.user?.email; // Safely extract it here
+      // Safely extract email to satisfy TypeScript
+      const userEmail = session?.user?.email; 
       
       if (userEmail) {
         try {
           const q = query(
             collection(db, "submissions"),
-            where("userEmail", "==", userEmail), // Use the safe variable here
+            where("userEmail", "==", userEmail),
             where("promo", "==", PROMO_NAME)
           );
           const snapshot = await getDocs(q);
@@ -57,18 +58,21 @@ export default function NvidiaRedeemForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const userEmail = session?.user?.email; // Safely extract it here
+    // Safely extract email to satisfy TypeScript
+    const userEmail = session?.user?.email; 
     
     if (!userEmail) return alert("Please log in.");
     if (hasRedeemed) return alert("You have already redeemed this promotion.");
     setIsSubmitting(true);
 
     try {
+      // Save directly to Firebase without waiting for a Cloudinary upload
       await addDoc(collection(db, "submissions"), {
-        userEmail: userEmail, // Use the safe variable here!
+        userEmail: userEmail,
         fullName,
         tel,
         selectedProduct, 
+        // Inject a placeholder image so the Admin panel doesn't show a broken image icon
         receiptUrl: "https://placehold.co/600x400/eeeeee/999999?text=No+Receipt+Required",
         promo: PROMO_NAME,
         status: "pending",
@@ -142,7 +146,7 @@ export default function NvidiaRedeemForm() {
             <label className="block text-sm font-semibold text-gray-700 mb-1">Email (Auto-filled)</label>
             <input 
               type="email" 
-              value={session?.user?.email || ""}
+              value={session?.user?.email || ""} 
               disabled 
               className="w-full p-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" 
             />
@@ -161,7 +165,7 @@ export default function NvidiaRedeemForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Telephone Number (เบอร์โทรศัพท์)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Telephone (เบอร์โทรศัพท์)</label>
             <input 
               type="tel" 
               required 
@@ -173,7 +177,7 @@ export default function NvidiaRedeemForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Product Purchased (รุ่นที่ซื้อ)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">รุ่นที่ต้องการซื้อ</label>
             <select 
               value={selectedProduct} 
               onChange={(e) => setSelectedProduct(e.target.value)} 

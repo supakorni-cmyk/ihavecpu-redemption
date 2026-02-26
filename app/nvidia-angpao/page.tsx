@@ -34,7 +34,7 @@ export default function NvidiaLanding() {
       <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900">
         <Image
           // Make sure you add an image named "nvidia-banner.jpg" to your public folder!
-          src="/nvidia-banner.jpg" 
+          src="/NVIDIA-CNY-FB-1800x600.jpg" 
           alt="NVIDIA RTX 50 Series Promotion Background"
           fill
           className="object-cover"
