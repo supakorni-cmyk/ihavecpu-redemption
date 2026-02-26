@@ -64,7 +64,7 @@ export default function NvidiaLanding() {
               ส่วนลดพิเศษสำหรับซื้อ Notebook ที่มีการ์ดจอ NVIDIA GeForce RTX 50 Series ที่ iHAVECPU
             </p>
 
-            <h3>รุ่นที่เข้าร่วมรายการ (Participating Products)</h3>
+            <h3><Link href="https://ihavecpu.com/category/notebook?filter=[[23615,23327,23711,24122]]">รุ่นที่เข้าร่วมรายการ (Participating Products)</Link></h3>
             <ul className="list-disc pl-5 mb-8 space-y-2 text-lg">
               <li>GeForce RTX 5050</li>
               <li>GeForce RTX 5060</li>
@@ -72,7 +72,6 @@ export default function NvidiaLanding() {
               <li>GeForce RTX 5070 Ti</li>
             </ul>
 
-            <p><strong><Link href="https://ihavecpu.com/category/notebook?filter=[[23615,23327,23711,24122]]">ซื้อเลย</Link> </strong></p>
             <p>*โค้ดส่วนลดสามารถแลกรับและใช้ได้ถึงวันที่ 15 มีนาคม 2569</p>
 
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
