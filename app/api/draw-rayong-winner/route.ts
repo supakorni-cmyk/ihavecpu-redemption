@@ -2,8 +2,19 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
 
-export async function POST() {
+export async function POST(req: Request) {
   try {
+    // 1. Read the requested quantity from the Admin panel (default to 1)
+    let qty = 1;
+    try {
+      const body = await req.json();
+      if (body.qty && typeof body.qty === 'number' && body.qty > 0) {
+        qty = body.qty;
+      }
+    } catch (e) {
+      // Ignore if no body is passed
+    }
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -15,25 +26,18 @@ export async function POST() {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_RAYONG as string;
 
-    // 1. Fetch columns A through G from the Google Form sheet
-    // We use single quotes around 'Form Responses 1' because it contains spaces
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: "'Form Responses 1'!A2:G", 
     });
 
     const rows = response.data.values || [];
-    
     const availableParticipants = [];
     
     for (let i = 0; i < rows.length; i++) {
-      // In Google Forms:
-      // rows[i][1] is Column B (Name)
-      // rows[i][6] is Column G (Where we will put "WINNER")
       const name = rows[i][1];
       const winnerStatus = rows[i][6];
 
-      // If the row has a name AND Column G is empty, they are eligible!
       if (name && !winnerStatus) { 
         availableParticipants.push({
           rowIndex: i + 2,
@@ -42,23 +46,35 @@ export async function POST() {
       }
     }
 
+    // Check if we have enough people left!
     if (availableParticipants.length === 0) {
       return NextResponse.json({ error: "No participants left to draw!" }, { status: 400 });
     }
+    if (availableParticipants.length < qty) {
+      return NextResponse.json({ error: `Not enough people! Only ${availableParticipants.length} left.` }, { status: 400 });
+    }
 
-    // 2. Pick a random winner
-    const randomIndex = Math.floor(Math.random() * availableParticipants.length);
-    const winner = availableParticipants[randomIndex];
+    // 2. Shuffle the array and slice the requested quantity
+    const shuffled = availableParticipants.sort(() => 0.5 - Math.random());
+    const winners = shuffled.slice(0, qty);
 
-    // 3. Mark them as "WINNER" in Column G so they can't be drawn again
-    await sheets.spreadsheets.values.update({
-      spreadsheetId,
+    // 3. Batch update the Google Sheet so all winners get marked at once
+    const updateData = winners.map(winner => ({
       range: `'Form Responses 1'!G${winner.rowIndex}`,
-      valueInputOption: "USER_ENTERED",
-      requestBody: { values: [["WINNER"]] },
+      values: [["WINNER"]]
+    }));
+
+    await sheets.spreadsheets.values.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        valueInputOption: "USER_ENTERED",
+        data: updateData
+      }
     });
 
-    return NextResponse.json({ winnerName: winner.name });
+    // 4. Return the array of winning names
+    const winnerNames = winners.map(w => w.name);
+    return NextResponse.json({ winnerNames });
 
   } catch (error: unknown) {
     console.error("Draw Error:", error);
