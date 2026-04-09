@@ -15,21 +15,29 @@ export async function POST() {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_RAYONG as string;
 
-    // Read Column A (Names) and Column B (Status)
+    // 1. Fetch columns A through G from the Google Form sheet
+    // We use single quotes around 'Form Responses 1' because it contains spaces
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Form Responses 1!B2:G", 
+      range: "'Form Responses 1'!A2:G", 
     });
 
     const rows = response.data.values || [];
     
-    // 1. Collect everyone who hasn't won yet (Column B is empty)
     const availableParticipants = [];
+    
     for (let i = 0; i < rows.length; i++) {
-      if (!rows[i][1] && rows[i][0]) { 
+      // In Google Forms:
+      // rows[i][1] is Column B (Name)
+      // rows[i][6] is Column G (Where we will put "WINNER")
+      const name = rows[i][1];
+      const winnerStatus = rows[i][6];
+
+      // If the row has a name AND Column G is empty, they are eligible!
+      if (name && !winnerStatus) { 
         availableParticipants.push({
-          rowIndex: i + 6,
-          name: rows[i][0]
+          rowIndex: i + 2,
+          name: name
         });
       }
     }
@@ -42,10 +50,10 @@ export async function POST() {
     const randomIndex = Math.floor(Math.random() * availableParticipants.length);
     const winner = availableParticipants[randomIndex];
 
-    // 3. Mark them as "WINNER" in Column B so they can't be drawn again
+    // 3. Mark them as "WINNER" in Column G so they can't be drawn again
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Form Responses 1!G${winner.rowIndex}`,
+      range: `'Form Responses 1'!G${winner.rowIndex}`,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [["WINNER"]] },
     });
