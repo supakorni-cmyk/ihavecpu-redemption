@@ -28,7 +28,7 @@ export async function POST() {
     for (let i = 0; i < rows.length; i++) {
       if (!rows[i][1] && rows[i][0]) { 
         availableParticipants.push({
-          rowIndex: i + 5,
+          rowIndex: i + 6,
           name: rows[i][0]
         });
       }
