@@ -94,9 +94,9 @@ export default function Home() {
                 alt="angpao" 
                 className="object-fit"
               />
-            <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+            {/* <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
               NEW!
-            </div>
+            </div> */}
             <div className="h-14 bg-gradient-to-r from-green-600 to-green-900 flex items-center justify-center">
                <span className="text-white font-bold text-2xl tracking-wider px-4 text-center">NVIDIA Angpao Laptop</span>
             </div>
