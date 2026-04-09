@@ -18,7 +18,7 @@ export async function POST() {
     // Read Column A (Names) and Column B (Status)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Form Response 1!B2:G", 
+      range: "Form Responses 1!B2:G", 
     });
 
     const rows = response.data.values || [];
@@ -45,7 +45,7 @@ export async function POST() {
     // 3. Mark them as "WINNER" in Column B so they can't be drawn again
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Form Response 1!G${winner.rowIndex}`,
+      range: `Form Responses 1!G${winner.rowIndex}`,
       valueInputOption: "USER_ENTERED",
       requestBody: { values: [["WINNER"]] },
     });
