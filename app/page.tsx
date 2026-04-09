@@ -111,9 +111,9 @@ export default function Home() {
                 *สำหรับการซื้อบน website iHAVECPU เท่านั้น<br />
                 *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
               </p>
-              <Link href="/nvidia-angpao" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-green-600 transition-colors">
-                ดูรายละเอียดเพิ่มเติม &rarr;
-              </Link>
+              <div className="block w-full text-center bg-gray-500 text-black font-medium py-3 rounded-lg">
+                สิทธิ์เต็มแล้ว
+              </div>
             </div>
           </div>
 
