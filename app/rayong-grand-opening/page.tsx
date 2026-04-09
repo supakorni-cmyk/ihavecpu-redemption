@@ -36,11 +36,11 @@ export default function RayongDisplayBoard() {
       </div>
 
       <div className="relative z-10 p-10 text-center mt-10">
-        <span className="inline-block py-2 px-6 rounded-full bg-orange-500 text-white text-lg font-bold tracking-widest uppercase mb-6 shadow-lg animate-pulse">
+        <span className="inline-block py-2 px-6 rounded-full bg-red-500 text-white text-lg font-bold tracking-widest uppercase mb-6 shadow-lg animate-pulse">
           Live Lucky Draw
         </span>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl">
-          iHAVECPU <span className="text-orange-500">RAYONG</span>
+          iHAVECPU <span className="text-red-500">RAYONG</span>
         </h1>
       </div>
 
@@ -49,13 +49,16 @@ export default function RayongDisplayBoard() {
           
           {isDrawing ? (
             <div className="animate-pulse">
-              <h2 className="text-4xl md:text-6xl font-bold text-orange-400 mb-6">กำลังสุ่มผู้โชคดี...</h2>
+              <h2 className="text-4xl md:text-6xl font-bold text-red-400 mb-6">กำลังสุ่มผู้โชคดี...</h2>
               <p className="text-2xl text-white opacity-80">(Drawing winners...)</p>
             </div>
           ) : winnerNames.length > 0 ? (
             <div className="animate-bounce-short">
-              <p className="text-2xl font-bold text-orange-300 uppercase tracking-widest mb-8">
-                ผู้โชคดีได้รับ {prize || "รางวัลพิเศษ"}
+              <p className="text-2xl font-bold text-red-300 uppercase tracking-widest mb-8">
+                ผู้โชคดีได้รับ 
+              </p>
+              <p className="text-3xl font-bold text-white tracking-widest mb-8">
+                {prize || "รางวัลพิเศษ"}
               </p>
               
               {/* Dynamic Grid: Adjusts based on how many winners there are! */}
