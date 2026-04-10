@@ -71,7 +71,7 @@ export default function RayongRemoteControl() {
     <div className="min-h-screen bg-gray-100 p-6 md:p-12 flex justify-center items-start">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mt-10">
         <div className="bg-gray-900 text-white p-6 text-center">
-          <span className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-1 block">Remote Control</span>
+          <span className="text-red-500 font-bold text-sm tracking-widest uppercase mb-1 block">Remote Control</span>
           <h1 className="text-2xl font-black">Rayong Live Draw</h1>
         </div>
 
@@ -82,7 +82,7 @@ export default function RayongRemoteControl() {
               type="text" 
               value={prizeInput}
               onChange={(e) => setPrizeInput(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-orange-500 outline-none"
+              className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none"
             />
           </div>
 
@@ -94,7 +94,7 @@ export default function RayongRemoteControl() {
               max="20"
               value={qtyInput}
               onChange={(e) => setQtyInput(Number(e.target.value))}
-              className="w-full p-4 border border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-orange-500 outline-none"
+              className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none"
             />
           </div>
 
@@ -102,7 +102,7 @@ export default function RayongRemoteControl() {
             <button 
               onClick={handleDrawWinner}
               disabled={isProcessing}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white py-5 rounded-xl font-black text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white py-5 rounded-xl font-black text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95"
             >
               {isProcessing ? "Drawing..." : `🎉 DRAW ${qtyInput} WINNER(S)`}
             </button>

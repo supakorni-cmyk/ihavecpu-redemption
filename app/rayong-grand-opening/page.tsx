@@ -42,6 +42,9 @@ export default function RayongDisplayBoard() {
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl">
           iHAVECPU <span className="text-red-500">RAYONG</span>
         </h1>
+        <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white drop-shadow-2xl">
+          GRAND OPENING
+        </h2>
       </div>
 
       <div className="relative z-10 flex-grow flex items-center justify-center p-6">
