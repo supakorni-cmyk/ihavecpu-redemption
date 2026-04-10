@@ -10,6 +10,7 @@ export default function RayongRemoteControl() {
   const { data: session, status } = useSession();
   const [prizeInput, setPrizeInput] = useState("การ์ดจอ RTX 4060");
   const [qtyInput, setQtyInput] = useState(1); // <-- New Quantity State
+  const [isGrandPrize, setIsGrandPrize] = useState(false); // <-- Grand Prize State
   const [isProcessing, setIsProcessing] = useState(false);
 
   const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "")
@@ -25,8 +26,12 @@ export default function RayongRemoteControl() {
     try {
       const eventRef = doc(db, "events", "rayong-lucky-draw");
 
-      // 1. Trigger the drumroll
-      await setDoc(eventRef, { isDrawing: true, prize: prizeInput }, { merge: true });
+      // 1. Trigger the drumroll and send the Grand Prize flag!
+      await setDoc(eventRef, { 
+        isDrawing: true, 
+        prize: prizeInput,
+        isGrandPrize: isGrandPrize // <-- Save flag to Firebase
+      }, { merge: true });
 
       // 2. Send the requested quantity to our API
       const res = await fetch("/api/draw-rayong-winner", { 
@@ -38,12 +43,13 @@ export default function RayongRemoteControl() {
 
       if (!res.ok) throw new Error(data.error);
 
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // Longer drumroll for Grand Prize (5 seconds instead of 3)
+      await new Promise((resolve) => setTimeout(resolve, isGrandPrize ? 5000 : 3000));
 
       // 3. Reveal the array of winners on the TV
       await setDoc(eventRef, { 
         isDrawing: false, 
-        currentWinners: data.winnerNames // Saving as an array now
+        currentWinners: data.winnerNames 
       }, { merge: true });
 
     } catch (error: unknown) {
@@ -54,14 +60,15 @@ export default function RayongRemoteControl() {
       setIsProcessing(false);
     }
   };
-
-  const handleResetScreen = async () => {
+const handleResetScreen = async () => {
     if (!confirm("Reset the TV back to the waiting screen?")) return;
     await setDoc(doc(db, "events", "rayong-lucky-draw"), { 
       isDrawing: false, 
-      currentWinners: [], // Reset to empty array
-      prize: null
+      currentWinners: [], 
+      prize: null,
+      isGrandPrize: false // <-- Reset flag
     }, { merge: true });
+    setIsGrandPrize(false); // Reset checkbox on admin side too
   };
 
   if (status === "loading") return <div className="p-10 text-center">Loading...</div>;
@@ -97,14 +104,31 @@ export default function RayongRemoteControl() {
               className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none"
             />
           </div>
+          {/* GRAND PRIZE CHECKBOX */}
+          <div className="flex items-center space-x-3 bg-red-50 p-4 rounded-xl border border-red-200">
+            <input 
+              type="checkbox" 
+              id="grandPrize"
+              checked={isGrandPrize}
+              onChange={(e) => setIsGrandPrize(e.target.checked)}
+              className="w-6 h-6 text-red-600 bg-white border-gray-300 rounded focus:ring-red-500"
+            />
+            <label htmlFor="grandPrize" className="text-lg font-black text-red-600 uppercase tracking-wide cursor-pointer">
+              🌟 Grand Prize Mode
+            </label>
+          </div>
 
           <div className="space-y-4 pt-4">
             <button 
               onClick={handleDrawWinner}
               disabled={isProcessing}
-              className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white py-5 rounded-xl font-black text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95"
+              className={`w-full py-5 rounded-xl font-black text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-white ${
+                isGrandPrize 
+                  ? "bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 animate-pulse" 
+                  : "bg-red-500 hover:bg-red-600 disabled:bg-red-300"
+              }`}
             >
-              {isProcessing ? "Drawing..." : `🎉 DRAW ${qtyInput} WINNER(S)`}
+              {isProcessing ? "Drawing..." : isGrandPrize ? `👑 DRAW GRAND PRIZE!` : `🎉 DRAW ${qtyInput} WINNER(S)`}
             </button>
             <button 
               onClick={handleResetScreen}
