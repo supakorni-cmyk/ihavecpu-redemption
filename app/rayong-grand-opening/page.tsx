@@ -102,18 +102,18 @@ export default function RayongDisplayBoard() {
           
           {isDrawing ? (
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
-              {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
+              {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨👑🚨</div>}
               <h2 className={`text-4xl md:text-6xl font-bold mb-8 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
                 {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
               
               {/* ⚡ REAL-TIME SHUFFLE ANIMATION BOX ⚡ */}
-              <div className={`w-full max-w-2xl mx-auto py-8 px-4 rounded-2xl border-4 border-dashed transition-colors duration-100 ${
+              <div className={`w-full max-w-2xl mx-auto py-8 px-4 rounded-2xl border-4 border-dashed transition-colors duration-200 ${
                 isGrandPrize 
                   ? 'border-yellow-400/70 bg-yellow-500/10 shadow-[0_0_30px_rgba(250,204,21,0.3)]' 
                   : 'border-red-400/70 bg-red-500/10 shadow-[0_0_30px_rgba(248,113,113,0.3)]'
               }`}>
-                <h3 className={`text-5xl md:text-6xl font-black italic tracking-wider opacity-90 blur-[1px] ${isGrandPrize ? 'text-yellow-200' : 'text-white'}`}>
+                <h3 className={`text-5xl md:text-6xl font-black italic whitespace-nowrap tracking-wider opacity-90 blur-[1px] ${isGrandPrize ? 'text-yellow-200' : 'text-white'}`}>
                   {shufflingName}
                 </h3>
               </div>
@@ -132,7 +132,7 @@ export default function RayongDisplayBoard() {
               <div className={`grid gap-6 ${winnerNames.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} mb-8`}>
                 {winnerNames.map((name, index) => (
                   <div key={index} className={`rounded-2xl py-6 px-4 border shadow-inner ${isGrandPrize ? 'bg-gradient-to-r from-yellow-500/20 to-red-500/20 border-yellow-400/50' : 'bg-white/10 border-white/20'}`}>
-                    <h2 className={`text-4xl md:text-5xl font-black text-white drop-shadow-md bg-clip-text text-transparent ${isGrandPrize ? 'bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]' : 'bg-gradient-to-r from-orange-300 to-yellow-500'}`}>
+                    <h2 className={`text-4xl md:text-5xl font-black text-white whitespace-nowrap drop-shadow-md bg-clip-text text-transparent ${isGrandPrize ? 'bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]' : 'bg-gradient-to-r from-orange-300 to-yellow-500'}`}>
                       {name}
                     </h2>
                   </div>
