@@ -2,15 +2,20 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
 export default function RayongRemoteControl() {
   const { data: session, status } = useSession();
-  const [prizeInput, setPrizeInput] = useState("การ์ดจอ RTX 4060");
-  const [qtyInput, setQtyInput] = useState(1); // <-- New Quantity State
-  const [isGrandPrize, setIsGrandPrize] = useState(false); // <-- Grand Prize State
+  
+  // NEW STATES FOR PRIZES
+  const [prizeInput, setPrizeInput] = useState(""); 
+  const [prizesList, setPrizesList] = useState<string[]>([]);
+  const [isLoadingPrizes, setIsLoadingPrizes] = useState(true);
+
+  const [qtyInput, setQtyInput] = useState(1);
+  const [isGrandPrize, setIsGrandPrize] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "")
@@ -19,7 +24,33 @@ export default function RayongRemoteControl() {
     
   const isAdmin = session?.user?.email ? adminEmails.includes(session.user.email.toLowerCase()) : false;
 
+  // FETCH PRIZES ON LOAD
+  useEffect(() => {
+    const fetchPrizes = async () => {
+      try {
+        const res = await fetch("/api/get-prizes");
+        const data = await res.json();
+        
+        if (data.prizes && data.prizes.length > 0) {
+          setPrizesList(data.prizes);
+          setPrizeInput(data.prizes[0]); // Set the first prize as default
+        }
+      } catch (error) {
+        console.error("Failed to fetch prizes", error);
+      } finally {
+        setIsLoadingPrizes(false);
+      }
+    };
+
+    if (isAdmin) {
+      fetchPrizes();
+    } else if (status !== "loading") {
+      setIsLoadingPrizes(false);
+    }
+  }, [isAdmin, status]);
+
   const handleDrawWinner = async () => {
+    if (!prizeInput) return alert("Please select a prize first!");
     if (!confirm(`Ready to draw ${qtyInput} winner(s) for: ${prizeInput}?`)) return;
     setIsProcessing(true);
 
@@ -30,14 +61,14 @@ export default function RayongRemoteControl() {
       await setDoc(eventRef, { 
         isDrawing: true, 
         prize: prizeInput,
-        isGrandPrize: isGrandPrize // <-- Save flag to Firebase
+        isGrandPrize: isGrandPrize 
       }, { merge: true });
 
       // 2. Send the requested quantity to our API
       const res = await fetch("/api/draw-rayong-winner", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ qty: Number(qtyInput) }) // Pass qty here!
+        body: JSON.stringify({ qty: Number(qtyInput) }) 
       });
       const data = await res.json();
 
@@ -60,15 +91,16 @@ export default function RayongRemoteControl() {
       setIsProcessing(false);
     }
   };
-const handleResetScreen = async () => {
+
+  const handleResetScreen = async () => {
     if (!confirm("Reset the TV back to the waiting screen?")) return;
     await setDoc(doc(db, "events", "rayong-lucky-draw"), { 
       isDrawing: false, 
       currentWinners: [], 
       prize: null,
-      isGrandPrize: false // <-- Reset flag
+      isGrandPrize: false 
     }, { merge: true });
-    setIsGrandPrize(false); // Reset checkbox on admin side too
+    setIsGrandPrize(false); 
   };
 
   if (status === "loading") return <div className="p-10 text-center">Loading...</div>;
@@ -83,14 +115,36 @@ const handleResetScreen = async () => {
         </div>
 
         <div className="p-8 space-y-6">
+          
+          {/* UPDATED: PRIZE DROPDOWN */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Current Prize (ของรางวัล)</label>
-            <input 
-              type="text" 
-              value={prizeInput}
-              onChange={(e) => setPrizeInput(e.target.value)}
-              className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none"
-            />
+            {isLoadingPrizes ? (
+              <div className="w-full p-4 border text-gray-500 bg-gray-50 border-gray-300 rounded-xl font-bold text-lg animate-pulse">
+                Loading prizes...
+              </div>
+            ) : prizesList.length > 0 ? (
+              <select 
+                value={prizeInput}
+                onChange={(e) => setPrizeInput(e.target.value)}
+                className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none bg-white cursor-pointer"
+              >
+                {prizesList.map((prize, index) => (
+                  <option key={index} value={prize}>
+                    {prize}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              // Fallback to text input if the Google Sheet is empty or fails
+              <input 
+                type="text" 
+                value={prizeInput}
+                onChange={(e) => setPrizeInput(e.target.value)}
+                placeholder="Type prize name here..."
+                className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none"
+              />
+            )}
           </div>
 
           <div>
@@ -104,7 +158,7 @@ const handleResetScreen = async () => {
               className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none"
             />
           </div>
-          {/* GRAND PRIZE CHECKBOX */}
+
           <div className="flex items-center space-x-3 bg-red-50 p-4 rounded-xl border border-red-200">
             <input 
               type="checkbox" 
@@ -113,7 +167,7 @@ const handleResetScreen = async () => {
               onChange={(e) => setIsGrandPrize(e.target.checked)}
               className="w-6 h-6 text-red-600 bg-white border-gray-300 rounded focus:ring-red-500"
             />
-            <label htmlFor="grandPrize" className="text-lg font-black text-red-600 uppercase tracking-wide cursor-pointer">
+            <label htmlFor="grandPrize" className="text-lg font-black text-red-600 uppercase tracking-wide cursor-pointer flex-grow select-none">
               🌟 Grand Prize Mode
             </label>
           </div>
@@ -121,7 +175,7 @@ const handleResetScreen = async () => {
           <div className="space-y-4 pt-4">
             <button 
               onClick={handleDrawWinner}
-              disabled={isProcessing}
+              disabled={isProcessing || isLoadingPrizes}
               className={`w-full py-5 rounded-xl font-black text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-white ${
                 isGrandPrize 
                   ? "bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 animate-pulse" 
