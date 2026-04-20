@@ -102,7 +102,7 @@ export default function RayongDisplayBoard() {
           
           {isDrawing ? (
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
-              {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨👑🚨</div>}
+              {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
               <h2 className={`text-4xl md:text-6xl font-bold mb-8 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
                 {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
