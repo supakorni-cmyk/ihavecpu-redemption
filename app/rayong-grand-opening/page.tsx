@@ -1,3 +1,4 @@
+// app/rayong-grand-opening/page.tsx
 "use client";
 
 import Image from "next/image";
@@ -6,23 +7,70 @@ import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 
 export default function RayongDisplayBoard() {
-  const [winnerNames, setWinnerNames] = useState<string[]>([]); // <-- Array of names
+  const [winnerNames, setWinnerNames] = useState<string[]>([]); 
   const [prize, setPrize] = useState<string | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [isGrandPrize, setIsGrandPrize] = useState(false); // <-- Catch the Grand Prize flag
+  const [isGrandPrize, setIsGrandPrize] = useState(false); 
+  
+  const [shufflingName, setShufflingName] = useState("???");
+  
+  // NEW: State to hold the REAL names from your Google Sheet!
+  const [realNamesPool, setRealNamesPool] = useState<string[]>(["กำลังโหลดรายชื่อ...", "Loading..."]);
 
+  // Function to fetch the latest names from the database
+  const fetchParticipants = async () => {
+    try {
+      const res = await fetch("/api/get-rayong-participants");
+      const data = await res.json();
+      if (data.participants && data.participants.length > 0) {
+        setRealNamesPool(data.participants);
+      }
+    } catch (error) {
+      console.error("Failed to load names for shuffle", error);
+    }
+  };
+
+  // 1. Fetch names when the TV screen first loads
+  useEffect(() => {
+    fetchParticipants();
+  }, []);
+
+  // 2. Listen to Firebase for the Admin's "Draw" click
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "events", "rayong-lucky-draw"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setWinnerNames(data.currentWinners || []); // Load the array
+        setWinnerNames(data.currentWinners || []); 
         setPrize(data.prize);
         setIsDrawing(data.isDrawing);
-        setIsGrandPrize(data.isGrandPrize || false); // Update state
+        setIsGrandPrize(data.isGrandPrize || false); 
       }
     });
     return () => unsub();
   }, []);
+
+  // 3. Whenever a draw STARTS, refresh the name pool so it's 100% accurate!
+  useEffect(() => {
+    if (isDrawing) {
+      fetchParticipants();
+    }
+  }, [isDrawing]);
+
+  // 4. The High-Speed Shuffle Animation (using realNamesPool)
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isDrawing && realNamesPool.length > 0) {
+      interval = setInterval(() => {
+        const randomName = realNamesPool[Math.floor(Math.random() * realNamesPool.length)];
+        setShufflingName(randomName);
+      }, 70); // Flashes a new name every 70 milliseconds!
+    } else {
+      setShufflingName("???");
+    }
+
+    return () => clearInterval(interval);
+  }, [isDrawing, realNamesPool]);
 
   return (
     <main className="min-h-screen bg-gray-900 flex flex-col relative overflow-hidden">
@@ -33,7 +81,7 @@ export default function RayongDisplayBoard() {
           fill
           className="object-cover blur-sm"
         />
-        {/* Dynamic Background Overlay: Dark for normal, Gold/Red for Grand Prize */}
+        {/* Dynamic Background Overlay */}
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
@@ -53,12 +101,22 @@ export default function RayongDisplayBoard() {
         <div className={`w-full max-w-5xl backdrop-blur-md border p-12 md:p-20 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/40 border-yellow-500/50 scale-105' : 'bg-white/10 border-white/20'}`}>
           
           {isDrawing ? (
-            <div className={`animate-pulse ${isGrandPrize ? 'scale-110' : ''}`}>
-              {isGrandPrize && <div className="text-7xl mb-4">🚨👑🚨</div>}
-              <h2 className={`text-4xl md:text-6xl font-bold mb-6 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
+            <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
+              {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
+              <h2 className={`text-4xl md:text-6xl font-bold mb-8 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
                 {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
-              <p className="text-2xl text-white opacity-80">(Drawing winners...)</p>
+              
+              {/* ⚡ REAL-TIME SHUFFLE ANIMATION BOX ⚡ */}
+              <div className={`w-full max-w-2xl mx-auto py-8 px-4 rounded-2xl border-4 border-dashed transition-colors duration-100 ${
+                isGrandPrize 
+                  ? 'border-yellow-400/70 bg-yellow-500/10 shadow-[0_0_30px_rgba(250,204,21,0.3)]' 
+                  : 'border-red-400/70 bg-red-500/10 shadow-[0_0_30px_rgba(248,113,113,0.3)]'
+              }`}>
+                <h3 className={`text-5xl md:text-6xl font-black italic tracking-wider opacity-90 blur-[1px] ${isGrandPrize ? 'text-yellow-200' : 'text-white'}`}>
+                  {shufflingName}
+                </h3>
+              </div>
             </div>
           ) : winnerNames.length > 0 ? (
             <div className="animate-bounce-short">
@@ -70,7 +128,7 @@ export default function RayongDisplayBoard() {
                 {prize || "รางวัลพิเศษ"}
               </p>
               
-              {/* Dynamic Grid: Adjusts based on how many winners there are! */}
+              {/* Dynamic Grid */}
               <div className={`grid gap-6 ${winnerNames.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} mb-8`}>
                 {winnerNames.map((name, index) => (
                   <div key={index} className={`rounded-2xl py-6 px-4 border shadow-inner ${isGrandPrize ? 'bg-gradient-to-r from-yellow-500/20 to-red-500/20 border-yellow-400/50' : 'bg-white/10 border-white/20'}`}>
@@ -88,6 +146,9 @@ export default function RayongDisplayBoard() {
               <div className="text-8xl mb-6">🎁</div>
               <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
               <p className="text-xl text-gray-300">รอลุ้นรับรางวัลใหญ่จากทาง iHAVECPU เร็วๆ นี้</p>
+              <p className="text-sm text-gray-500 mt-6 mt-2 opacity-50">
+                (Participants ready: {realNamesPool.length > 2 ? realNamesPool.length : 0})
+              </p>
             </div>
           )}
 
