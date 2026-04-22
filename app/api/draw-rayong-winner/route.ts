@@ -4,12 +4,16 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    // 1. Read the requested quantity from the Admin panel (default to 1)
     let qty = 1;
+    let prizeName = "Unknown Prize"; // <-- Default prize name
+    
     try {
       const body = await req.json();
       if (body.qty && typeof body.qty === 'number' && body.qty > 0) {
         qty = body.qty;
+      }
+      if (body.prizeName) {
+        prizeName = body.prizeName; // <-- Get prize name from body
       }
     } catch (e) {
       // Ignore if no body is passed
@@ -46,7 +50,6 @@ export async function POST(req: Request) {
       }
     }
 
-    // Check if we have enough people left!
     if (availableParticipants.length === 0) {
       return NextResponse.json({ error: "No participants left to draw!" }, { status: 400 });
     }
@@ -54,14 +57,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: `Not enough people! Only ${availableParticipants.length} left.` }, { status: 400 });
     }
 
-    // 2. Shuffle the array and slice the requested quantity
     const shuffled = availableParticipants.sort(() => 0.5 - Math.random());
     const winners = shuffled.slice(0, qty);
 
-    // 3. Batch update the Google Sheet so all winners get marked at once
+    // Update BOTH Column G (WINNER status) and Column H (Prize Name)
     const updateData = winners.map(winner => ({
-      range: `'Form Responses 1'!G${winner.rowIndex}`,
-      values: [["WINNER"]]
+      range: `'Form Responses 1'!G${winner.rowIndex}:H${winner.rowIndex}`, // <-- Range covers G and H
+      values: [["WINNER", prizeName]] // <-- Write both values
     }));
 
     await sheets.spreadsheets.values.batchUpdate({
@@ -72,7 +74,6 @@ export async function POST(req: Request) {
       }
     });
 
-    // 4. Return the array of winning names
     const winnerNames = winners.map(w => w.name);
     return NextResponse.json({ winnerNames });
 

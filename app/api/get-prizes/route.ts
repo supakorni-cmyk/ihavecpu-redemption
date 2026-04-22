@@ -15,16 +15,22 @@ export async function GET() {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_PRIZES as string;
 
-    // Read Column A from Sheet1 (Change "Sheet1" if your tab is named differently)
+    // Fetch Columns A through E (E is the 5th column)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Sheet1!A2:A",
+      range: "Sheet1!A2:E",
     });
 
     const rows = response.data.values || [];
     
-    // Flatten the rows into a simple array of strings and filter out empty cells
-    const prizes = rows.map((row) => row[0]).filter(Boolean);
+    // Map into an array of objects holding name, value (Col C), and supporter (Col E)
+    const prizes = rows
+      .filter(row => row[0]) 
+      .map((row) => ({
+        name: row[0],
+        value: row[2] || "",     // Column C is index 2
+        supporter: row[4] || ""  // Column E is index 4
+      }));
 
     return NextResponse.json({ prizes });
   } catch (error: unknown) {

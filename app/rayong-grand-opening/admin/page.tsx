@@ -6,12 +6,16 @@ import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
+// Updated Type to include supporter
+type Prize = { name: string; value: string; supporter: string };
+
 export default function RayongRemoteControl() {
   const { data: session, status } = useSession();
   
-  // NEW STATES FOR PRIZES
   const [prizeInput, setPrizeInput] = useState(""); 
-  const [prizesList, setPrizesList] = useState<string[]>([]);
+  const [prizeValue, setPrizeValue] = useState(""); 
+  const [prizeSupporter, setPrizeSupporter] = useState(""); // <-- NEW: State for Supporter
+  const [prizesList, setPrizesList] = useState<Prize[]>([]); 
   const [isLoadingPrizes, setIsLoadingPrizes] = useState(true);
 
   const [qtyInput, setQtyInput] = useState(1);
@@ -24,7 +28,6 @@ export default function RayongRemoteControl() {
     
   const isAdmin = session?.user?.email ? adminEmails.includes(session.user.email.toLowerCase()) : false;
 
-  // FETCH PRIZES ON LOAD
   useEffect(() => {
     const fetchPrizes = async () => {
       try {
@@ -33,7 +36,9 @@ export default function RayongRemoteControl() {
         
         if (data.prizes && data.prizes.length > 0) {
           setPrizesList(data.prizes);
-          setPrizeInput(data.prizes[0]); // Set the first prize as default
+          setPrizeInput(data.prizes[0].name);
+          setPrizeValue(data.prizes[0].value);
+          setPrizeSupporter(data.prizes[0].supporter); // <-- Set initial supporter
         }
       } catch (error) {
         console.error("Failed to fetch prizes", error);
@@ -49,6 +54,17 @@ export default function RayongRemoteControl() {
     }
   }, [isAdmin, status]);
 
+  // Handle dropdown change to update name, value, AND supporter
+  const handlePrizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedName = e.target.value;
+    const selectedPrize = prizesList.find(p => p.name === selectedName);
+    setPrizeInput(selectedName);
+    if (selectedPrize) {
+      setPrizeValue(selectedPrize.value);
+      setPrizeSupporter(selectedPrize.supporter); // <-- Update supporter state
+    }
+  };
+
   const handleDrawWinner = async () => {
     if (!prizeInput) return alert("Please select a prize first!");
     if (!confirm(`Ready to draw ${qtyInput} winner(s) for: ${prizeInput}?`)) return;
@@ -57,27 +73,29 @@ export default function RayongRemoteControl() {
     try {
       const eventRef = doc(db, "events", "rayong-lucky-draw");
 
-      // 1. Trigger the drumroll and send the Grand Prize flag!
+      // Send prize name, value, and supporter to Firebase for the TV screen
       await setDoc(eventRef, { 
         isDrawing: true, 
         prize: prizeInput,
+        prizeValue: prizeValue, 
+        prizeSupporter: prizeSupporter, // <-- Send supporter to Firebase
         isGrandPrize: isGrandPrize 
       }, { merge: true });
 
-      // 2. Send the requested quantity to our API
       const res = await fetch("/api/draw-rayong-winner", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ qty: Number(qtyInput) }) 
+        body: JSON.stringify({ 
+          qty: Number(qtyInput),
+          prizeName: prizeInput 
+        }) 
       });
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error);
 
-      // Longer drumroll for Grand Prize (5 seconds instead of 3)
       await new Promise((resolve) => setTimeout(resolve, isGrandPrize ? 5000 : 3000));
 
-      // 3. Reveal the array of winners on the TV
       await setDoc(eventRef, { 
         isDrawing: false, 
         currentWinners: data.winnerNames 
@@ -98,6 +116,8 @@ export default function RayongRemoteControl() {
       isDrawing: false, 
       currentWinners: [], 
       prize: null,
+      prizeValue: null, 
+      prizeSupporter: null, // <-- Clear supporter
       isGrandPrize: false 
     }, { merge: true });
     setIsGrandPrize(false); 
@@ -116,7 +136,6 @@ export default function RayongRemoteControl() {
 
         <div className="p-8 space-y-6">
           
-          {/* UPDATED: PRIZE DROPDOWN */}
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Current Prize (ของรางวัล)</label>
             {isLoadingPrizes ? (
@@ -126,17 +145,16 @@ export default function RayongRemoteControl() {
             ) : prizesList.length > 0 ? (
               <select 
                 value={prizeInput}
-                onChange={(e) => setPrizeInput(e.target.value)}
+                onChange={handlePrizeChange} 
                 className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none bg-white cursor-pointer"
               >
                 {prizesList.map((prize, index) => (
-                  <option key={index} value={prize}>
-                    {prize}
+                  <option key={index} value={prize.name}>
+                    {prize.name} {prize.supporter ? `[${prize.supporter}]` : ""}
                   </option>
                 ))}
               </select>
             ) : (
-              // Fallback to text input if the Google Sheet is empty or fails
               <input 
                 type="text" 
                 value={prizeInput}

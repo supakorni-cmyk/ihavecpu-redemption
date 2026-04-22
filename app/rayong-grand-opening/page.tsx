@@ -9,15 +9,14 @@ import { doc, onSnapshot } from "firebase/firestore";
 export default function RayongDisplayBoard() {
   const [winnerNames, setWinnerNames] = useState<string[]>([]); 
   const [prize, setPrize] = useState<string | null>(null);
+  const [prizeValue, setPrizeValue] = useState<string | null>(null); 
+  const [prizeSupporter, setPrizeSupporter] = useState<string | null>(null); // <-- NEW: State for Supporter
   const [isDrawing, setIsDrawing] = useState(false);
   const [isGrandPrize, setIsGrandPrize] = useState(false); 
   
   const [shufflingName, setShufflingName] = useState("???");
-  
-  // NEW: State to hold the REAL names from your Google Sheet!
   const [realNamesPool, setRealNamesPool] = useState<string[]>(["กำลังโหลดรายชื่อ...", "Loading..."]);
 
-  // Function to fetch the latest names from the database
   const fetchParticipants = async () => {
     try {
       const res = await fetch("/api/get-rayong-participants");
@@ -30,18 +29,18 @@ export default function RayongDisplayBoard() {
     }
   };
 
-  // 1. Fetch names when the TV screen first loads
   useEffect(() => {
     fetchParticipants();
   }, []);
 
-  // 2. Listen to Firebase for the Admin's "Draw" click
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "events", "rayong-lucky-draw"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setWinnerNames(data.currentWinners || []); 
         setPrize(data.prize);
+        setPrizeValue(data.prizeValue || null); 
+        setPrizeSupporter(data.prizeSupporter || null); // <-- Read supporter from Firebase
         setIsDrawing(data.isDrawing);
         setIsGrandPrize(data.isGrandPrize || false); 
       }
@@ -49,39 +48,29 @@ export default function RayongDisplayBoard() {
     return () => unsub();
   }, []);
 
-  // 3. Whenever a draw STARTS, refresh the name pool so it's 100% accurate!
   useEffect(() => {
     if (isDrawing) {
       fetchParticipants();
     }
   }, [isDrawing]);
 
-  // 4. The High-Speed Shuffle Animation (using realNamesPool)
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
     if (isDrawing && realNamesPool.length > 0) {
       interval = setInterval(() => {
         const randomName = realNamesPool[Math.floor(Math.random() * realNamesPool.length)];
         setShufflingName(randomName);
-      }, 70); // Flashes a new name every 70 milliseconds!
+      }, 70); 
     } else {
       setShufflingName("???");
     }
-
     return () => clearInterval(interval);
   }, [isDrawing, realNamesPool]);
 
   return (
     <main className="min-h-screen bg-gray-900 flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 z-0 opacity-40">
-        <Image
-          src="/rayong-banner.jpg" 
-          alt="Background"
-          fill
-          className="object-cover blur-sm"
-        />
-        {/* Dynamic Background Overlay */}
+        <Image src="/rayong-banner.jpg" alt="Background" fill className="object-cover blur-sm" />
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
@@ -103,17 +92,28 @@ export default function RayongDisplayBoard() {
           {isDrawing ? (
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
               {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
-              <h2 className={`text-4xl md:text-6xl font-bold mb-8 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
+              <h2 className={`text-4xl md:text-6xl font-bold mb-2 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
                 {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
               
-              {/* ⚡ REAL-TIME SHUFFLE ANIMATION BOX ⚡ */}
+              {/* Show prize value and supporter while drawing */}
+              <div className="mb-6 space-y-2">
+                {prizeValue && (
+                   <p className={`text-2xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-red-200'}`}>
+                      ({prizeValue})
+                   </p>
+                )}
+                {prizeSupporter && (
+                   <p className={`text-xl italic font-semibold ${isGrandPrize ? 'text-yellow-300' : 'text-white/80'}`}>
+                      Supported by {prizeSupporter}
+                   </p>
+                )}
+              </div>
+              
               <div className={`w-full max-w-2xl mx-auto py-8 px-4 rounded-2xl border-4 border-dashed transition-colors duration-200 ${
-                isGrandPrize 
-                  ? 'border-yellow-400/70 bg-yellow-500/10 shadow-[0_0_30px_rgba(250,204,21,0.3)]' 
-                  : 'border-red-400/70 bg-red-500/10 shadow-[0_0_30px_rgba(248,113,113,0.3)]'
+                isGrandPrize ? 'border-yellow-400/70 bg-yellow-500/10 shadow-[0_0_30px_rgba(250,204,21,0.3)]' : 'border-red-400/70 bg-red-500/10 shadow-[0_0_30px_rgba(248,113,113,0.3)]'
               }`}>
-                <h3 className={`text-5xl md:text-6xl font-black italic whitespace-nowrap tracking-wider opacity-90 blur-[1px] ${isGrandPrize ? 'text-yellow-200' : 'text-white'}`}>
+                <h3 className={`text-5xl md:text-6xl font-black italic whitespace-nowrap tracking-wider opacity-90 blur-[1px] truncate px-4 ${isGrandPrize ? 'text-yellow-200' : 'text-white'}`}>
                   {shufflingName}
                 </h3>
               </div>
@@ -124,15 +124,28 @@ export default function RayongDisplayBoard() {
               <p className={`text-2xl font-bold uppercase tracking-widest mb-2 ${isGrandPrize ? 'text-yellow-300' : 'text-red-300'}`}>
                 ผู้โชคดีได้รับ 
               </p>
-              <p className={`text-3xl font-bold tracking-widest mb-8 ${isGrandPrize ? 'text-yellow-400 drop-shadow-md' : 'text-white'}`}>
+              <p className={`text-3xl font-bold tracking-widest mb-1 ${isGrandPrize ? 'text-yellow-400 drop-shadow-md' : 'text-white'}`}>
                 {prize || "รางวัลพิเศษ"}
               </p>
               
-              {/* Dynamic Grid */}
+               {/* Show prize value and supporter on final reveal! */}
+               <div className="mb-8 space-y-2">
+                 {prizeValue && (
+                   <p className={`text-xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-gray-300'}`}>
+                      ({prizeValue})
+                   </p>
+                 )}
+                 {prizeSupporter && (
+                   <p className={`text-xl italic font-semibold ${isGrandPrize ? 'text-yellow-300' : 'text-white/80'}`}>
+                      Supported by {prizeSupporter}
+                   </p>
+                 )}
+               </div>
+              
               <div className={`grid gap-6 ${winnerNames.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} mb-8`}>
                 {winnerNames.map((name, index) => (
                   <div key={index} className={`rounded-2xl py-6 px-4 border shadow-inner ${isGrandPrize ? 'bg-gradient-to-r from-yellow-500/20 to-red-500/20 border-yellow-400/50' : 'bg-white/10 border-white/20'}`}>
-                    <h2 className={`text-4xl md:text-5xl font-black text-white whitespace-nowrap drop-shadow-md bg-clip-text text-transparent ${isGrandPrize ? 'bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]' : 'bg-gradient-to-r from-orange-300 to-yellow-500'}`}>
+                    <h2 className={`text-4xl md:text-5xl font-black text-white whitespace-nowrap drop-shadow-md bg-clip-text text-transparent truncate px-2 ${isGrandPrize ? 'bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]' : 'bg-gradient-to-r from-orange-300 to-yellow-500'}`}>
                       {name}
                     </h2>
                   </div>
