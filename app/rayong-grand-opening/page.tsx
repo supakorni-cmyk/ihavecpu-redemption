@@ -1,4 +1,3 @@
-// app/rayong-grand-opening/page.tsx
 "use client";
 
 import Image from "next/image";
@@ -10,7 +9,7 @@ export default function RayongDisplayBoard() {
   const [winnerNames, setWinnerNames] = useState<string[]>([]); 
   const [prize, setPrize] = useState<string | null>(null);
   const [prizeValue, setPrizeValue] = useState<string | null>(null); 
-  const [prizeSupporter, setPrizeSupporter] = useState<string | null>(null); // <-- NEW: State for Supporter
+  const [prizeSupporter, setPrizeSupporter] = useState<string | null>(null); 
   const [isDrawing, setIsDrawing] = useState(false);
   const [isGrandPrize, setIsGrandPrize] = useState(false); 
   
@@ -40,7 +39,7 @@ export default function RayongDisplayBoard() {
         setWinnerNames(data.currentWinners || []); 
         setPrize(data.prize);
         setPrizeValue(data.prizeValue || null); 
-        setPrizeSupporter(data.prizeSupporter || null); // <-- Read supporter from Firebase
+        setPrizeSupporter(data.prizeSupporter || null); 
         setIsDrawing(data.isDrawing);
         setIsGrandPrize(data.isGrandPrize || false); 
       }
@@ -92,12 +91,15 @@ export default function RayongDisplayBoard() {
           {isDrawing ? (
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
               {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
-              <h2 className={`text-4xl md:text-6xl font-bold mb-2 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
+              <h2 className={`text-3xl md:text-5xl font-bold mb-6 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
                 {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
               
-              {/* Show prize value and supporter while drawing */}
-              <div className="mb-6 space-y-2">
+              {/* Show Static Prize Name, Value, and Supporter while drawing */}
+              <div className="mb-8 space-y-3">
+                <p className={`text-4xl md:text-5xl font-extrabold tracking-widest ${isGrandPrize ? 'text-yellow-300 drop-shadow-md' : 'text-white'}`}>
+                  {prize || "รางวัลพิเศษ"}
+                </p>
                 {prizeValue && (
                    <p className={`text-2xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-red-200'}`}>
                       มูลค่า {prizeValue} บาท
@@ -132,7 +134,7 @@ export default function RayongDisplayBoard() {
                <div className="mb-8 space-y-2">
                  {prizeValue && (
                    <p className={`text-xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-gray-300'}`}>
-                      ({prizeValue})
+                      มูลค่า {prizeValue} บาท
                    </p>
                  )}
                  {prizeSupporter && (
