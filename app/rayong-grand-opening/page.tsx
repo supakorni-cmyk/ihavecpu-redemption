@@ -100,7 +100,7 @@ export default function RayongDisplayBoard() {
               <div className="mb-6 space-y-2">
                 {prizeValue && (
                    <p className={`text-2xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-red-200'}`}>
-                      ({prizeValue})
+                      มูลค่า {prizeValue} บาท
                    </p>
                 )}
                 {prizeSupporter && (
