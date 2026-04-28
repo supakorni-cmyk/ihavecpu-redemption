@@ -132,11 +132,11 @@ export default function RayongDisplayBoard() {
               
                {/* Show prize value and supporter on final reveal! */}
                <div className="mb-8 space-y-2">
-                 {prizeValue && (
+                 {/* {prizeValue && (
                    <p className={`text-xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-gray-300'}`}>
                       มูลค่า {prizeValue} บาท
                    </p>
-                 )}
+                 )} */}
                  {prizeSupporter && (
                    <p className={`text-xl italic font-semibold ${isGrandPrize ? 'text-yellow-300' : 'text-white/80'}`}>
                       Supported by {prizeSupporter}
