@@ -8,7 +8,6 @@ import { doc, onSnapshot } from "firebase/firestore";
 export default function RayongDisplayBoard() {
   const [winnerNames, setWinnerNames] = useState<string[]>([]); 
   const [prize, setPrize] = useState<string | null>(null);
-  const [prizeValue, setPrizeValue] = useState<string | null>(null); 
   const [prizeSupporter, setPrizeSupporter] = useState<string | null>(null); 
   const [isDrawing, setIsDrawing] = useState(false);
   const [isGrandPrize, setIsGrandPrize] = useState(false); 
@@ -38,7 +37,6 @@ export default function RayongDisplayBoard() {
         const data = docSnap.data();
         setWinnerNames(data.currentWinners || []); 
         setPrize(data.prize);
-        setPrizeValue(data.prizeValue || null); 
         setPrizeSupporter(data.prizeSupporter || null); 
         setIsDrawing(data.isDrawing);
         setIsGrandPrize(data.isGrandPrize || false); 
@@ -100,11 +98,6 @@ export default function RayongDisplayBoard() {
                 <p className={`text-4xl md:text-5xl font-extrabold tracking-widest ${isGrandPrize ? 'text-yellow-300 drop-shadow-md' : 'text-white'}`}>
                   {prize || "รางวัลพิเศษ"}
                 </p>
-                {/* {prizeValue && (
-                   <p className={`text-2xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-red-200'}`}>
-                      มูลค่า {prizeValue} บาท
-                   </p>
-                )} */}
                 {prizeSupporter && (
                    <p className={`text-xl italic font-semibold ${isGrandPrize ? 'text-yellow-300' : 'text-white/80'}`}>
                       Supported by {prizeSupporter}
@@ -132,11 +125,6 @@ export default function RayongDisplayBoard() {
               
                {/* Show prize value and supporter on final reveal! */}
                <div className="mb-8 space-y-2">
-                 {/* {prizeValue && (
-                   <p className={`text-xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-gray-300'}`}>
-                      มูลค่า {prizeValue} บาท
-                   </p>
-                 )} */}
                  {prizeSupporter && (
                    <p className={`text-xl italic font-semibold ${isGrandPrize ? 'text-yellow-300' : 'text-white/80'}`}>
                       Supported by {prizeSupporter}

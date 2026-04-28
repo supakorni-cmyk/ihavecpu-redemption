@@ -13,7 +13,7 @@ export default function RayongRemoteControl() {
   const { data: session, status } = useSession();
   
   const [prizeInput, setPrizeInput] = useState(""); 
-  const [prizeValue, setPrizeValue] = useState(""); 
+
   const [prizeSupporter, setPrizeSupporter] = useState(""); // <-- NEW: State for Supporter
   const [prizesList, setPrizesList] = useState<Prize[]>([]); 
   const [isLoadingPrizes, setIsLoadingPrizes] = useState(true);
@@ -37,7 +37,6 @@ export default function RayongRemoteControl() {
         if (data.prizes && data.prizes.length > 0) {
           setPrizesList(data.prizes);
           setPrizeInput(data.prizes[0].name);
-          setPrizeValue(data.prizes[0].value);
           setPrizeSupporter(data.prizes[0].supporter); // <-- Set initial supporter
         }
       } catch (error) {
@@ -60,7 +59,6 @@ export default function RayongRemoteControl() {
     const selectedPrize = prizesList.find(p => p.name === selectedName);
     setPrizeInput(selectedName);
     if (selectedPrize) {
-      setPrizeValue(selectedPrize.value);
       setPrizeSupporter(selectedPrize.supporter); // <-- Update supporter state
     }
   };
@@ -77,7 +75,6 @@ export default function RayongRemoteControl() {
       await setDoc(eventRef, { 
         isDrawing: true, 
         prize: prizeInput,
-        prizeValue: prizeValue, 
         prizeSupporter: prizeSupporter, // <-- Send supporter to Firebase
         isGrandPrize: isGrandPrize 
       }, { merge: true });
@@ -116,7 +113,6 @@ export default function RayongRemoteControl() {
       isDrawing: false, 
       currentWinners: [], 
       prize: null,
-      prizeValue: null, 
       prizeSupporter: null, // <-- Clear supporter
       isGrandPrize: false 
     }, { merge: true });
