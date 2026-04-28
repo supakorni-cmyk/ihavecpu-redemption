@@ -100,11 +100,11 @@ export default function RayongDisplayBoard() {
                 <p className={`text-4xl md:text-5xl font-extrabold tracking-widest ${isGrandPrize ? 'text-yellow-300 drop-shadow-md' : 'text-white'}`}>
                   {prize || "รางวัลพิเศษ"}
                 </p>
-                {prizeValue && (
+                {/* {prizeValue && (
                    <p className={`text-2xl font-medium ${isGrandPrize ? 'text-yellow-200' : 'text-red-200'}`}>
                       มูลค่า {prizeValue} บาท
                    </p>
-                )}
+                )} */}
                 {prizeSupporter && (
                    <p className={`text-xl italic font-semibold ${isGrandPrize ? 'text-yellow-300' : 'text-white/80'}`}>
                       Supported by {prizeSupporter}
