@@ -49,7 +49,7 @@ export async function GET(req: Request) {
       const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "Item1!A2:B", 
+        range: "Item!A2:B", 
       });
 
       const rows = response.data.values || [];
