@@ -61,9 +61,9 @@ export default function TalesRunnerLanding() {
             </p>
             <h3>สินค้าที่เข้าร่วมรายการ</h3>
             <p>
-                ซื้อ Notebook AMD RYZEN (ทุกรุ่น) รับ 1 Code<br />
-                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป รับ 1 Code<br />
-                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป คู่กับ การ์ดจอ AMD RADEON รับ 2 Code<br />
+                • ซื้อ Notebook AMD RYZEN (ทุกรุ่น) รับ 1 Code<br />
+                • ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป รับ 1 Code<br />
+                • ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป คู่กับ การ์ดจอ AMD RADEON รับ 2 Code<br />
                 (1 Code รับ กาชาปอง 50 กล่อง)<br />
             </p>
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
