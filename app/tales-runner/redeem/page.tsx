@@ -115,6 +115,7 @@ export default function TalesRunnerPromo() {
               <option value="Website">Website</option>
               <option value="In-Game Store">หน้าร้าน iHAVECPU</option>
               <option value="Retail">Shopee/Lazada</option>
+              <option value="Retail">Facebook</option>
             </select>
           </div>
 
