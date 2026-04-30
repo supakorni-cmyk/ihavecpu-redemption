@@ -64,16 +64,16 @@ export default function Home() {
               className="object-fit"
               />
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">iHAVECPU x AMD x Tales Runner</span>
+              <span className="text-white font-bold text-center text-2xl">iHAVECPU x AMD x Tales Runner</span>
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
               <span className="text-xs font-bold tracking-wide text-blue-600 uppercase mb-2">Game Loot</span>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive In-Game Items</h3>
               <p className="text-gray-600 text-sm mb-6 flex-grow">
-                ซื้อ Notebook AMD RYZEN (ทุกรุ่น) รับ 1 Code<br />
-                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป รับ 1 Code<br />
-                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป คู่กับ การ์ดจอ AMD RADEON รับ 2 Code<br />
+                • ซื้อ Notebook AMD RYZEN (ทุกรุ่น) รับ 1 Code<br />
+                • ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป รับ 1 Code<br />
+                • ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป คู่กับ การ์ดจอ AMD RADEON รับ 2 Code<br />
                 (1 Code รับ กาชาปอง 50 กล่อง)<br />
               </p>
               <p className="text-gray-600 text-sm mb-6 flex-grow">
