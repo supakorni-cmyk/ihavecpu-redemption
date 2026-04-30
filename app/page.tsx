@@ -64,16 +64,17 @@ export default function Home() {
               className="object-fit"
               />
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-              <span className="text-white font-bold text-2xl">Tales Runner</span>
+              <span className="text-white font-bold text-2xl">iHAVECPU x AMD x Tales Runner</span>
             </div>
             
             <div className="p-6 flex flex-col flex-grow">
               <span className="text-xs font-bold tracking-wide text-blue-600 uppercase mb-2">Game Loot</span>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive In-Game Items</h3>
               <p className="text-gray-600 text-sm mb-6 flex-grow">
-                ซื้อ Computer Set Tales Runner เซ็ตใดก็ได้ 1 เซ็ต รับโค้ดพิเศษจากเกมส์ Tales Runner<br />
-                • Code 1: ไอเทมระดับ SS Tier ได้ครบทั้งชุด<br />
-                • Code 2: กล่องสุ่มไอเทมพิเศษ 90 กล่อง<br />
+                ซื้อ Notebook AMD RYZEN (ทุกรุ่น) รับ 1 Code<br />
+                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป รับ 1 Code<br />
+                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป คู่กับ การ์ดจอ AMD RADEON รับ 2 Code<br />
+                (1 Code รับ กาชาปอง 50 กล่อง)<br />
               </p>
               <p className="text-gray-600 text-sm mb-6 flex-grow">
                 *ของรางวัลมีจำนวนจำกัด<br />
@@ -83,37 +84,6 @@ export default function Home() {
               <Link href="/tales-runner" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
                 ดูรายละเอียดเพิ่มเติม &rarr;
               </Link>
-            </div>
-          </div>
-
-          {/* Promo Card 2: NVIDIA RTX 50 Series (NEW!) */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col relative">
-            {/* Optional Badge */}
-              <Image 
-                src="/NVIDIA-CNY-FB.jpg" 
-                alt="angpao" 
-                className="object-fit"
-              />
-            {/* <div className="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
-              NEW!
-            </div> */}
-            <div className="h-14 bg-gradient-to-r from-green-600 to-green-900 flex items-center justify-center">
-               <span className="text-white font-bold text-2xl tracking-wider px-4 text-center">NVIDIA Angpao Laptop</span>
-            </div>
-            <div className="p-6 flex flex-col flex-grow">
-              <span className="text-xs font-bold tracking-wide text-green-600 uppercase mb-2">Special Discount</span>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive Angpao Reward</h3>
-              <p className="text-gray-600 text-sm mb-6 flex-grow">
-                ลงทะเบียนรับส่วนลดสำหรับซื้อ Notebook NVIDIA GeForce RTX 50 SERIES สูงสุด 1,000 บาท.
-              </p>
-              <p className="text-gray-600 text-sm mb-6 flex-grow">
-                *ของรางวัลมีจำนวนจำกัด<br />
-                *สำหรับการซื้อบน website iHAVECPU เท่านั้น<br />
-                *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
-              </p>
-              <div className="block w-full text-center bg-gray-500 text-black font-medium py-3 rounded-lg">
-                สิทธิ์เต็มแล้ว
-              </div>
             </div>
           </div>
 

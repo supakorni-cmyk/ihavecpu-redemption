@@ -42,7 +42,7 @@ export default function TalesRunnerLanding() {
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
-            Tales Runner x iHAVECPU
+            iHAVECPU x AMD x Tales Runner
           </h1>
           <p className="text-xl text-blue-100 drop-shadow-md">
             Exclusive In-Game Item Redemption
@@ -57,10 +57,15 @@ export default function TalesRunnerLanding() {
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-3xl font-bold text-gray-900 border-b pb-4 mb-6">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
             <p className="mb-6 text-lg leading-relaxed">
-              ซื้อสินค้าที่ร่วมรายการจาก iHAVECPU และนำใบเสร็จมาแลกรับโค้ดไอเทมสุดพิเศษจากเกม Tales Runner จำนวน 2 โค้ดทันที! 
+              ช้อป AMD ที่ iHAVECPU รับฟรี! โค้ด Tales Runner
             </p>
-            <h3>Set Promotion ที่เข้าร่วม</h3>
-            <p><strong><Link href="https://ihavecpu.com/category/promotion?addition=740}">Link</Link> </strong></p>
+            <h3>สินค้าที่เข้าร่วมรายการ</h3>
+            <p>
+                ซื้อ Notebook AMD RYZEN (ทุกรุ่น) รับ 1 Code<br />
+                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป รับ 1 Code<br />
+                ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป คู่กับ การ์ดจอ AMD RADEON รับ 2 Code<br />
+                (1 Code รับ กาชาปอง 50 กล่อง)<br />
+            </p>
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
               <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก iHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
@@ -76,7 +81,7 @@ export default function TalesRunnerLanding() {
               <li>กรอกข้อมูลและอัปโหลดรูปภาพใบเสร็จในหน้า Redeem</li>
               <li>รอทีมงานตรวจสอบ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับโค้ดในหน้า <strong>My Rewards</strong> ของคุณ</li>
-              <li>นำโค้ดที่ได้ไปลงทะเบียนต่อที่ <strong><Link href="https://member.thehof.gg/talesrunner">Link</Link> </strong></li>
+              <li>นำโค้ดที่ได้ไปลงทะเบียนต่อที่ <strong><Link href="https://member.thehof.gg/talesrunner/itemcode">Link</Link> </strong></li>
             </ol>
           </div>
 
@@ -92,7 +97,7 @@ export default function TalesRunnerLanding() {
                 </button>
               ) : isAvailable ? (
                 <Link href="/tales-runner/redeem">
-                  <button className="w-full md:w-auto bg-blue-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-blue-700 shadow-lg transition-transform hover:scale-105">
+                  <button className="w-full md:w-auto bg-red-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-red-700 shadow-lg transition-transform hover:scale-105">
                     Redeem Now (แลกรับสิทธิ์)
                   </button>
                 </Link>
