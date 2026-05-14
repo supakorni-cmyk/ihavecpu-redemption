@@ -105,8 +105,8 @@ export async function POST(req: Request) {
     else {
       const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
       const code1 = await getAndMarkCode(sheets, spreadsheetId, "Item1", email);
-      const code2 = await getAndMarkCode(sheets, spreadsheetId, "Item2", email);
-      return NextResponse.json({ code1, code2 });
+      // const code2 = await getAndMarkCode(sheets, spreadsheetId, "Item2", email);
+      return NextResponse.json({ code1 });
     }
 
   // 2. Safely type the error block
