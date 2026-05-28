@@ -102,9 +102,9 @@ export default function IntelLanding() {
                   กำลังตรวจสอบสิทธิ์... (Checking...)
                 </button>
               ) : isAvailable ? (
-                <Link href="/nvidia-angpao/redeem">
+                <Link href="/intel-spring-game-bundle/redeem">
                   {/* Changed button to NVIDIA Green */}
-                  <button className="w-full md:w-auto bg-green-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-green-700 shadow-lg transition-transform hover:scale-105">
+                  <button className="w-full md:w-auto bg-blue-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-blue-700 shadow-lg transition-transform hover:scale-105">
                     Redeem Now (แลกรับสิทธิ์)
                   </button>
                 </Link>
