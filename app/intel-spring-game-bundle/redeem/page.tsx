@@ -115,9 +115,9 @@ export default function TalesRunnerPromo() {
             <label className="block text-sm font-medium mb-1">Buying Channel</label>
             <select value={channel} onChange={(e) => setChannel(e.target.value)} className="w-full border p-2 rounded">
               <option value="Website">Website</option>
-              <option value="In-Game Store">หน้าร้าน iHAVECPU</option>
-              <option value="Retail">Shopee/Lazada</option>
-              <option value="Retail">Facebook</option>
+              <option value="Store">หน้าร้าน iHAVECPU</option>
+              <option value="E-commerce">Shopee/Lazada</option>
+              <option value="Facebook">Facebook</option>
             </select>
           </div>
 
