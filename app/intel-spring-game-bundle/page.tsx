@@ -1,3 +1,4 @@
+// app/nvidia-angpao/page.tsx
 "use client";
 
 import Image from "next/image";
@@ -12,7 +13,7 @@ export default function IntelLanding() {
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Fetch availability from our API (passing a query param for Intel)
+    // Fetch availability from our API (passing a query param for NVIDIA)
     const checkStock = async () => {
       try {
         const res = await fetch("/api/check-availability?promo=intel");
@@ -32,7 +33,7 @@ export default function IntelLanding() {
       {/* Promo Hero Banner with Background Image */}
       <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900">
         <Image
-          // Make sure you add an image named "intelbanner.jpg" to your public folder!
+          // Make sure you add an image named "nvidia-banner.jpg" to your public folder!
           src="/intelbanner.jpg" 
           alt="Intel Spring Gaming Bundle"
           fill
@@ -44,7 +45,7 @@ export default function IntelLanding() {
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
             Intel® Spring Gaming Bundle
           </h1>
-          <p className="text-xl text-blue-100 drop-shadow-md">
+          <p className="text-xl text-green-100 drop-shadow-md">
             Exclusive Game Bundle
           </p>
         </div>
@@ -69,7 +70,7 @@ export default function IntelLanding() {
               <li>Intel® Core™ Ultra 5,7,9 (Series 2)</li>
               <li>Intel® Core™ Ultra 5,7,9 (Series 3)</li>
             </ul>
-            <h3><strong><Link href="https://ihavecpu.com/shops/intelspringgamingbundle" className="text-blue-600 hover:underline">ไปที่หน้าสินค้า</Link></strong></h3>
+            <h3><strong><Link href="https://ihavecpu.com/shops/intelspringgamingbundle">ไปที่หน้าสินค้า</Link></strong></h3>
 
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
@@ -86,7 +87,7 @@ export default function IntelLanding() {
               <li>กรอกข้อมูลและอัปโหลดรูปภาพใบเสร็จในหน้า Redeem</li>
               <li>รอทีมงานตรวจสอบ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับ Master Key ในหน้า <strong>My Rewards</strong> ของคุณ</li>
-              <li>นำ Masterkey ที่ได้ไปลงทะเบียนต่อที่ <strong><Link href="https://softwareoffer.intel.com/" className="text-blue-600 hover:underline">Link</Link> </strong></li>
+              <li>นำ Masterkey ที่ได้ไปลงทะเบียนต่อที่ <strong><Link href="https://softwareoffer.intel.com/">Link</Link> </strong></li>
             </ol>
           </div>
 
@@ -101,9 +102,9 @@ export default function IntelLanding() {
                   กำลังตรวจสอบสิทธิ์... (Checking...)
                 </button>
               ) : isAvailable ? (
-                <Link href="/intel-spring-bundle/redeem">
-                  {/* Changed button to Intel Blue */}
-                  <button className="w-full md:w-auto bg-blue-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-blue-700 shadow-lg transition-transform hover:scale-105">
+                <Link href="/nvidia-angpao/redeem">
+                  {/* Changed button to NVIDIA Green */}
+                  <button className="w-full md:w-auto bg-green-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-green-700 shadow-lg transition-transform hover:scale-105">
                     Redeem Now (แลกรับสิทธิ์)
                   </button>
                 </Link>

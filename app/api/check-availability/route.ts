@@ -23,7 +23,7 @@ export async function GET(req: Request) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // 🔴 IF PROMO IS NVIDIA
+    // 🔵 IF PROMO IS INTEL
     if (promo === "intel") {
       const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
       const response = await sheets.spreadsheets.values.get({
@@ -34,9 +34,9 @@ export async function GET(req: Request) {
       const rows = response.data.values || [];
       let isAvailable = false;
 
-      // In NVIDIA, Column C (index 2) holds the email
+      // In Intel, Column B (index 1) holds the email
       for (let i = 0; i < rows.length; i++) {
-        if (!rows[i][2]) { 
+        if (!rows[i][1]) { 
           isAvailable = true;
           break;
         }
@@ -44,7 +44,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ available: isAvailable });
     } 
     
-    // 🔵 DEFAULT: TALES RUNNER
+    // 🟢 DEFAULT: TALES RUNNER
     else {
       const spreadsheetId = process.env.GOOGLE_SHEET_ID as string;
       const response = await sheets.spreadsheets.values.get({
