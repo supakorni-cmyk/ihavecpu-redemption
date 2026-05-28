@@ -57,14 +57,14 @@ export default function IntelLanding() {
           {/* Main Content & Rules */}
           <div className="prose max-w-none text-gray-700">
             <h2 className="text-3xl font-bold text-gray-900 border-b pb-4 mb-6">รายละเอียดโปรโมชั่น (Promotion Details)</h2>
-            <p className="mb-6 text-lg leading-relaxed text-red-600 font-bold">
+            {/* <p className="mb-6 text-lg leading-relaxed text-red-600 font-bold">
               *จำกัด 1 สิทธิ์ ต่อ 1 บัญชีผู้ใช้เท่านั้น*
-            </p>
+            </p> */}
             <p className="mb-6 text-lg leading-relaxed">
               ซื้อ CPU / Notebook Intel® Core™ Ultra รุ่นที่ร่วมรายการ รับฟรี! LEGO® Batman™: Legacy of the Dark Knight
             </p>
 
-            <h3>สินค้าที่เข้าร่วมรายการ (Participating Products)</h3>
+            <h2>สินค้าที่เข้าร่วมรายการ (Participating Products)</h2>
             <ul className="list-disc pl-5 mb-8 space-y-2 text-lg">
               <li>Intel® Core™ Ultra 5,7,9 Plus (Series 2)</li>
               <li>Intel® Core™ Ultra 5,7,9 (Series 2)</li>
