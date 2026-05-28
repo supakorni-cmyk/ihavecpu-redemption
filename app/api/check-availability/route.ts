@@ -24,11 +24,11 @@ export async function GET(req: Request) {
     const sheets = google.sheets({ version: "v4", auth });
 
     // 🔴 IF PROMO IS NVIDIA
-    if (promo === "nvidia") {
-      const spreadsheetId = process.env.GOOGLE_SHEET_ID_NVIDIA as string;
+    if (promo === "intel") {
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "Sheet1!A2:C", 
+        range: "Sheet1!A2:B", 
       });
 
       const rows = response.data.values || [];
