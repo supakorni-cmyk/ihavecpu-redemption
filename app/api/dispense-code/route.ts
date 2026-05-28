@@ -68,11 +68,10 @@ export async function POST(req: Request) {
       // 1. Collect ALL available rows (where Column C is empty)
       const availableRows = [];
       for (let i = 0; i < rows.length; i++) {
-        if (!rows[i][2]) { 
+        if (!rows[i][1]) { 
           availableRows.push({
-            rowIndex: i + 2, // +2 because we start at row 2 and arrays are 0-indexed
+            rowIndex: i + 1, // +2 because we start at row 2 and arrays are 0-indexed
             code: rows[i][0],     // Column A
-            discount: rows[i][1]  // Column B
           });
         }
       }
@@ -96,8 +95,7 @@ export async function POST(req: Request) {
 
       // 5. Return the randomly selected code and discount!
       return NextResponse.json({ 
-        code1: selectedRow.code, 
-        discount: selectedRow.discount 
+        code1: selectedRow.code
       }); 
     }
     
