@@ -95,7 +95,7 @@ export default function Home() {
               alt="intel" 
               className="object-fit"
               />
-            <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
+            <div className="h-14 bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
               <span className="text-white font-bold text-center text-2xl">Intel® Spring Gaming Bundle</span>
             </div>
             
