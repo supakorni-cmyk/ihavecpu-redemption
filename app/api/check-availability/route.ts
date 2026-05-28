@@ -23,12 +23,12 @@ export async function GET(req: Request) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // 🔴 IF PROMO IS Intel
-    if (promo === "Intel® Spring Gaming Bundle") {
-      const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
+    // 🔴 IF PROMO IS NVIDIA
+    if (promo === "nvidia") {
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID_NVIDIA as string;
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "Sheet1!A2:B", 
+        range: "Sheet1!A2:C", 
       });
 
       const rows = response.data.values || [];
