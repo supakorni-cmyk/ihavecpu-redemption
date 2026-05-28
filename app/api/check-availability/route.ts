@@ -24,7 +24,7 @@ export async function GET(req: Request) {
     const sheets = google.sheets({ version: "v4", auth });
 
     // 🔴 IF PROMO IS Intel
-    if (promo === "intel") {
+    if (promo === "Intel® Spring Gaming Bundle") {
       const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
