@@ -1,10 +1,10 @@
 // app/api/dispense-code/route.ts
-import { google, sheets_v4 } from "googleapis"; // <-- Added sheets_v4 type
+import { google, sheets_v4 } from "googleapis";
 import { NextResponse } from "next/server";
 
 // 1. Properly typed helper function for Tales Runner
 async function getAndMarkCode(
-  sheets: sheets_v4.Sheets, // <-- Replaced 'any' with the official Google type
+  sheets: sheets_v4.Sheets, 
   spreadsheetId: string, 
   sheetName: string, 
   email: string
@@ -54,8 +54,8 @@ export async function POST(req: Request) {
 
     const sheets = google.sheets({ version: "v4", auth });
 
-    // 🔴 IF PROMO IS NVIDIA:
-    if (promo === "Intel® Spring Gaming Bundle") {
+    // 🔴 IF PROMO IS INTEL (Safely checks if the promo name contains "Intel"):
+    if (promo && promo.includes("Intel")) {
       const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
       
       const response = await sheets.spreadsheets.values.get({
@@ -65,13 +65,13 @@ export async function POST(req: Request) {
 
       const rows = response.data.values || [];
       
-      // 1. Collect ALL available rows (where Column C is empty)
+      // 1. Collect ALL available rows (where Column B is empty)
       const availableRows = [];
       for (let i = 0; i < rows.length; i++) {
         if (!rows[i][1]) { 
           availableRows.push({
-            rowIndex: i + 1, // +2 because we start at row 2 and arrays are 0-indexed
-            code: rows[i][0],     // Column A
+            rowIndex: i + 2, // FIXED: Must be i + 2 because we start at row 2!
+            code: rows[i][0],     
           });
         }
       }
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
         requestBody: { values: [[email]] },
       });
 
-      // 5. Return the randomly selected code and discount!
+      // 5. Return the randomly selected code!
       return NextResponse.json({ 
         code1: selectedRow.code
       }); 
@@ -108,10 +108,9 @@ export async function POST(req: Request) {
     }
 
   // 2. Safely type the error block
-  } catch (error: unknown) { // <-- Replaced 'any' with 'unknown'
+  } catch (error: unknown) { 
     console.error("API Error:", error);
     
-    // We check if the unknown error is a standard Error object to safely read its message
     let errorMessage = "An unknown error occurred";
     if (error instanceof Error) {
       errorMessage = error.message;

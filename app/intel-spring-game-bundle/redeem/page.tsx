@@ -18,6 +18,8 @@ export default function TalesRunnerPromo() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const PROMO_NAME = "Intel® Spring Gaming Bundle";
+
   // If user is not logged in, they shouldn't be here
   if (!session) {
     return (
@@ -59,7 +61,7 @@ export default function TalesRunnerPromo() {
       // 2. Save data to Firestore Database (This part stays exactly the same!)
       await addDoc(collection(db, "submissions"), {
         userEmail: session.user?.email,
-        promo: "Intel Spring",
+        promo: PROMO_NAME,
         name,
         channel,
         tel,
