@@ -87,6 +87,35 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Promo Card 2: Intel Batman */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
+            {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
+              <Image 
+              src="/intel1x1.png" 
+              alt="intel" 
+              className="object-fit"
+              />
+            <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
+              <span className="text-white font-bold text-center text-2xl">Intel® Spring Gaming Bundle</span>
+            </div>
+            
+            <div className="p-6 flex flex-col flex-grow">
+              <span className="text-xs font-bold tracking-wide text-blue-600 uppercase mb-2">Game Bundle</span>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive Game Bundle</h3>
+              <p className="text-gray-600 text-sm mb-6 flex-grow">
+              ซื้อ CPU / Notebook Intel® Core™ Ultra รุ่นที่ร่วมรายการ รับฟรี! LEGO® Batman™: Legacy of the Dark Knight
+              </p>
+              <p className="text-gray-600 text-sm mb-6 flex-grow">
+                *ของรางวัลมีจำนวนจำกัด<br />
+                *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
+              </p>
+              
+              <Link href="/intel-spring-game-bundle" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
+                ดูรายละเอียดเพิ่มเติม &rarr;
+              </Link>
+            </div>
+          </div>
+
           {/* Promo Card 3: Coming Soon (Placeholder to show it's a center) */}
           <div className="bg-gray-50 rounded-2xl border border-dashed border-gray-300 flex flex-col items-center justify-center h-full min-h-[350px] text-center p-6">
             <div className="w-16 h-16 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center text-3xl mb-4">

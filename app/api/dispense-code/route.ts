@@ -55,12 +55,12 @@ export async function POST(req: Request) {
     const sheets = google.sheets({ version: "v4", auth });
 
     // 🔴 IF PROMO IS NVIDIA:
-    if (promo === "NVIDIA GeForce RTX 50 Series Angpao") {
-      const spreadsheetId = process.env.GOOGLE_SHEET_ID_NVIDIA as string;
+    if (promo === "Intel® Spring Gaming Bundle") {
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
       
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range: "Sheet1!A2:C", 
+        range: "Sheet1!A2:B", 
       });
 
       const rows = response.data.values || [];
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
 
       // 2. If no rows are left, throw an error
       if (availableRows.length === 0) {
-        throw new Error("No NVIDIA codes available!");
+        throw new Error("No Master Key available!");
       }
 
       // 3. Pick one completely at RANDOM
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
       // 4. Update that specific random row with the user's email
       await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `Sheet1!C${selectedRow.rowIndex}`,
+        range: `Sheet1!B${selectedRow.rowIndex}`,
         valueInputOption: "USER_ENTERED",
         requestBody: { values: [[email]] },
       });
