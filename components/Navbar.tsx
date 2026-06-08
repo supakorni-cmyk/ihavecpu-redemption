@@ -1,4 +1,3 @@
-// components/Navbar.tsx
 "use client";
 
 import Link from "next/link";
@@ -43,7 +42,14 @@ export default function Navbar() {
             )}
             
             {isAdmin && (
-              <Link href="/admin" className="text-red-400 hover:text-red-300 font-medium transition-colors">Admin Panel</Link>
+              <>
+                <Link href="/admin" className="text-red-400 hover:text-red-300 font-medium transition-colors">Admin Panel</Link>
+                <Link href="/admin/add-campaign">
+                  <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all">
+                    + Add Campaign
+                  </button>
+                </Link>
+              </>
             )}
 
             {/* Auth Button */}
@@ -89,7 +95,13 @@ export default function Navbar() {
             <Link href="/" className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Home</Link>
             <Link href="/tales-runner" className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Redeem</Link>
             {session && <Link href="/my-rewards" className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">My Rewards</Link>}
-            {isAdmin && <Link href="/admin" className="block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-gray-700">Admin Panel</Link>}
+            
+            {isAdmin && (
+              <>
+                <Link href="/admin" className="block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-gray-700">Admin Panel</Link>
+                <Link href="/admin/add-campaign" className="block px-3 py-2 rounded-md text-base font-medium text-indigo-400 hover:bg-gray-700">+ Add Campaign</Link>
+              </>
+            )}
             
             {session ? (
               <button onClick={() => signOut()} className="w-full text-left mt-4 block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700">Log Out</button>
