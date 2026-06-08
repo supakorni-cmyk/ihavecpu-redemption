@@ -122,6 +122,18 @@ export default function UnifiedAdminPanel() {
     setEditPromoBannerFile(null);
   };
 
+  const handleDeleteCampaign = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to permanently delete "${name}"?\nThis action cannot be undone.`)) return;
+
+    try {
+      await deleteDoc(doc(db, "campaigns", id));
+      alert("Campaign cleared from registry database.");
+    } catch (error) {
+      console.error("Delete failed:", error);
+      alert("Deletion request failed.");
+    }
+  };
+
   const handleUpdateCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCampaign) return;

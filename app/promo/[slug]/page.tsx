@@ -15,6 +15,7 @@ type Campaign = {
   details: string;
   imageUrl: string;
   sheetId: string;
+  promoBannerUrl: string;
 };
 
 export default function DynamicPromoPage() {
@@ -92,12 +93,12 @@ export default function DynamicPromoPage() {
       {/* Dynamic Cover Banner */}
       <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900">
         <Image
-          src={campaign.imageUrl} 
-          alt={campaign.name}
-          fill
-          className="object-cover"
-          priority 
-        />
+            src={campaign.promoBannerUrl} 
+            alt={campaign.name}
+            fill
+            className="object-cover"
+            priority 
+            />
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">

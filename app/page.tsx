@@ -14,6 +14,8 @@ type Campaign = {
   period: string;
   details: string;
   imageUrl: string;
+  homeCoverUrl: string;
+  promoBannerUrl: string;
 };
 
 export default function Home() {
@@ -154,10 +156,10 @@ export default function Home() {
               {/* Dynamic Image Cover */}
               <div className="relative h-48 w-full bg-gray-100 overflow-hidden border-b">
                 <img 
-                  src={promo.imageUrl || "/default-banner.jpg"} 
-                  alt={promo.name} 
-                  className="w-full h-full object-cover"
-                />
+                src={promo.homeCoverUrl || "/default-banner.jpg"} 
+                alt={promo.name} 
+                className="w-full h-full object-cover"
+              />
               </div>
 
               {/* Dynamic Branding Header */}
