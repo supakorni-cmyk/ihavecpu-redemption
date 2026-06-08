@@ -1,12 +1,41 @@
-// app/page.tsx
 "use client";
 
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { db } from "@/lib/firebase";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+
+type Campaign = {
+  id: string;
+  name: string;
+  slug: string;
+  period: string;
+  details: string;
+  imageUrl: string;
+};
 
 export default function Home() {
   const { data: session } = useSession();
+  const [dbCampaigns, setDbCampaigns] = useState<Campaign[]>([]);
+
+  // Listen to Firestore for database-created campaigns in real-time
+  useEffect(() => {
+    const q = query(collection(db, "campaigns"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Campaign[];
+      setDbCampaigns(list);
+    }, (error) => {
+      console.error("Error loading live campaigns:", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <main className="min-h-screen bg-white">
@@ -57,11 +86,12 @@ export default function Home() {
           
           {/* Promo Card 1: Tales Runner */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
-            {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
               <Image 
               src="/tr-banner.jpg" 
               alt="tales-runner" 
               className="object-fit"
+              width={500}
+              height={300}
               />
             <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
               <span className="text-white font-bold text-center text-2xl">iHAVECPU x AMD x Tales Runner</span>
@@ -89,11 +119,12 @@ export default function Home() {
 
           {/* Promo Card 2: Intel Batman */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
-            {/* Placeholder Image Banner (You can replace the src with a real Tales Runner banner image later) */}
               <Image 
               src="/intel1x1.png" 
               alt="intel" 
               className="object-fit"
+              width={500}
+              height={300}
               />
             <div className="h-14 bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
               <span className="text-white font-bold text-center text-2xl">Intel® Spring Gaming Bundle</span>
@@ -116,7 +147,44 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Promo Card 3: Coming Soon (Placeholder to show it's a center) */}
+          {/* ⚡ DYNAMIC CAMPAIGNS FROM FIRESTORE CMS ⚡ */}
+          {dbCampaigns.map((promo) => (
+            <div key={promo.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col justify-between">
+              
+              {/* Dynamic Image Cover */}
+              <div className="relative h-48 w-full bg-gray-100 overflow-hidden border-b">
+                <img 
+                  src={promo.imageUrl || "/default-banner.jpg"} 
+                  alt={promo.name} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Dynamic Branding Header */}
+              <div className="h-14 bg-gradient-to-r from-gray-800 to-gray-900 flex items-center justify-center px-4 text-center">
+                <span className="text-white font-bold text-lg truncate w-full">{promo.name}</span>
+              </div>
+              
+              {/* Card Body Content */}
+              <div className="p-6 flex flex-col flex-grow justify-between">
+                <div>
+                  <span className="text-xs font-bold tracking-wide text-red-500 uppercase block mb-2">
+                    🕒 ระยะเวลา: {promo.period}
+                  </span>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1">Promotion Details</h3>
+                  <p className="text-gray-600 text-sm mb-6 line-clamp-4 whitespace-pre-line leading-relaxed">
+                    {promo.details}
+                  </p>
+                </div>
+                
+                <Link href={`/promo/${promo.slug}`} className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors mt-auto">
+                  ดูรายละเอียดเพิ่มเติม &rarr;
+                </Link>
+              </div>
+            </div>
+          ))}
+
+          {/* Promo Card 3: Coming Soon Placeholder */}
           <div className="bg-gray-50 rounded-2xl border border-dashed border-gray-300 flex flex-col items-center justify-center h-full min-h-[350px] text-center p-6">
             <div className="w-16 h-16 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center text-3xl mb-4">
               🎁
