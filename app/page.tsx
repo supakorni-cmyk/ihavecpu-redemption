@@ -155,7 +155,7 @@ export default function Home() {
               
               {/* Dynamic Image Cover */}
               <div className="relative h-48 w-full bg-gray-100 overflow-hidden border-b">
-                <img 
+                <Image 
                 src={promo.homeCoverUrl || "/default-banner.jpg"} 
                 alt={promo.name} 
                 className="w-full h-full object-cover"
