@@ -6,15 +6,14 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, Timestamp } from "firebase/firestore";
 import Link from "next/link";
 
-// 1. Define the shape of our data (Added discountAmount and rejectReason)
+// 1. Updated shape definitions to perfectly align with Admin panel writes
 type Submission = {
   id: string;
   promo: string;
   status: string;
-  rewardCode1?: string;
-  rewardCode2?: string;
+  code1?: string;             // ⚡ FIXED: Matches API / Admin write name
   discountAmount?: string; 
-  rejectReason?: string;
+  rejectionReason?: string;    // ⚡ FIXED: Matches Admin write name
   createdAt: Timestamp | null;
 };
 
@@ -31,12 +30,12 @@ export default function MyRewards() {
     }
   }, [session, sessionStatus]);
 
-  // Fetch only the submissions belonging to the logged-in user
   const fetchMySubmissions = async (email: string) => {
     try {
+      // ⚡ FIXED: Querying "email" instead of "userEmail" to match registration schema
       const q = query(
         collection(db, "submissions"),
-        where("userEmail", "==", email)
+        where("email", "==", email.toLowerCase().trim())
       );
       const querySnapshot = await getDocs(q);
 
@@ -56,12 +55,10 @@ export default function MyRewards() {
     }
   };
 
-  // Loading State
   if (sessionStatus === "loading" || loading) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600">Loading your rewards...</div>;
   }
 
-  // Security check: Must be logged in
   if (!session) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 text-gray-800">
@@ -95,7 +92,7 @@ export default function MyRewards() {
                 {/* Left Side: Promo Info */}
                 <div className="mb-4 md:mb-0">
                   <span className="text-xs font-bold tracking-wider text-gray-400 uppercase mb-1 block">
-                    {sub.promo.includes("NVIDIA") ? "Hardware Promo" : "Game Promo"}
+                    {sub.promo.includes("Intel") ? "Intel Promo" : "Hardware Promo"}
                   </span>
                   <h2 className="text-xl font-bold text-gray-900">{sub.promo}</h2>
                   <p className="text-sm text-gray-500 mt-1">
@@ -121,7 +118,7 @@ export default function MyRewards() {
                       </p>
                       <div className="bg-white px-3 py-2 rounded border border-red-100">
                         <p className="text-xs text-red-400 font-semibold uppercase mb-1">Reason:</p>
-                        <p className="text-sm text-red-600">{sub.rejectReason || "No reason provided"}</p>
+                        <p className="text-sm text-red-600">{sub.rejectionReason || "No reason provided"}</p>
                       </div>
                     </div>
                   )}
@@ -130,7 +127,7 @@ export default function MyRewards() {
                   {sub.status === "approved" && (
                     <div className="shadow-sm">
                       
-                      {/* 🔴 NVIDIA ANGPAO DESIGN */}
+                      {/* NVIDIA ANGPAO DESIGN SPECIAL CASE */}
                       {sub.promo === "NVIDIA GeForce RTX 50 Series Angpao" ? (
                         <div className="bg-gradient-to-br from-red-50 to-red-100 border border-red-200 p-5 rounded-xl text-left">
                           <p className="text-red-700 font-extrabold mb-3 text-lg flex items-center leading-tight">
@@ -139,27 +136,21 @@ export default function MyRewards() {
                           </p>
                           <div className="bg-white px-4 py-3 rounded-lg border border-red-200 flex items-center justify-between">
                             <span className="text-red-500 font-semibold text-xs uppercase tracking-wider">Your Code:</span> 
-                            <span className="font-mono text-lg font-bold text-gray-900 select-all">{sub.rewardCode1}</span>
+                            <span className="font-mono text-lg font-bold text-gray-900 select-all">{sub.code1}</span>
                           </div>
                         </div>
                       ) : (
 
-                      /* 🔵 TALES RUNNER DESIGN (Default) */
+                      /* GENERAL / INTEL / TALES RUNNER UNIFIED REWARDS CARD */
                         <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl text-left">
                           <p className="text-blue-800 font-bold mb-3 flex items-center">
-                            <span className="mr-2 text-xl">🎉</span> Approved! Here are your codes:
+                            <span className="mr-2 text-xl">🎉</span> Approved! Here is your code:
                           </p>
                           <div className="flex flex-col space-y-2">
-                            <p className="font-mono text-sm bg-white px-3 py-2 rounded-lg border border-blue-100 select-all flex justify-between items-center">
-                              <span className="text-blue-400 font-sans text-xs uppercase font-bold">Item 1:</span> 
-                              <span className="font-bold text-gray-800">{sub.rewardCode1}</span>
-                            </p>
-                            {sub.rewardCode2 && (
-                              <p className="font-mono text-sm bg-white px-3 py-2 rounded-lg border border-blue-100 select-all flex justify-between items-center">
-                                <span className="text-blue-400 font-sans text-xs uppercase font-bold">Item 2:</span> 
-                                <span className="font-bold text-gray-800">{sub.rewardCode2}</span>
-                              </p>
-                            )}
+                            <div className="font-mono text-sm bg-white px-3 py-2 rounded-lg border border-blue-100 select-all flex justify-between items-center gap-4">
+                              <span className="text-blue-400 font-sans text-xs uppercase font-bold whitespace-nowrap">Your Reward Key:</span> 
+                              <span className="font-bold text-gray-800 break-all">{sub.code1 || "Code missing"}</span>
+                            </div>
                           </div>
                         </div>
                       )}
