@@ -1,4 +1,3 @@
-// app/tales-runner/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -37,9 +36,8 @@ export default function TalesRunnerPromo() {
       // 1. Upload receipt to Cloudinary
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "receipt_uploads"); // Use the exact preset name you created
+      formData.append("upload_preset", "receipt_uploads"); 
 
-      // Replace YOUR_CLOUD_NAME with your actual Cloudinary Cloud Name
       const cloudinaryRes = await fetch(
         `https://api.cloudinary.com/v1_1/dlukdk7wu/image/upload`,
         {
@@ -54,16 +52,16 @@ export default function TalesRunnerPromo() {
         throw new Error(cloudinaryData.error?.message || "Image upload failed");
       }
 
-      const receiptUrl = cloudinaryData.secure_url; // This is the public link to the image
+      const receiptUrl = cloudinaryData.secure_url; 
 
-      // 2. Save data to Firestore Database (This part stays exactly the same!)
+      // 2. Save data to Firestore Database
       await addDoc(collection(db, "submissions"), {
-        userEmail: session.user?.email,
+        email: session.user?.email?.toLowerCase().trim(), // ⚡ FIXED: Changed from userEmail to email
         promo: "Tales Runner",
         name,
         channel,
         tel,
-        receiptUrl, // Saving the new Cloudinary URL here
+        receiptUrl, 
         status: "pending",
         rewardCode: null,
         createdAt: serverTimestamp(),

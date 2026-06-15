@@ -9,13 +9,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 
+// ⚡ FIXED: Updated types to line up with the new dual-image CMS architecture
 type Campaign = {
   name: string;
   period: string;
   details: string;
-  imageUrl: string;
-  sheetId: string;
+  homeCoverUrl: string;
   promoBannerUrl: string;
+  sheetId: string;
 };
 
 export default function DynamicPromoPage() {
@@ -41,7 +42,7 @@ export default function DynamicPromoPage() {
           setCampaign(data);
           
           // Once we have the sheet ID, check code availability
-          checkStock(data.sheetId);
+          checkStock(data.sheetId, data.name);
         } else {
           setCampaign(null);
           setLoading(false);
@@ -55,11 +56,16 @@ export default function DynamicPromoPage() {
     fetchCampaign();
   }, [slug]);
 
-  // 2. Simple stock checker that hooks into your Google Sheet ID dynamically
-  const checkStock = async (sheetId: string) => {
+  // 2. Dynamic stock checker passing parameters down to your availability endpoint
+  const checkStock = async (sheetId: string, promoName: string) => {
     try {
-      // You can pass the sheet ID directly to your availability API
-      const res = await fetch(`/api/check-availability?sheetId=${sheetId}`);
+      // Sending both sheetId and promo name ensures old and new campaign types both match your API route
+      const isIntel = promoName.toLowerCase().includes("intel");
+      const url = isIntel 
+        ? `/api/check-availability?promo=intel` 
+        : `/api/check-availability?sheetId=${sheetId}`;
+
+      const res = await fetch(url);
       const data = await res.json();
       setIsAvailable(data.available);
     } catch (error) {
@@ -72,7 +78,7 @@ export default function DynamicPromoPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600 font-medium">
         กำลังโหลดข้อมูลแคมเปญ... (Loading Campaign...)
       </div>
     );
@@ -90,21 +96,25 @@ export default function DynamicPromoPage() {
   return (
     <main className="min-h-screen bg-gray-50 pb-20">
       
-      {/* Dynamic Cover Banner */}
+      {/* Dynamic Cover Banner Header */}
       <div className="relative text-white py-24 md:py-32 overflow-hidden bg-gray-900">
-        <Image
+        {campaign.promoBannerUrl ? (
+          <Image
             src={campaign.promoBannerUrl} 
             alt={campaign.name}
             fill
             className="object-cover"
             priority 
-            />
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-800 to-gray-900" />
+        )}
         <div className="absolute inset-0 bg-black/60 z-10" />
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-lg">
             {campaign.name}
           </h1>
-          <p className="text-xl text-blue-100 drop-shadow-md">
+          <p className="text-xl text-blue-100 drop-shadow-md font-medium">
             ระยะเวลาแคมเปญ: {campaign.period}
           </p>
         </div>
@@ -113,10 +123,10 @@ export default function DynamicPromoPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-30">
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-10 md:p-16">
           
-          {/* Main Content Rendered from database text */}
-          <div className="prose max-w-none text-gray-700 whitespace-pre-line">
+          {/* Main Content Details */}
+          <div className="prose max-w-none text-gray-700 whitespace-pre-line leading-relaxed">
             <h2 className="text-3xl font-bold text-gray-900 border-b pb-4 mb-6">รายละเอียดโปรโมชั่น</h2>
-            <p className="text-lg leading-relaxed mb-6">
+            <p className="text-lg text-gray-650">
               {campaign.details}
             </p>
           </div>
@@ -131,7 +141,7 @@ export default function DynamicPromoPage() {
                   กำลังตรวจสอบสิทธิ์...
                 </button>
               ) : isAvailable ? (
-                // Points to your general dynamic redeem page or custom structure
+                // Automatically forwards campaign identifier onto your dynamic dynamic application layout 
                 <Link href={`/redeem?promo=${encodeURIComponent(campaign.name)}`}>
                   <button className="w-full md:w-auto bg-blue-600 text-white px-12 py-5 rounded-full font-bold text-xl hover:bg-blue-700 shadow-lg transition-transform hover:scale-105">
                     Redeem Now (แลกรับสิทธิ์)
