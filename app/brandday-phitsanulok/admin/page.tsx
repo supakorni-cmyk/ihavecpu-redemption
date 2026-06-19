@@ -127,7 +127,7 @@ export default function RayongRemoteControl() {
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mt-10">
         <div className="bg-gray-900 text-white p-6 text-center">
           <span className="text-red-500 font-bold text-sm tracking-widest uppercase mb-1 block">Remote Control</span>
-          <h1 className="text-2xl font-black">Rayong Live Draw</h1>
+          <h1 className="text-2xl font-black">iHAVECPU BRAND DAY Live Draw</h1>
         </div>
 
         <div className="p-8 space-y-6">
