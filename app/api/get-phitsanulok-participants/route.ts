@@ -16,7 +16,7 @@ export async function GET() {
     });
 
     const sheets = google.sheets({ version: "v4", auth });
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID_RAYONG as string;
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID_PHITSANULOK as string;
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
