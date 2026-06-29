@@ -85,7 +85,7 @@ export default function RayongDisplayBoard() {
       </div>
 
       <div className="relative z-10 flex-grow flex items-center justify-center p-4">
-        <div className={`w-full max-w-5xl backdrop-blur-md border p-12 md:p-20 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/40 border-yellow-500/50 scale-105' : 'bg-white/10 border-white/20'}`}>
+        <div className={`w-full max-w-5xl backdrop-blur-md border p-6 md:p-20 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/40 border-yellow-500/50 scale-105' : 'bg-white/10 border-white/20'}`}>
           
           {isDrawing ? (
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
