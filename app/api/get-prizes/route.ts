@@ -23,12 +23,12 @@ export async function GET() {
 
     const rows = response.data.values || [];
     
-    // Map into an array of objects holding name, value (Col C), and supporter (Col E)
+    // Map into an array of objects holding name, value (Col D), and supporter (Col E)
     const prizes = rows
       .filter(row => row[0]) 
       .map((row) => ({
         name: row[0],
-        value: row[2] || "",     // Column C is index 2
+        value: row[3] || "",     // Column D is index 3
         supporter: row[4] || ""  // Column E is index 4
       }));
 
