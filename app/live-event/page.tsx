@@ -68,7 +68,7 @@ export default function RayongDisplayBoard() {
   return (
     <main className="min-h-screen bg-gray-900 flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 z-0 opacity-40">
-        <Image src="/phitsanulok-banner.jpg" alt="Background" fill className="object-cover blur-sm" />
+        <Image src="/live-event-banner.jpg" alt="Background" fill className="object-cover blur-sm" />
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
@@ -85,7 +85,7 @@ export default function RayongDisplayBoard() {
       </div>
 
       <div className="relative z-10 flex-grow flex items-center justify-center p-4">
-        <div className={`w-full max-w-5xl backdrop-blur-md border p-6 md:p-20 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/40 border-yellow-500/50 scale-105' : 'bg-white/10 border-white/20'}`}>
+        <div className={`w-full max-w-5xl backdrop-blur-md border p-12 md:p-20 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/40 border-yellow-500/50 scale-105' : 'bg-white/10 border-white/20'}`}>
           
           {isDrawing ? (
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
