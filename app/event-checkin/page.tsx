@@ -45,7 +45,7 @@ export default function UserCheckupKiosk() {
 
   // Format the direct scanner execution link that your staff terminal decodes
   const targetPassUrl = result 
-    ? `${window.location.origin}/admin/event-checkin?email=${encodeURIComponent(result.email.toLowerCase().trim())}`
+    ? `${window.location.origin}/event-checkin/admin?email=${encodeURIComponent(result.email.toLowerCase().trim())}`
     : "";
 
   return (
@@ -81,7 +81,7 @@ export default function UserCheckupKiosk() {
               disabled={loading}
               className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-xl text-sm uppercase tracking-wider transition-all disabled:opacity-50 shadow-md"
             >
-              {loading ? "กำลังตรวจสอบข้อมูล..." : "ตรวจสอบสิทธิ์ & รับตั๋ว"}
+              {loading ? "กำลังตรวจสอบข้อมูล..." : "ตรวจสอบสิทธิ์ (Check Eligibility)"}
             </button>
 
             {errorMessage && (
