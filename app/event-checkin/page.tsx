@@ -57,8 +57,8 @@ export default function UserCheckupKiosk() {
           <span className="inline-block bg-red-50 text-red-600 font-black text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-2">
             iHAVECPU Checkup Portal
           </span>
-          <h1 className="text-2xl font-black text-gray-900">รับเสื้อยืดประจำกิจกรรม</h1>
-          <p className="text-xs text-gray-400 mt-1">กรุณากรอกอีเมลที่ใช้ลงทะเบียนใน Google Forms เพื่อรับสิทธิ์</p>
+          <h1 className="text-2xl font-black text-gray-900">รับของรางวัลประจำกิจกรรม</h1>
+          <p className="text-xs text-gray-400 mt-1">กรุณากรอกอีเมลที่ใช้ลงทะเบียนเข้าร่วมงาน เพื่อรับสิทธิ์</p>
         </div>
 
         {/* ----------------- STATE 1: INITIAL INPUT FORM ----------------- */}
@@ -81,7 +81,7 @@ export default function UserCheckupKiosk() {
               disabled={loading}
               className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-xl text-sm uppercase tracking-wider transition-all disabled:opacity-50 shadow-md"
             >
-              {loading ? "กำลังตรวจสอบข้อมูล..." : "ตรวจสอบสิทธิ์ & รับตั๋ว &rarr;"}
+              {loading ? "กำลังตรวจสอบข้อมูล..." : "ตรวจสอบสิทธิ์ & รับตั๋ว"}
             </button>
 
             {errorMessage && (
@@ -96,16 +96,16 @@ export default function UserCheckupKiosk() {
         {result && result.status === "CLAIMED" && (
           <div className="text-center space-y-4 py-4 animate-scale-up">
             <div className="text-5xl animate-bounce">👕❌</div>
-            <h2 className="text-xl font-black text-red-600">คุณได้รับเสื้อยืดไปเรียบร้อยแล้ว</h2>
+            <h2 className="text-xl font-black text-red-600">คุณได้รับของรางวัลไปเรียบร้อยแล้ว</h2>
             <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-left space-y-1">
               <p className="text-xs text-gray-400 uppercase font-bold">Attendee Info</p>
               <p className="text-sm font-bold text-gray-800">{result.name}</p>
               <p className="text-xs text-red-600 font-medium">Status: ได้รับของรางวัลแล้ว (CLAIMED)</p>
             </div>
-            <p className="text-xs text-gray-400 leading-relaxed">หากมีข้อสงสัย กรุณาติดต่อติดต่อเจ้าหน้าที่ประจำบูธบริหารงาน</p>
+            <p className="text-xs text-gray-400 leading-relaxed">หากมีข้อสงสัย กรุณาติดต่อติดต่อเจ้าหน้าที่ประจำบูธ</p>
             
             <button onClick={() => setResult(null)} className="text-xs text-blue-500 font-bold hover:underline block mx-auto pt-2">
-              ตรวจสอบอีเมลอื่น &larr;
+              ตรวจสอบอีเมลอื่น
             </button>
           </div>
         )}
@@ -114,7 +114,7 @@ export default function UserCheckupKiosk() {
         {result && result.status !== "CLAIMED" && (
           <div className="text-center flex flex-col items-center py-2 animate-scale-up">
             <div className="bg-green-50 text-green-700 border border-green-100 text-xs font-black tracking-widest uppercase px-4 py-1.5 rounded-full mb-3">
-              🎉 ได้รับสิทธิ์รับเสื้อยืด (Eligible)
+              🎉 ได้รับสิทธิ์รับของรางวัล (Eligible)
             </div>
             
             <p className="text-sm font-bold text-gray-800 mb-1">{result.name}</p>
@@ -131,11 +131,11 @@ export default function UserCheckupKiosk() {
 
 
             <p className="text-[11px] text-gray-400 max-w-[280px] leading-relaxed">
-              ยื่นหน้าจอนี้ให้เจ้าหน้าที่ประจำบูธสแกนรหัสผ่านกล้องเทอร์มินอลเพื่อรับเสื้อยืดทันที
+              ยื่นหน้าจอนี้ให้เจ้าหน้าที่ประจำบูธสแกน QR Code เพื่อรับของรางวัล (Show this QR code to the staff at the booth to claim your gift)
             </p>
 
             <button onClick={() => setResult(null)} className="text-xs text-gray-400 font-bold hover:text-red-600 transition-colors mt-6">
-              &larr; ย้อนกลับ (Go Back)
+              ย้อนกลับ (Go Back)
             </button>
           </div>
         )}
