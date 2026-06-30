@@ -129,9 +129,6 @@ export default function UserCheckupKiosk() {
               />
             </div>
 
-            <div className="bg-gray-900 text-white w-full p-3 rounded-xl mb-4 font-black tracking-wide">
-              ไซส์เสื้อของคุณ: <span className="text-yellow-400 text-xl font-black ml-1">{result.size}</span>
-            </div>
 
             <p className="text-[11px] text-gray-400 max-w-[280px] leading-relaxed">
               ยื่นหน้าจอนี้ให้เจ้าหน้าที่ประจำบูธสแกนรหัสผ่านกล้องเทอร์มินอลเพื่อรับเสื้อยืดทันที
