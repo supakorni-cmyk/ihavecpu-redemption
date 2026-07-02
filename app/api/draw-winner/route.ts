@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "'Form Responses 1'!A2:G", 
+      range: "'Form Responses'!A2:G", 
     });
 
     const rows = response.data.values || [];
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     // Update BOTH Column G (WINNER status) and Column H (Prize Name)
     const updateData = winners.map(winner => ({
-      range: `'Form Responses 1'!G${winner.rowIndex}:H${winner.rowIndex}`, // <-- Range covers G and H
+      range: `'Form Responses'!G${winner.rowIndex}:H${winner.rowIndex}`, // <-- Range covers G and H
       values: [["WINNER", prizeName]] // <-- Write both values
     }));
 
