@@ -15,10 +15,10 @@ export async function GET() {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_PHITSANULOK_PRIZES as string;
 
-    // Fetch Columns A through E (E is the 5th column)
+    // Fetch Columns A through G (G is the 7th column)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Sheet1!A2:E",
+      range: "Sheet1!A2:G",
     });
 
     const rows = response.data.values || [];
@@ -28,8 +28,8 @@ export async function GET() {
       .filter(row => row[0]) 
       .map((row) => ({
         name: row[0],
-        value: row[2] || "",     // Column C is index 2
-        supporter: row[4] || ""  // Column E is index 4
+        value: row[4] || "",     // Column C is index 2
+        supporter: row[6] || ""  // Column E is index 4
       }));
 
     return NextResponse.json({ prizes });
