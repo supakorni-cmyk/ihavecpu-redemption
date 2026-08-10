@@ -86,68 +86,6 @@ export default function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           
-          {/* Promo Card 1: Tales Runner */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
-              <Image 
-              src="/tr-banner.jpg" 
-              alt="tales-runner" 
-              className="object-fit"
-              width={500}
-              height={300}
-              />
-            <div className="h-14 bg-gradient-to-r from-red-500 to-red-600 flex items-center justify-center">
-              <span className="text-white font-bold text-center text-2xl">iHAVECPU x AMD x Tales Runner</span>
-            </div>
-            
-            <div className="p-6 flex flex-col flex-grow">
-              <span className="text-xs font-bold tracking-wide text-blue-600 uppercase mb-2">Game Loot</span>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive In-Game Items</h3>
-              <p className="text-gray-600 text-sm mb-6 flex-grow">
-                • ซื้อ Notebook AMD RYZEN (ทุกรุ่น) รับ 1 Code<br />
-                • ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป รับ 1 Code<br />
-                • ซื้อ Computer Set AMD RYZEN 7000 Series ขึ้นไป คู่กับ การ์ดจอ AMD RADEON รับ 2 Code<br />
-                (1 Code รับ กาชาปอง 50 กล่อง)<br />
-              </p>
-              <p className="text-gray-600 text-sm mb-6 flex-grow">
-                *ของรางวัลมีจำนวนจำกัด<br />
-                *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
-              </p>
-              
-              <Link href="/tales-runner" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
-                ดูรายละเอียดเพิ่มเติม &rarr;
-              </Link>
-            </div>
-          </div>
-
-          {/* Promo Card 2: Intel Batman */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
-              <Image 
-              src="/intel1x1.png" 
-              alt="intel" 
-              className="object-fit"
-              width={500}
-              height={300}
-              />
-            <div className="h-14 bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
-              <span className="text-white font-bold text-center text-2xl">Intel® Spring Gaming Bundle</span>
-            </div>
-            
-            <div className="p-6 flex flex-col flex-grow">
-              <span className="text-xs font-bold tracking-wide text-blue-600 uppercase mb-2">Game Bundle</span>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive Game Bundle</h3>
-              <p className="text-gray-600 text-sm mb-6 flex-grow">
-              ซื้อ CPU / Notebook Intel® Core™ Ultra รุ่นที่ร่วมรายการ รับฟรี! LEGO® Batman™: Legacy of the Dark Knight
-              </p>
-              <p className="text-gray-600 text-sm mb-6 flex-grow">
-                *ของรางวัลมีจำนวนจำกัด<br />
-                *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
-              </p>
-              
-              <Link href="/intel-spring-game-bundle" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
-                ดูรายละเอียดเพิ่มเติม &rarr;
-              </Link>
-            </div>
-          </div>
 
           {/* ⚡ DYNAMIC CAMPAIGNS FROM FIRESTORE CMS ⚡ */}
           {dbCampaigns.map((promo) => (
