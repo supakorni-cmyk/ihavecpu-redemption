@@ -88,7 +88,7 @@ export default function Home() {
           {/* Promo Card: Intel Gamer Days 2026 */}
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
               <Image 
-              src="/intelgd26_1x1.png" 
+              src="/intelgd26_1x1.jpg" 
               alt="intel" 
               className="object-fit"
               width={500}

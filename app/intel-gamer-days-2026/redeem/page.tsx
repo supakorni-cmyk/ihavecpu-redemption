@@ -96,7 +96,7 @@ export default function TalesRunnerPromo() {
   return (
     <main className="min-h-screen p-10 flex flex-col items-center bg-gray-50 text-black">
       <div className="max-w-xl w-full bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Intel® Spring Gaming Bundle</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">Intel® Gamer Days 2026</h1>
         
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
           <div>
