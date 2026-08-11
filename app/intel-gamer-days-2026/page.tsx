@@ -94,7 +94,7 @@ export default function IntelLanding() {
               <li>กรอกข้อมูลและอัปโหลดรูปภาพใบเสร็จในหน้า Redeem</li>
               <li>รอทีมงานตรวจสอบ (ใช้เวลาประมาณ 1-2 วันทำการ)</li>
               <li>รับ Master Key ในหน้า <strong>My Rewards</strong> ของคุณ</li>
-              <li>นำ Masterkey ที่ได้ไปลงทะเบียนต่อที่ <strong><Link href="https://softwareoffer.intel.com/">Link</Link> </strong></li>
+              <li>นำ Master Key ที่ได้ไปลงทะเบียนต่อที่ <strong><Link href="https://softwareoffer.intel.com/">Link</Link> </strong></li>
             </ol>
           </div>
 
