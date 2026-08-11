@@ -83,6 +83,7 @@ export default function IntelLanding() {
               <li>ใบเสร็จ 1 ใบ สามารถใช้แลกรับสิทธิ์ได้เพียง 1 ครั้งเท่านั้น (1 Receipt = 1 Redemption)</li>
               <li>Master Keyไม่สามารถแลกเปลี่ยนเป็นเงินสดได้</li>
               <li>บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงเงื่อนไขโดยไม่ต้องแจ้งให้ทราบล่วงหน้า</li>
+              <li>ของรางวัลมีจำนวนจำกัด</li>
             </ul>
 
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">ขั้นตอนการแลกรับ (Instructions)</h3>
