@@ -85,7 +85,39 @@ export default function Home() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          
+          {/* Promo Card: Intel Gamer Days 2026 */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col">
+              <Image 
+              src="/intelgd26_1x1.png" 
+              alt="intel" 
+              className="object-fit"
+              width={500}
+              height={300}
+              />
+            <div className="h-14 bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center">
+              <span className="text-white font-bold text-center text-2xl">Intel® Gamer Days 2026</span>
+            </div>
+            
+            <div className="p-6 flex flex-col flex-grow">
+              <span className="text-xs font-bold tracking-wide text-blue-600 uppercase mb-2">Game Bundle</span>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Exclusive Game Bundle</h3>
+              <p className="text-gray-600 text-sm mb-6 flex-grow">
+              ซื้อ CPU / Notebook Intel® รุ่นที่ร่วมรายการ รับฟรี! 
+              </p>
+              <ul className="list-disc pl-5 mb-8 space-y-2 text-lg">
+                <li>Tomb Raider: Legacy of Atlantis</li>
+                <li>STAR WARS: GALACTIC RACER</li>
+              </ul>
+              <p className="text-gray-600 text-sm mb-6 flex-grow">
+                *ของรางวัลมีจำนวนจำกัด<br />
+                *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
+              </p>
+              
+              <Link href="/intel-spring-game-bundle" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
+                ดูรายละเอียดเพิ่มเติม &rarr;
+              </Link>
+            </div>
+          </div>
 
           {/* ⚡ DYNAMIC CAMPAIGNS FROM FIRESTORE CMS ⚡ */}
           {dbCampaigns.map((promo) => (

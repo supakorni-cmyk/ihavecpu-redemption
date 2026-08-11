@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     // 🔴 IF PROMO IS INTEL (Safely checks if the promo name contains "Intel"):
     if (promo && promo.includes("Intel")) {
-      const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL_GD26 as string;
       
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,

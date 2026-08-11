@@ -25,7 +25,7 @@ export async function GET(req: Request) {
 
     // 🔵 IF PROMO IS INTEL
     if (promo === "intel") {
-      const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL as string;
+      const spreadsheetId = process.env.GOOGLE_SHEET_ID_INTEL_GD26 as string;
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range: "Sheet1!A2:B", 
