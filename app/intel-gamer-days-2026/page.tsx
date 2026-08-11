@@ -80,6 +80,7 @@ export default function IntelLanding() {
             <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8">เงื่อนไขการรับสิทธิ์ (Terms & Conditions)</h3>
             <ul className="list-disc pl-5 mb-8 space-y-3 text-lg">
               <li>โปรโมชั่นนี้สงวนสิทธิ์เฉพาะลูกค้าที่ซื้อสินค้าจาก iHAVECPU ตามช่วงเวลาที่กำหนดเท่านั้น</li>
+              <li>ตั้งแต่วันที่ 10 สิงหาคม 2026 ถึง 13 กันยายน 2026</li>
               <li>ใบเสร็จ 1 ใบ สามารถใช้แลกรับสิทธิ์ได้เพียง 1 ครั้งเท่านั้น (1 Receipt = 1 Redemption)</li>
               <li>Master Keyไม่สามารถแลกเปลี่ยนเป็นเงินสดได้</li>
               <li>บริษัทฯ ขอสงวนสิทธิ์ในการเปลี่ยนแปลงเงื่อนไขโดยไม่ต้องแจ้งให้ทราบล่วงหน้า</li>
