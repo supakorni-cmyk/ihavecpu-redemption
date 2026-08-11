@@ -104,7 +104,7 @@ export default function Home() {
               <p className="text-gray-600 text-sm mb-6 flex-grow">
               ซื้อ CPU / Notebook Intel® รุ่นที่ร่วมรายการ รับฟรี! 
               </p>
-              <ul className="list-disc pl-5 mb-8 space-y-2 text-lg">
+              <ul className="text-gray-600 list-disc pl-5 mb-8 space-y-2 text-lg">
                 <li>Tomb Raider: Legacy of Atlantis</li>
                 <li>STAR WARS: GALACTIC RACER</li>
               </ul>
@@ -113,7 +113,7 @@ export default function Home() {
                 *โปรดอ่านรายละเอียดเพิ่มเติมในหน้าการแลกของรางวัล
               </p>
               
-              <Link href="/intel-spring-game-bundle" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
+              <Link href="/intel-gamer-days-2026" className="block w-full text-center bg-gray-900 text-white font-medium py-3 rounded-lg hover:bg-red-600 transition-colors">
                 ดูรายละเอียดเพิ่มเติม &rarr;
               </Link>
             </div>
