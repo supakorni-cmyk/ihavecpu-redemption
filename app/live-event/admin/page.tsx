@@ -1,4 +1,3 @@
-// app/rayong-grand-opening/admin/page.tsx
 "use client";
 
 import { useSession } from "next-auth/react";
@@ -6,17 +5,18 @@ import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
-// Updated Type to include supporter
 type Prize = { name: string; value: string; supporter: string };
 
-export default function RayongRemoteControl() {
+export default function LiveEventRemoteControl() {
   const { data: session, status } = useSession();
   
   const [prizeInput, setPrizeInput] = useState(""); 
-
-  const [prizeSupporter, setPrizeSupporter] = useState(""); // <-- NEW: State for Supporter
+  const [prizeSupporter, setPrizeSupporter] = useState(""); 
   const [prizesList, setPrizesList] = useState<Prize[]>([]); 
   const [isLoadingPrizes, setIsLoadingPrizes] = useState(true);
+
+  // 🔍 NEW: Search state for filtering prizes
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [qtyInput, setQtyInput] = useState(1);
   const [isGrandPrize, setIsGrandPrize] = useState(false);
@@ -37,7 +37,7 @@ export default function RayongRemoteControl() {
         if (data.prizes && data.prizes.length > 0) {
           setPrizesList(data.prizes);
           setPrizeInput(data.prizes[0].name);
-          setPrizeSupporter(data.prizes[0].supporter); // <-- Set initial supporter
+          setPrizeSupporter(data.prizes[0].supporter); 
         }
       } catch (error) {
         console.error("Failed to fetch prizes", error);
@@ -53,13 +53,30 @@ export default function RayongRemoteControl() {
     }
   }, [isAdmin, status]);
 
-  // Handle dropdown change to update name, value, AND supporter
+  // Filter prizes dynamically based on search term
+  const filteredPrizes = prizesList.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.supporter?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Automatically update selected prize if search filters out the currently selected item
+  useEffect(() => {
+    if (filteredPrizes.length > 0) {
+      const exists = filteredPrizes.some((p) => p.name === prizeInput);
+      if (!exists) {
+        setPrizeInput(filteredPrizes[0].name);
+        setPrizeSupporter(filteredPrizes[0].supporter);
+      }
+    }
+  }, [searchTerm]);
+
   const handlePrizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedName = e.target.value;
     const selectedPrize = prizesList.find(p => p.name === selectedName);
     setPrizeInput(selectedName);
     if (selectedPrize) {
-      setPrizeSupporter(selectedPrize.supporter); // <-- Update supporter state
+      setPrizeSupporter(selectedPrize.supporter); 
     }
   };
 
@@ -71,11 +88,10 @@ export default function RayongRemoteControl() {
     try {
       const eventRef = doc(db, "events", "event-lucky-draw");
 
-      // Send prize name, value, and supporter to Firebase for the TV screen
       await setDoc(eventRef, { 
         isDrawing: true, 
         prize: prizeInput,
-        prizeSupporter: prizeSupporter, // <-- Send supporter to Firebase
+        prizeSupporter: prizeSupporter, 
         isGrandPrize: isGrandPrize 
       }, { merge: true });
 
@@ -113,7 +129,7 @@ export default function RayongRemoteControl() {
       isDrawing: false, 
       currentWinners: [], 
       prize: null,
-      prizeSupporter: null, // <-- Clear supporter
+      prizeSupporter: null, 
       isGrandPrize: false 
     }, { merge: true });
     setIsGrandPrize(false); 
@@ -134,22 +150,40 @@ export default function RayongRemoteControl() {
           
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2">Current Prize (ของรางวัล)</label>
+            
+            {/* 🔍 SEARCH BOX INPUT */}
+            {prizesList.length > 0 && (
+              <div className="mb-2">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="🔍 Search prize name or supporter..."
+                  className="w-full p-3 border text-black border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-red-500 outline-none"
+                />
+              </div>
+            )}
+
             {isLoadingPrizes ? (
               <div className="w-full p-4 border text-gray-500 bg-gray-50 border-gray-300 rounded-xl font-bold text-lg animate-pulse">
                 Loading prizes...
               </div>
-            ) : prizesList.length > 0 ? (
+            ) : filteredPrizes.length > 0 ? (
               <select 
                 value={prizeInput}
                 onChange={handlePrizeChange} 
                 className="w-full p-4 border text-black border-gray-300 rounded-xl font-bold text-lg focus:ring-2 focus:ring-red-500 outline-none bg-white cursor-pointer"
               >
-                {prizesList.map((prize, index) => (
+                {filteredPrizes.map((prize, index) => (
                   <option key={index} value={prize.name}>
                     {prize.name} {prize.supporter ? `[${prize.supporter}]` : ""}
                   </option>
                 ))}
               </select>
+            ) : prizesList.length > 0 ? (
+              <div className="p-4 border text-center text-gray-500 bg-gray-50 border-gray-300 rounded-xl text-sm font-semibold">
+                No prizes found matching "{searchTerm}"
+              </div>
             ) : (
               <input 
                 type="text" 
