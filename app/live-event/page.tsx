@@ -312,7 +312,7 @@ export default function LiveEventDisplayBoard() {
 
             /* ----------------- STATE 3: WAITING / IDLE ----------------- */
             <div>
-              <Image src={'lucky.png'} alt={"Lucky"} fill className="object-contain drop-shadow-2xl" />
+              <div><Image src={'lucky.png'} alt={"Lucky"} fill className="object-contain drop-shadow-2xl" /></div>
               <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
               <p className="text-xl text-gray-300">รอลุ้นรับรางวัลใหญ่จากทาง iHAVECPU เร็วๆ นี้</p>
               <p className="text-sm text-gray-500 mt-6 opacity-50">
