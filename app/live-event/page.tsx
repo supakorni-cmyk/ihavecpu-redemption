@@ -24,7 +24,7 @@ const isExplicit = (text: string): boolean => {
 
 // 🎯 8 PRE-DEFINED NON-OVERLAPPING SLOTS (4 Left / 4 Right)
 const SPATIAL_SLOTS = [
-  // Left Flank Slots (Strictly kept away from header & center card)
+  // Left Flank Slots
   { top: 12, left: 2 },
   { top: 32, left: 4 },
   { top: 52, left: 2 },
@@ -37,7 +37,7 @@ const SPATIAL_SLOTS = [
 ];
 
 type FloatingMessage = {
-  id: number;
+  id: string;
   text: string;
   sign: string;
   top: number;
@@ -58,8 +58,9 @@ export default function LiveEventDisplayBoard() {
   const [shufflingName, setShufflingName] = useState("???");
   const [realNamesPool, setRealNamesPool] = useState<string[]>(["กำลังโหลดรายชื่อ...", "Loading..."]);
 
-  // 💬 Floating Google Form Messages State
+  // 💬 Floating Messages State & Tracking Ref
   const [floatingMessages, setFloatingMessages] = useState<FloatingMessage[]>([]);
+  const lastMessagesHashRef = useRef<string>("");
 
   const fetchParticipants = async () => {
     try {
@@ -73,38 +74,46 @@ export default function LiveEventDisplayBoard() {
     }
   };
 
-  // 💬 Fetch Google Form Messages, Filter Explicit Words, and Assign to Non-Overlapping Slots
+  // 💬 Auto-Refresh & Detect New Google Form Messages
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/get-messages");
       const data = await res.json();
       
       if (data.messages && data.messages.length > 0) {
-        // 1. FILTER OUT EXPLICIT CONTENT
+        // 1. Filter out profane or explicit content
         const cleanMessages = data.messages.filter(
           (m: { text: string; sign: string }) => !isExplicit(m.text) && !isExplicit(m.sign)
         );
 
-        // 2. ASSIGN TO NON-OVERLAPPING FIXED SLOTS (Up to 8 max active on screen)
-        const activeMessages = cleanMessages.slice(0, SPATIAL_SLOTS.length);
+        // 2. Create a signature hash to detect new input
+        const currentHash = JSON.stringify(cleanMessages);
 
-        const scheduled: FloatingMessage[] = activeMessages.map(
-          (m: { text: string; sign: string }, index: number) => {
-            const slot = SPATIAL_SLOTS[index];
-            return {
-              id: index,
-              text: m.text,
-              sign: m.sign,
-              top: slot.top,
-              left: slot.left,
-              delay: index * 0.8, // Staggered entry
-              duration: 14 + (index % 3), // Subtle speed variation
-              scale: 0.95,
-            };
-          }
-        );
+        // If new entries exist, update the display slots
+        if (currentHash !== lastMessagesHashRef.current) {
+          lastMessagesHashRef.current = currentHash;
 
-        setFloatingMessages(scheduled);
+          // Take the most recent messages up to the max slot capacity
+          const latestMessages = cleanMessages.slice(-SPATIAL_SLOTS.length);
+
+          const scheduled: FloatingMessage[] = latestMessages.map(
+            (m: { text: string; sign: string }, index: number) => {
+              const slot = SPATIAL_SLOTS[index % SPATIAL_SLOTS.length];
+              return {
+                id: `${m.sign}-${m.text}-${index}`, // Unique React key for instant re-render
+                text: m.text,
+                sign: m.sign,
+                top: slot.top,
+                left: slot.left,
+                delay: index * 0.4,
+                duration: 14 + (index % 3),
+                scale: 0.95,
+              };
+            }
+          );
+
+          setFloatingMessages(scheduled);
+        }
       }
     } catch (error) {
       console.error("Failed to load messages", error);
@@ -115,8 +124,8 @@ export default function LiveEventDisplayBoard() {
     fetchParticipants();
     fetchMessages();
 
-    // Auto-refresh messages every 30 seconds for live updates
-    const messageInterval = setInterval(fetchMessages, 30000);
+    // ⚡ Poll every 5 seconds for new Google Form submissions
+    const messageInterval = setInterval(fetchMessages, 5000);
     return () => clearInterval(messageInterval);
   }, []);
 
@@ -157,7 +166,7 @@ export default function LiveEventDisplayBoard() {
   return (
     <main className="min-h-screen bg-gray-900 flex flex-col relative overflow-hidden select-none">
       
-      {/* 🌟 CSS Keyframe for Gentle Non-Colliding Floating Motion */}
+      {/* 🌟 CSS Keyframe for Gentle Floating Motion */}
       <style jsx global>{`
         @keyframes gentleFloat {
           0% {
@@ -166,11 +175,21 @@ export default function LiveEventDisplayBoard() {
           }
           50% {
             transform: translateY(-12px);
-            opacity: 0.9;
+            opacity: 0.95;
           }
           100% {
             transform: translateY(0px);
             opacity: 0.5;
+          }
+        }
+        @keyframes fadeInCard {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(0.95);
           }
         }
       `}</style>
@@ -181,7 +200,7 @@ export default function LiveEventDisplayBoard() {
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
-      {/* 💬 SIDE FLANK FLOATING MESSAGES (Guaranteed Zero Overlap) */}
+      {/* 💬 SIDE FLANK FLOATING MESSAGES (Auto-Refreshes Live) */}
       <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
         {floatingMessages.map((msg) => (
           <div
@@ -189,10 +208,9 @@ export default function LiveEventDisplayBoard() {
             style={{
               top: `${msg.top}%`,
               left: `${msg.left}%`,
-              animation: `gentleFloat ${msg.duration}s ease-in-out ${msg.delay}s infinite`,
-              transform: `scale(${msg.scale})`,
+              animation: `fadeInCard 0.6s ease-out, gentleFloat ${msg.duration}s ease-in-out ${msg.delay}s infinite`,
             }}
-            className="absolute max-w-[200px] md:max-w-[260px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white"
+            className="absolute max-w-[200px] md:max-w-[260px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white transition-all duration-500"
           >
             <p className="text-xs md:text-sm font-medium italic text-amber-200 leading-snug drop-shadow">
               "{msg.text}"
@@ -217,7 +235,7 @@ export default function LiveEventDisplayBoard() {
         </h2>
       </div>
 
-      {/* Main Stage Interactive Card (100% Unobstructed Center Stage) */}
+      {/* Main Stage Interactive Card */}
       <div className="relative z-20 flex-grow flex items-center justify-center p-4">
         <div className={`w-full max-w-5xl backdrop-blur-lg border p-8 md:p-16 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/50 border-yellow-500/50 scale-105' : 'bg-black/40 border-white/20'}`}>
           
