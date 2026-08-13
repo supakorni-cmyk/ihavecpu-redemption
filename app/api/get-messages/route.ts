@@ -1,9 +1,6 @@
-// app/api/get-participants/route.ts
+// app/api/get-messages/route.ts
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
-
-// ⚠️ Crucial: This tells Next.js NOT to cache this response, so it always gets fresh names!
-export const dynamic = 'force-dynamic'; 
 
 export async function GET() {
   try {
@@ -18,26 +15,27 @@ export async function GET() {
     const sheets = google.sheets({ version: "v4", auth });
     const spreadsheetId = process.env.GOOGLE_SHEET_ID_EVENT as string;
 
+    // Adjust "Form Responses 1!A2:G" range to cover your message columns
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "'Form Responses'!A2:K",
+      range: "Form Responses !A2:H", 
     });
 
     const rows = response.data.values || [];
-    const participants = [];
+    
+    // ⚠️ ADJUST COLUMN INDEXES ACCORDING TO YOUR GOOGLE FORM SHEET:
+    // row[4] = Message ("Say something about MSI and iHAVECPU")
+    // row[5] = Signature / Name ("Sign")
+    const messages = rows
+      .map((row) => ({
+        text: row[6] || row[1] || "", 
+        sign: row[7] || row[2] || "Anonymous", 
+      }))
+      .filter((item) => item.text.trim() !== "");
 
-    // Filter out people who already won (Column G)
-    for (let i = 0; i < rows.length; i++) {
-      const name = rows[i][1];
-      const winnerStatus = rows[i][8];
-      if (name && !winnerStatus) {
-        participants.push(name);
-      }
-    }
-
-    return NextResponse.json({ participants });
+    return NextResponse.json({ messages });
   } catch (error: unknown) {
-    console.error("Fetch Participants Error:", error);
-    return NextResponse.json({ error: "Failed to fetch participants" }, { status: 500 });
+    console.error("Get Messages Error:", error);
+    return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
   }
 }
