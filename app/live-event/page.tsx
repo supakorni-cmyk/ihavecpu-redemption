@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 
@@ -10,7 +10,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 const EXPLICIT_WORDS = [
   // Thai
   "ควย", "เหี้ย", "เชี่ย", "สัด", "สัส", "เย็ด", "กู", "มึง", "แม่ง", 
-  "ชิปหาย", "ฉิบหาย", "ตีน", "ส้นตีน", "กวนตีน", "แฮก", "ค_ย", "เxี้ย","หี","แตด","ห่วย","สวะ","สัส","สัด","สาด","สาดดด","สาดดดด","สาดดดดด","สาดดดดดด","สาดดดดดดด","สาดดดดดดดด","สาดดดดดดดดด","สาดดดดดดดดdd","สาดdd","สาดddddd","สาดdddddd","สาดddddddd","สาดdddddddd","สาดddddddddd","สาดdddddddddd","สาดddddddddddd",
+  "ชิปหาย", "ฉิบหาย", "ตีน", "ส้นตีน", "กวนตีน", "แฮก", "ค_ย", "เxี้ย","หี","แตด",
   // English
   "fuck", "shit", "bitch", "asshole", "cunt", "dick", "pussy", 
   "bastard", "slut", "whore", "nigger", "faggot"
