@@ -10,11 +10,11 @@ type FloatingMessage = {
   id: number;
   text: string;
   sign: string;
-  top: number;       // Random percentage (8% - 83%)
-  left: number;      // Random percentage (5% - 85%)
-  delay: number;     // Random animation delay in seconds
-  duration: number;  // Random floating duration in seconds
-  scale: number;     // Random slight size variation
+  top: number;       // Random top position (10% - 80%)
+  left: number;      // Restricted to Left/Right flanks
+  delay: number;     // Random animation delay
+  duration: number;  // Random floating duration
+  scale: number;     // Random scale variation
 };
 
 export default function LiveEventDisplayBoard() {
@@ -43,22 +43,29 @@ export default function LiveEventDisplayBoard() {
     }
   };
 
-  // 💬 Fetch Google Form Messages & Scatter Randomly
+  // 💬 Fetch Google Form Messages & Scatter strictly on Left/Right Flanks
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/get-messages");
       const data = await res.json();
       if (data.messages && data.messages.length > 0) {
-        const scattered: FloatingMessage[] = data.messages.map((m: { text: string; sign: string }, index: number) => ({
-          id: index,
-          text: m.text,
-          sign: m.sign,
-          top: Math.floor(Math.random() * 75) + 8, // 8% to 83%
-          left: Math.floor(Math.random() * 80) + 5, // 5% to 85%
-          delay: Math.floor(Math.random() * 8),     // 0s to 8s delay
-          duration: Math.floor(Math.random() * 10) + 12, // 12s to 22s float time
-          scale: Number((Math.random() * 0.3 + 0.85).toFixed(2)), // 0.85x to 1.15x
-        }));
+        const scattered: FloatingMessage[] = data.messages.map((m: { text: string; sign: string }, index: number) => {
+          const isLeftLane = index % 2 === 0;
+
+          return {
+            id: index,
+            text: m.text,
+            sign: m.sign,
+            top: Math.floor(Math.random() * 68) + 12, // 12% to 80% vertical space
+            // 🎯 Left Flank: 2% - 14% | Right Flank: 81% - 93% (Leaves Center 15%-80% completely clear!)
+            left: isLeftLane 
+              ? Math.floor(Math.random() * 12) + 2    
+              : Math.floor(Math.random() * 12) + 81,  
+            delay: Math.floor(Math.random() * 8),     // 0s to 8s delay
+            duration: Math.floor(Math.random() * 10) + 12, // 12s to 22s float time
+            scale: Number((Math.random() * 0.2 + 0.85).toFixed(2)), // 0.85x to 1.05x
+          };
+        });
         setFloatingMessages(scattered);
       }
     } catch (error) {
@@ -117,15 +124,15 @@ export default function LiveEventDisplayBoard() {
         @keyframes gentleFloat {
           0% {
             transform: translateY(0px) rotate(0deg);
-            opacity: 0.45;
+            opacity: 0.5;
           }
           50% {
-            transform: translateY(-20px) rotate(2deg);
-            opacity: 0.85;
+            transform: translateY(-18px) rotate(2deg);
+            opacity: 0.9;
           }
           100% {
             transform: translateY(0px) rotate(0deg);
-            opacity: 0.45;
+            opacity: 0.5;
           }
         }
       `}</style>
@@ -136,7 +143,7 @@ export default function LiveEventDisplayBoard() {
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
-      {/* 💬 FLOATING & SCATTERED GOOGLE FORM MESSAGES */}
+      {/* 💬 SIDE FLANK FLOATING MESSAGES (Restricted from Center) */}
       <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
         {floatingMessages.map((msg) => (
           <div
@@ -147,19 +154,19 @@ export default function LiveEventDisplayBoard() {
               animation: `gentleFloat ${msg.duration}s ease-in-out ${msg.delay}s infinite`,
               transform: `scale(${msg.scale})`,
             }}
-            className="absolute max-w-xs md:max-w-sm bg-white/10 backdrop-blur-md border border-white/15 px-4 py-3 rounded-2xl shadow-lg text-white"
+            className="absolute max-w-[220px] md:max-w-[280px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white"
           >
-            <p className="text-sm md:text-base font-medium italic text-amber-200 leading-snug drop-shadow">
+            <p className="text-xs md:text-sm font-medium italic text-amber-200 leading-snug drop-shadow">
               "{msg.text}"
             </p>
-            <p className="text-xs font-bold text-gray-300 text-right mt-1.5 font-mono">
+            <p className="text-[11px] font-bold text-gray-300 text-right mt-1 font-mono">
               — {msg.sign}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Main Header Title */}
+      {/* Main Header Title (Resting comfortably at z-20) */}
       <div className="relative z-20 p-10 text-center mt-6">
         <span className={`inline-block py-2 px-6 rounded-full text-white text-lg font-bold tracking-widest uppercase mb-4 shadow-lg animate-pulse ${isGrandPrize ? 'bg-yellow-500' : 'bg-red-500'}`}>
           Live Lucky Draw
@@ -172,7 +179,7 @@ export default function LiveEventDisplayBoard() {
         </h2>
       </div>
 
-      {/* Main Stage Interactive Card */}
+      {/* Main Stage Interactive Card (100% Unobstructed Center Stage) */}
       <div className="relative z-20 flex-grow flex items-center justify-center p-4">
         <div className={`w-full max-w-5xl backdrop-blur-lg border p-8 md:p-16 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/50 border-yellow-500/50 scale-105' : 'bg-black/40 border-white/20'}`}>
           
@@ -181,7 +188,7 @@ export default function LiveEventDisplayBoard() {
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-105' : ''}`}>
               {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
               <h2 className={`text-3xl md:text-5xl font-bold mb-6 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
-                {isGrandPrize ? "กำลังหารางวัลใหญ่สุดพิเศษ!" : "กำลังหาผู้โชคดี..."}
+                {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
               
               {/* Prize Image Box during Drawing */}
