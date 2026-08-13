@@ -100,7 +100,7 @@ export default function RayongDisplayBoard() {
               {/* 🖼️ Prize Image Box during Drawing */}
               {prizeImage && (
                 <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 bg-white/10 rounded-2xl border border-white/20 p-4 shadow-2xl flex items-center justify-center overflow-hidden">
-                  <img src={prizeImage} alt={prize || "Prize"} className="max-w-full max-h-full object-contain drop-shadow-lg" />
+                  <Image src={prizeImage} alt={prize || "Prize"} fill className="object-contain drop-shadow-lg" />
                 </div>
               )}
 

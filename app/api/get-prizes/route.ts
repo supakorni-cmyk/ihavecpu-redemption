@@ -18,7 +18,7 @@ export async function GET() {
     // Fetch Columns A through E (E is the 5th column)
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Sheet1!A2:E",
+      range: "Sheet1!A2:H",
     });
 
     const rows = response.data.values || [];
