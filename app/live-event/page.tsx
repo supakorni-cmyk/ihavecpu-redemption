@@ -77,10 +77,10 @@ export default function RayongDisplayBoard() {
           Live Lucky Draw
         </span>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl">
-          iHAVECPU<span className={isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]' : 'text-red-500'}> GRAND OPENING</span>
+          iHAVECPU X MSI
         </h1>
-        <h2 className={`text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl ${isGrandPrize ? 'text-yellow-300' : 'text-white'}`}>
-          @UDON THANI
+        <h2 className={`text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl text-amber-500`}>
+          BRAND DAY 40TH Anniversary
         </h2>
       </div>
 
