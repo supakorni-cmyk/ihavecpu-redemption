@@ -18,7 +18,7 @@ export async function GET() {
     // Adjust "Form Responses 1!A2:G" range to cover your message columns
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: "Form Responses !A2:H", 
+      range: "'Form Responses'!A2:K", 
     });
 
     const rows = response.data.values || [];
