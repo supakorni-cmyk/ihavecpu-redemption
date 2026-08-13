@@ -58,9 +58,8 @@ export default function LiveEventDisplayBoard() {
   const [shufflingName, setShufflingName] = useState("???");
   const [realNamesPool, setRealNamesPool] = useState<string[]>(["กำลังโหลดรายชื่อ...", "Loading..."]);
 
-  // 💬 Floating Messages State & Tracking Ref
+  // 💬 Floating Messages State
   const [floatingMessages, setFloatingMessages] = useState<FloatingMessage[]>([]);
-  const lastMessagesHashRef = useRef<string>("");
 
   const fetchParticipants = async () => {
     try {
@@ -74,7 +73,7 @@ export default function LiveEventDisplayBoard() {
     }
   };
 
-  // 💬 Auto-Refresh & Detect New Google Form Messages
+  // 💬 Fetch Google Form Messages, Filter Explicit Words & Randomize Selection
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/get-messages");
@@ -86,27 +85,24 @@ export default function LiveEventDisplayBoard() {
           (m: { text: string; sign: string }) => !isExplicit(m.text) && !isExplicit(m.sign)
         );
 
-        // 2. Create a signature hash to detect new input
-        const currentHash = JSON.stringify(cleanMessages);
+        if (cleanMessages.length > 0) {
+          // 2. Randomize/Shuffle the entire array of messages
+          const shuffled = [...cleanMessages].sort(() => Math.random() - 0.5);
 
-        // If new entries exist, update the display slots
-        if (currentHash !== lastMessagesHashRef.current) {
-          lastMessagesHashRef.current = currentHash;
+          // 3. Take up to 8 random messages for the 8 slots
+          const randomSelection = shuffled.slice(0, SPATIAL_SLOTS.length);
 
-          // Take the most recent messages up to the max slot capacity
-          const latestMessages = cleanMessages.slice(-SPATIAL_SLOTS.length);
-
-          const scheduled: FloatingMessage[] = latestMessages.map(
+          const scheduled: FloatingMessage[] = randomSelection.map(
             (m: { text: string; sign: string }, index: number) => {
-              const slot = SPATIAL_SLOTS[index % SPATIAL_SLOTS.length];
+              const slot = SPATIAL_SLOTS[index];
               return {
-                id: `${m.sign}-${m.text}-${index}`, // Unique React key for instant re-render
+                id: `msg-${Date.now()}-${index}`, // Unique key forces a fresh fade-in animation on swap
                 text: m.text,
                 sign: m.sign,
                 top: slot.top,
                 left: slot.left,
-                delay: index * 0.4,
-                duration: 14 + (index % 3),
+                delay: index * 0.3,
+                duration: 12 + (index % 3),
                 scale: 0.95,
               };
             }
@@ -124,8 +120,8 @@ export default function LiveEventDisplayBoard() {
     fetchParticipants();
     fetchMessages();
 
-    // ⚡ Poll every 5 seconds for new Google Form submissions
-    const messageInterval = setInterval(fetchMessages, 5000);
+    // 🎲 Rotate with a new random batch of messages every 6 seconds
+    const messageInterval = setInterval(fetchMessages, 6000);
     return () => clearInterval(messageInterval);
   }, []);
 
@@ -166,7 +162,7 @@ export default function LiveEventDisplayBoard() {
   return (
     <main className="min-h-screen bg-gray-900 flex flex-col relative overflow-hidden select-none">
       
-      {/* 🌟 CSS Keyframe for Gentle Floating Motion */}
+      {/* 🌟 CSS Keyframe Animations */}
       <style jsx global>{`
         @keyframes gentleFloat {
           0% {
@@ -185,7 +181,7 @@ export default function LiveEventDisplayBoard() {
         @keyframes fadeInCard {
           from {
             opacity: 0;
-            transform: scale(0.8);
+            transform: scale(0.7);
           }
           to {
             opacity: 1;
@@ -200,7 +196,7 @@ export default function LiveEventDisplayBoard() {
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
-      {/* 💬 SIDE FLANK FLOATING MESSAGES (Auto-Refreshes Live) */}
+      {/* 💬 SIDE FLANK FLOATING MESSAGES (Randomized Batch Every 6s) */}
       <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
         {floatingMessages.map((msg) => (
           <div
@@ -208,9 +204,9 @@ export default function LiveEventDisplayBoard() {
             style={{
               top: `${msg.top}%`,
               left: `${msg.left}%`,
-              animation: `fadeInCard 0.6s ease-out, gentleFloat ${msg.duration}s ease-in-out ${msg.delay}s infinite`,
+              animation: `fadeInCard 0.8s ease-out, gentleFloat ${msg.duration}s ease-in-out ${msg.delay}s infinite`,
             }}
-            className="absolute max-w-[200px] md:max-w-[260px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white transition-all duration-500"
+            className="absolute max-w-[200px] md:max-w-[260px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white transition-all duration-700"
           >
             <p className="text-xs md:text-sm font-medium italic text-amber-200 leading-snug drop-shadow">
               "{msg.text}"
