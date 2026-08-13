@@ -5,17 +5,24 @@ import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
-type Prize = { name: string; value: string; supporter: string };
+// Updated Prize Type to include image
+type Prize = { 
+  name: string; 
+  value: string; 
+  supporter: string; 
+  image?: string; 
+};
 
 export default function LiveEventRemoteControl() {
   const { data: session, status } = useSession();
   
   const [prizeInput, setPrizeInput] = useState(""); 
   const [prizeSupporter, setPrizeSupporter] = useState(""); 
+  const [prizeImage, setPrizeImage] = useState(""); // 🖼️ State to store current prize image
   const [prizesList, setPrizesList] = useState<Prize[]>([]); 
   const [isLoadingPrizes, setIsLoadingPrizes] = useState(true);
 
-  // 🔍 NEW: Search state for filtering prizes
+  // 🔍 Search state for filtering prizes
   const [searchTerm, setSearchTerm] = useState("");
 
   const [qtyInput, setQtyInput] = useState(1);
@@ -38,6 +45,7 @@ export default function LiveEventRemoteControl() {
           setPrizesList(data.prizes);
           setPrizeInput(data.prizes[0].name);
           setPrizeSupporter(data.prizes[0].supporter); 
+          setPrizeImage(data.prizes[0].image || ""); // Set initial prize image
         }
       } catch (error) {
         console.error("Failed to fetch prizes", error);
@@ -67,6 +75,7 @@ export default function LiveEventRemoteControl() {
       if (!exists) {
         setPrizeInput(filteredPrizes[0].name);
         setPrizeSupporter(filteredPrizes[0].supporter);
+        setPrizeImage(filteredPrizes[0].image || "");
       }
     }
   }, [searchTerm]);
@@ -77,6 +86,7 @@ export default function LiveEventRemoteControl() {
     setPrizeInput(selectedName);
     if (selectedPrize) {
       setPrizeSupporter(selectedPrize.supporter); 
+      setPrizeImage(selectedPrize.image || ""); // Update image state
     }
   };
 
@@ -88,10 +98,16 @@ export default function LiveEventRemoteControl() {
     try {
       const eventRef = doc(db, "events", "event-lucky-draw");
 
+      // Find selected prize object to retrieve image URL
+      const selectedPrizeObj = prizesList.find(p => p.name === prizeInput);
+      const currentImage = selectedPrizeObj?.image || prizeImage || null;
+
+      // Send prize details AND image URL to Firestore for the TV Display Board
       await setDoc(eventRef, { 
         isDrawing: true, 
         prize: prizeInput,
         prizeSupporter: prizeSupporter, 
+        prizeImage: currentImage, // 🖼️ Send Image URL to TV screen
         isGrandPrize: isGrandPrize 
       }, { merge: true });
 
@@ -130,6 +146,7 @@ export default function LiveEventRemoteControl() {
       currentWinners: [], 
       prize: null,
       prizeSupporter: null, 
+      prizeImage: null, // 🖼️ Clear image from TV screen
       isGrandPrize: false 
     }, { merge: true });
     setIsGrandPrize(false); 

@@ -10,6 +10,7 @@ export default function RayongDisplayBoard() {
   const [winnerNames, setWinnerNames] = useState<string[]>([]); 
   const [prize, setPrize] = useState<string | null>(null);
   const [prizeSupporter, setPrizeSupporter] = useState<string | null>(null); 
+  const [prizeImage, setPrizeImage] = useState<string | null>(null); // 🖼️ NEW: Prize Image State
   const [isDrawing, setIsDrawing] = useState(false);
   const [isGrandPrize, setIsGrandPrize] = useState(false); 
   
@@ -39,6 +40,7 @@ export default function RayongDisplayBoard() {
         setWinnerNames(data.currentWinners || []); 
         setPrize(data.prize);
         setPrizeSupporter(data.prizeSupporter || null); 
+        setPrizeImage(data.prizeImage || null); // 🖼️ Listen to prizeImage in Firestore
         setIsDrawing(data.isDrawing);
         setIsGrandPrize(data.isGrandPrize || false); 
       }
@@ -85,17 +87,25 @@ export default function RayongDisplayBoard() {
       </div>
 
       <div className="relative z-10 flex-grow flex items-center justify-center p-4">
-        <div className={`w-full max-w-5xl backdrop-blur-md border p-12 md:p-20 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/40 border-yellow-500/50 scale-105' : 'bg-white/10 border-white/20'}`}>
+        <div className={`w-full max-w-5xl backdrop-blur-md border p-8 md:p-16 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/40 border-yellow-500/50 scale-105' : 'bg-white/10 border-white/20'}`}>
           
+          {/* ----------------- STATE 1: DRAWING / SHUFFLING ----------------- */}
           {isDrawing ? (
-            <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-110' : ''}`}>
+            <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-105' : ''}`}>
               {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
               <h2 className={`text-3xl md:text-5xl font-bold mb-6 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
                 {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
               
-              {/* Show Static Prize Name, Value, and Supporter while drawing */}
-              <div className="mb-8 space-y-3">
+              {/* 🖼️ Prize Image Box during Drawing */}
+              {prizeImage && (
+                <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 bg-white/10 rounded-2xl border border-white/20 p-4 shadow-2xl flex items-center justify-center overflow-hidden">
+                  <img src={prizeImage} alt={prize || "Prize"} className="max-w-full max-h-full object-contain drop-shadow-lg" />
+                </div>
+              )}
+
+              {/* Show Static Prize Name & Supporter while drawing */}
+              <div className="mb-8 space-y-2">
                 <p className={`text-4xl md:text-5xl font-extrabold tracking-widest ${isGrandPrize ? 'text-yellow-300 drop-shadow-md' : 'text-white'}`}>
                   {prize || "รางวัลพิเศษ"}
                 </p>
@@ -115,25 +125,34 @@ export default function RayongDisplayBoard() {
               </div>
             </div>
           ) : winnerNames.length > 0 ? (
-            <div className="animate-bounce-short">
+
+            /* ----------------- STATE 2: WINNER REVEALED ----------------- */
+            <div className="animate-bounce-short flex flex-col items-center">
               {isGrandPrize && <div className="text-8xl mb-6 animate-bounce">👑</div>}
               <p className={`text-2xl font-bold uppercase tracking-widest mb-2 ${isGrandPrize ? 'text-yellow-300' : 'text-red-300'}`}>
                 ผู้โชคดีได้รับ 
               </p>
-              <p className={`text-3xl font-bold tracking-widest mb-1 ${isGrandPrize ? 'text-yellow-400 drop-shadow-md' : 'text-white'}`}>
+
+              {/* 🖼️ Prize Image Box on Reveal */}
+              {prizeImage && (
+                <div className="relative w-56 h-56 md:w-72 md:h-72 mx-auto my-4 bg-white/10 rounded-2xl border border-white/20 p-4 shadow-2xl flex items-center justify-center overflow-hidden">
+                  <img src={prizeImage} alt={prize || "Prize"} className="max-w-full max-h-full object-contain drop-shadow-2xl" />
+                </div>
+              )}
+
+              <p className={`text-3xl md:text-4xl font-bold tracking-widest mb-1 ${isGrandPrize ? 'text-yellow-400 drop-shadow-md' : 'text-white'}`}>
                 {prize || "รางวัลพิเศษ"}
               </p>
               
-               {/* Show prize value and supporter on final reveal! */}
-               <div className="mb-8 space-y-2">
+              <div className="mb-8 space-y-2">
                  {prizeSupporter && (
                    <p className={`text-xl italic font-semibold ${isGrandPrize ? 'text-yellow-300' : 'text-white/80'}`}>
                       Supported by {prizeSupporter}
                    </p>
                  )}
-               </div>
+              </div>
               
-              <div className={`grid gap-6 ${winnerNames.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} mb-8`}>
+              <div className={`grid gap-6 ${winnerNames.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} mb-8 w-full`}>
                 {winnerNames.map((name, index) => (
                   <div key={index} className={`rounded-2xl py-6 px-4 border shadow-inner ${isGrandPrize ? 'bg-gradient-to-r from-yellow-500/20 to-red-500/20 border-yellow-400/50' : 'bg-white/10 border-white/20'}`}>
                     <h2 className={`text-4xl md:text-5xl font-black text-white whitespace-nowrap drop-shadow-md bg-clip-text text-transparent truncate px-2 ${isGrandPrize ? 'bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]' : 'bg-gradient-to-r from-orange-300 to-yellow-500'}`}>
@@ -143,14 +162,16 @@ export default function RayongDisplayBoard() {
                 ))}
               </div>
               
-              <p className={`text-3xl mt-8 font-bold ${isGrandPrize ? 'text-yellow-400' : 'text-white'}`}>ขอแสดงความยินดีด้วยครับ! 🎉</p>
+              <p className={`text-3xl mt-4 font-bold ${isGrandPrize ? 'text-yellow-400' : 'text-white'}`}>ขอแสดงความยินดีด้วยครับ! 🎉</p>
             </div>
           ) : (
+
+            /* ----------------- STATE 3: WAITING / IDLE ----------------- */
             <div>
               <div className="text-8xl mb-6">🎁</div>
               <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
               <p className="text-xl text-gray-300">รอลุ้นรับรางวัลใหญ่จากทาง iHAVECPU เร็วๆ นี้</p>
-              <p className="text-sm text-gray-500 mt-6 mt-2 opacity-50">
+              <p className="text-sm text-gray-500 mt-6 opacity-50">
                 (Participants ready: {realNamesPool.length > 2 ? realNamesPool.length : 0})
               </p>
             </div>

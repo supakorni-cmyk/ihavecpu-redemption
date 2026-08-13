@@ -29,7 +29,8 @@ export async function GET() {
       .map((row) => ({
         name: row[0],
         value: row[3] || "",     // Column D is index 3
-        supporter: row[4] || ""  // Column E is index 4
+        supporter: row[4] || "",  // Column E is index 4
+        image: row[7] || ""  // Column H is index 7
       }));
 
     return NextResponse.json({ prizes });
