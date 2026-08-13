@@ -28,8 +28,8 @@ export async function GET() {
     // row[5] = Signature / Name ("Sign")
     const messages = rows
       .map((row) => ({
-        text: row[6] || row[1] || "", 
-        sign: row[7] || row[2] || "Anonymous", 
+        text: row[6] || "", 
+        sign: row[7] || "", 
       }))
       .filter((item) => item.text.trim() !== "");
 
