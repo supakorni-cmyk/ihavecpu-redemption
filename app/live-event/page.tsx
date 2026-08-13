@@ -6,15 +6,45 @@ import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 
+// 🛑 EXPLICIT / PROFANITY WORD FILTER LIST (Thai & English)
+const EXPLICIT_WORDS = [
+  // Thai
+  "ควย", "เหี้ย", "เชี่ย", "สัด", "สัส", "เย็ด", "กู", "มึง", "แม่ง", 
+  "ชิปหาย", "ฉิบหาย", "ตีน", "ส้นตีน", "กวนตีน", "แฮก", "ค_ย", "เxี้ย","หี","แตด","ห่วย","สวะ","สัส","สัด","สาด","สาดดด","สาดดดด","สาดดดดด","สาดดดดดด","สาดดดดดดด","สาดดดดดดดด","สาดดดดดดดดด","สาดดดดดดดดdd","สาดdd","สาดddddd","สาดdddddd","สาดddddddd","สาดdddddddd","สาดddddddddd","สาดdddddddddd","สาดddddddddddd",
+  // English
+  "fuck", "shit", "bitch", "asshole", "cunt", "dick", "pussy", 
+  "bastard", "slut", "whore", "nigger", "faggot"
+];
+
+const isExplicit = (text: string): boolean => {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return EXPLICIT_WORDS.some((word) => lower.includes(word.toLowerCase()));
+};
+
+// 🎯 8 PRE-DEFINED NON-OVERLAPPING SLOTS (4 Left / 4 Right)
+const SPATIAL_SLOTS = [
+  // Left Flank Slots (Strictly kept away from header & center card)
+  { top: 12, left: 2 },
+  { top: 32, left: 4 },
+  { top: 52, left: 2 },
+  { top: 72, left: 3 },
+  // Right Flank Slots
+  { top: 12, left: 81 },
+  { top: 32, left: 83 },
+  { top: 52, left: 80 },
+  { top: 72, left: 82 },
+];
+
 type FloatingMessage = {
   id: number;
   text: string;
   sign: string;
-  top: number;       // Random top position (10% - 80%)
-  left: number;      // Restricted to Left/Right flanks
-  delay: number;     // Random animation delay
-  duration: number;  // Random floating duration
-  scale: number;     // Random scale variation
+  top: number;
+  left: number;
+  delay: number;
+  duration: number;
+  scale: number;
 };
 
 export default function LiveEventDisplayBoard() {
@@ -43,30 +73,38 @@ export default function LiveEventDisplayBoard() {
     }
   };
 
-  // 💬 Fetch Google Form Messages & Scatter strictly on Left/Right Flanks
+  // 💬 Fetch Google Form Messages, Filter Explicit Words, and Assign to Non-Overlapping Slots
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/get-messages");
       const data = await res.json();
+      
       if (data.messages && data.messages.length > 0) {
-        const scattered: FloatingMessage[] = data.messages.map((m: { text: string; sign: string }, index: number) => {
-          const isLeftLane = index % 2 === 0;
+        // 1. FILTER OUT EXPLICIT CONTENT
+        const cleanMessages = data.messages.filter(
+          (m: { text: string; sign: string }) => !isExplicit(m.text) && !isExplicit(m.sign)
+        );
 
-          return {
-            id: index,
-            text: m.text,
-            sign: m.sign,
-            top: Math.floor(Math.random() * 68) + 12, // 12% to 80% vertical space
-            // 🎯 Left Flank: 2% - 14% | Right Flank: 81% - 93% (Leaves Center 15%-80% completely clear!)
-            left: isLeftLane 
-              ? Math.floor(Math.random() * 12) + 2    
-              : Math.floor(Math.random() * 12) + 81,  
-            delay: Math.floor(Math.random() * 8),     // 0s to 8s delay
-            duration: Math.floor(Math.random() * 10) + 12, // 12s to 22s float time
-            scale: Number((Math.random() * 0.2 + 0.85).toFixed(2)), // 0.85x to 1.05x
-          };
-        });
-        setFloatingMessages(scattered);
+        // 2. ASSIGN TO NON-OVERLAPPING FIXED SLOTS (Up to 8 max active on screen)
+        const activeMessages = cleanMessages.slice(0, SPATIAL_SLOTS.length);
+
+        const scheduled: FloatingMessage[] = activeMessages.map(
+          (m: { text: string; sign: string }, index: number) => {
+            const slot = SPATIAL_SLOTS[index];
+            return {
+              id: index,
+              text: m.text,
+              sign: m.sign,
+              top: slot.top,
+              left: slot.left,
+              delay: index * 0.8, // Staggered entry
+              duration: 14 + (index % 3), // Subtle speed variation
+              scale: 0.95,
+            };
+          }
+        );
+
+        setFloatingMessages(scheduled);
       }
     } catch (error) {
       console.error("Failed to load messages", error);
@@ -119,19 +157,19 @@ export default function LiveEventDisplayBoard() {
   return (
     <main className="min-h-screen bg-gray-900 flex flex-col relative overflow-hidden select-none">
       
-      {/* 🌟 CSS Keyframe for Floating Motion */}
+      {/* 🌟 CSS Keyframe for Gentle Non-Colliding Floating Motion */}
       <style jsx global>{`
         @keyframes gentleFloat {
           0% {
-            transform: translateY(0px) rotate(0deg);
+            transform: translateY(0px);
             opacity: 0.5;
           }
           50% {
-            transform: translateY(-18px) rotate(2deg);
+            transform: translateY(-12px);
             opacity: 0.9;
           }
           100% {
-            transform: translateY(0px) rotate(0deg);
+            transform: translateY(0px);
             opacity: 0.5;
           }
         }
@@ -143,7 +181,7 @@ export default function LiveEventDisplayBoard() {
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
-      {/* 💬 SIDE FLANK FLOATING MESSAGES (Restricted from Center) */}
+      {/* 💬 SIDE FLANK FLOATING MESSAGES (Guaranteed Zero Overlap) */}
       <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
         {floatingMessages.map((msg) => (
           <div
@@ -154,7 +192,7 @@ export default function LiveEventDisplayBoard() {
               animation: `gentleFloat ${msg.duration}s ease-in-out ${msg.delay}s infinite`,
               transform: `scale(${msg.scale})`,
             }}
-            className="absolute max-w-[220px] md:max-w-[280px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white"
+            className="absolute max-w-[200px] md:max-w-[260px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white"
           >
             <p className="text-xs md:text-sm font-medium italic text-amber-200 leading-snug drop-shadow">
               "{msg.text}"
@@ -166,7 +204,7 @@ export default function LiveEventDisplayBoard() {
         ))}
       </div>
 
-      {/* Main Header Title (Resting comfortably at z-20) */}
+      {/* Main Header Title */}
       <div className="relative z-20 p-10 text-center mt-6">
         <span className={`inline-block py-2 px-6 rounded-full text-white text-lg font-bold tracking-widest uppercase mb-4 shadow-lg animate-pulse ${isGrandPrize ? 'bg-yellow-500' : 'bg-red-500'}`}>
           Live Lucky Draw
