@@ -226,7 +226,7 @@ export default function LiveEventDisplayBoard() {
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl">
           AMD x iHAVECPU
         </h1>
-        <h2 className={`text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl text-amber-500`}>
+        <h2 className={`text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl text-red-500`}>
           BRAND DAY
         </h2>
       </div>
