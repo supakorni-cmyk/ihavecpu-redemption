@@ -224,10 +224,10 @@ export default function LiveEventDisplayBoard() {
           Live Lucky Draw
         </span>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl">
-          iHAVECPU X MSI
+          AMD x iHAVECPU
         </h1>
         <h2 className={`text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl text-amber-500`}>
-          BRAND DAY 40TH Anniversary
+          BRAND DAY
         </h2>
       </div>
 

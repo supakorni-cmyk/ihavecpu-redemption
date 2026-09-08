@@ -29,7 +29,7 @@ export async function GET() {
     const messages = rows
       .map((row) => ({
         text: row[6] || "", 
-        sign: row[7] || "", 
+        sign: row[1] || "", 
       }))
       .filter((item) => item.text.trim() !== "");
 
