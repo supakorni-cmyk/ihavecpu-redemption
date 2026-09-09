@@ -315,7 +315,7 @@ export default function LiveEventDisplayBoard() {
               <div className= "relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'AMDRA8-01.png'} alt={"AMD"} fill className="object-contain drop-shadow-2xl" /></div>
               <div>
                 <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
-                <p className="text-xl text-gray-300">รอลุ้นรับรางวัลใหญ่จากทาง iHAVECPU เร็วๆ นี้</p>
+                <p className="text-xl text-gray-300">รอลุ้นรับรางวัลจากทาง iHAVECPU เร็วๆ นี้</p>
                 <p className="text-sm text-gray-500 mt-6 opacity-50">
                   (Participants ready: {realNamesPool.length > 2 ? realNamesPool.length : 0})
                 </p>
