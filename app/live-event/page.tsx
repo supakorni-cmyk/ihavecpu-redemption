@@ -220,14 +220,14 @@ export default function LiveEventDisplayBoard() {
 
       {/* Main Header Title */}
       <div className="relative z-20 p-10 text-center mt-6">
-        <span className={`inline-block py-2 px-6 rounded-full text-white text-lg font-bold tracking-widest uppercase mb-4 shadow-lg animate-pulse ${isGrandPrize ? 'bg-yellow-500' : 'bg-red-500'}`}>
+        <span className={`inline-block py-2 px-6 rounded-full text-white text-lg font-bold tracking-widest uppercase mb-4 shadow-lg animate-pulse ${isGrandPrize ? 'bg-yellow-500' : 'bg-green-500'}`}>
           Live Lucky Draw
         </span>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white drop-shadow-2xl">
-          AMD x iHAVECPU
+          iHAVECPU
         </h1>
-        <h2 className={`text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl text-red-500`}>
-          BRAND DAY
+        <h2 className={`text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-2xl text-green-500`}>
+          GEFORCE DAY
         </h2>
       </div>
 
@@ -239,7 +239,7 @@ export default function LiveEventDisplayBoard() {
           {isDrawing ? (
             <div className={`flex flex-col items-center justify-center ${isGrandPrize ? 'scale-105' : ''}`}>
               {isGrandPrize && <div className="text-7xl mb-4 animate-bounce">🚨</div>}
-              <h2 className={`text-3xl md:text-5xl font-bold mb-6 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-red-400'}`}>
+              <h2 className={`text-3xl md:text-5xl font-bold mb-6 ${isGrandPrize ? 'text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.8)]' : 'text-green-400'}`}>
                 {isGrandPrize ? "กำลังสุ่มรางวัลใหญ่สุดพิเศษ!" : "กำลังสุ่มผู้โชคดี..."}
               </h2>
               
@@ -262,7 +262,7 @@ export default function LiveEventDisplayBoard() {
               </div>
               
               <div className={`w-full max-w-2xl mx-auto py-8 px-4 rounded-2xl border-4 border-dashed transition-colors duration-200 ${
-                isGrandPrize ? 'border-yellow-400/70 bg-yellow-500/10 shadow-[0_0_30px_rgba(250,204,21,0.3)]' : 'border-red-400/70 bg-red-500/10 shadow-[0_0_30px_rgba(248,113,113,0.3)]'
+                isGrandPrize ? 'border-yellow-400/70 bg-yellow-500/10 shadow-[0_0_30px_rgba(250,204,21,0.3)]' : 'border-green-400/70 bg-green-500/10 shadow-[0_0_30px_rgba(72,187,120,0.3)]'
               }`}>
                 <h3 className={`text-5xl md:text-6xl font-black italic whitespace-nowrap tracking-wider opacity-90 blur-[1px] truncate px-4 ${isGrandPrize ? 'text-yellow-200' : 'text-white'}`}>
                   {shufflingName}
@@ -274,7 +274,7 @@ export default function LiveEventDisplayBoard() {
             /* ----------------- STATE 2: WINNER REVEALED ----------------- */
             <div className="animate-bounce-short flex flex-col items-center">
               {isGrandPrize && <div className="text-8xl mb-6 animate-bounce">👑</div>}
-              <p className={`text-2xl font-bold uppercase tracking-widest mb-2 ${isGrandPrize ? 'text-yellow-300' : 'text-red-300'}`}>
+              <p className={`text-2xl font-bold uppercase tracking-widest mb-2 ${isGrandPrize ? 'text-yellow-300' : 'text-green-300'}`}>
                 ผู้โชคดีได้รับ 
               </p>
 
@@ -298,8 +298,8 @@ export default function LiveEventDisplayBoard() {
               
               <div className={`grid gap-6 ${winnerNames.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} mb-8 w-full`}>
                 {winnerNames.map((name, index) => (
-                  <div key={index} className={`rounded-2xl py-6 px-4 border shadow-inner ${isGrandPrize ? 'bg-gradient-to-r from-yellow-500/20 to-red-500/20 border-yellow-400/50' : 'bg-white/10 border-white/20'}`}>
-                    <h2 className={`text-4xl md:text-5xl font-black text-white whitespace-nowrap drop-shadow-md bg-clip-text text-transparent truncate px-2 ${isGrandPrize ? 'bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]' : 'bg-gradient-to-r from-orange-300 to-yellow-500'}`}>
+                  <div key={index} className={`rounded-2xl py-6 px-4 border shadow-inner ${isGrandPrize ? 'bg-gradient-to-r from-yellow-500/20 to-green-500/20 border-yellow-400/50' : 'bg-white/10 border-white/20'}`}>
+                    <h2 className={`text-4xl md:text-5xl font-black text-white whitespace-nowrap drop-shadow-md bg-clip-text text-transparent truncate px-2 ${isGrandPrize ? 'bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-600 drop-shadow-[0_0_15px_rgba(250,204,21,0.8)]' : 'bg-gradient-to-r from-green-300 to-green-500'}`}>
                       {name}
                     </h2>
                   </div>
@@ -312,7 +312,7 @@ export default function LiveEventDisplayBoard() {
 
             /* ----------------- STATE 3: WAITING / IDLE ----------------- */
             <div>
-              <div className= "relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'AMDRA8-01.png'} alt={"AMD"} fill className="object-contain drop-shadow-2xl" /></div>
+              <div className= "relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'live-event-banner.jpg'} alt={"NVIDIA"} fill className="object-contain drop-shadow-2xl" /></div>
               <div>
                 <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
                 <p className="text-xl text-gray-300">รอลุ้นรับรางวัลจากทาง iHAVECPU เร็วๆ นี้</p>
