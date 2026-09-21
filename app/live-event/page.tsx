@@ -208,7 +208,7 @@ export default function LiveEventDisplayBoard() {
             }}
             className="absolute max-w-[200px] md:max-w-[260px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white transition-all duration-700"
           >
-            <p className="text-xs md:text-sm font-medium italic text-amber-200 leading-snug drop-shadow">
+            <p className="text-xs md:text-sm font-medium italic text-green-200 leading-snug drop-shadow">
               "{msg.text}"
             </p>
             <p className="text-[11px] font-bold text-gray-300 text-right mt-1 font-mono">
