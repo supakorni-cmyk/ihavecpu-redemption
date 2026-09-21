@@ -3,10 +3,17 @@
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useState } from "react";
+import { usePathname } from "next/navigation"; // 👈 1. Import usePathname
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname(); // 👈 2. Get current path
+
+  // 👈 3. Hide Navbar on the Live Event Display Board page
+  if (pathname === "/live-event") {
+    return null;
+  }
 
   // Check if the logged-in user is the admin
   const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "").split(",").map(email => email.trim());
@@ -20,7 +27,6 @@ export default function Navbar() {
           {/* Brand / Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center gap-2">
-            {/* The leading slash tells Next.js to look in the public folder */}
             <img 
                 src="/logo.png" 
                 alt="IHAVECPU Logo" 
@@ -35,7 +41,6 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
-            {/* <Link href="/tales-runner" className="text-gray-300 hover:text-white transition-colors">Redeem</Link> */}
             
             {session && (
               <Link href="/my-rewards" className="text-gray-300 hover:text-white transition-colors">My Rewards</Link>
