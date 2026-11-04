@@ -192,7 +192,7 @@ export default function LiveEventDisplayBoard() {
 
       {/* Background Banner */}
       <div className="absolute inset-0 z-0 opacity-40">
-        <Image src="/live-event-banner.jpg" alt="Background" fill className="object-cover blur-sm" />
+        <Image src="/event-banner.jpg" alt="Background" fill className="object-cover blur-sm" />
         <div className={`absolute inset-0 transition-colors duration-700 ${isGrandPrize && (isDrawing || winnerNames.length > 0) ? 'bg-gradient-to-b from-yellow-900/80 via-red-900/80 to-gray-900' : 'bg-gradient-to-b from-gray-900/80 to-gray-900'}`} />
       </div>
 
@@ -312,7 +312,7 @@ export default function LiveEventDisplayBoard() {
 
             /* ----------------- STATE 3: WAITING / IDLE ----------------- */
             <div>
-              <div className= "relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'event-avatar.png'} alt={"NVIDIA"} fill className="object-contain drop-shadow-2xl" /></div>
+              <div className= "relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'event-banner.jpg'} alt={"CNX"} fill className="object-contain drop-shadow-2xl" /></div>
               <div>
                 <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
                 <p className="text-xl text-gray-300">รอลุ้นรับรางวัลจากทาง iHAVECPU เร็วๆ นี้</p>
