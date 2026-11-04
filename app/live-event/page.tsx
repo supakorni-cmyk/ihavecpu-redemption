@@ -312,7 +312,7 @@ export default function LiveEventDisplayBoard() {
 
             /* ----------------- STATE 3: WAITING / IDLE ----------------- */
             <div>
-              <div className= "relative w-96 h-96 md:w-128 md:h-128 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'event-banner.jpg'} alt={"CNX"} fill className="object-contain drop-shadow-2xl" /></div>
+              <div className= "relative w-96 h-48 md:w-128 md:h-64 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'event-banner.jpg'} alt={"CNX"} fill className="object-contain drop-shadow-2xl" /></div>
               <div>
                 <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
                 <p className="text-xl text-gray-300">รอลุ้นรับรางวัลจากทาง iHAVECPU เร็วๆ นี้</p>
