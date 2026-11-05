@@ -10,7 +10,7 @@ import { doc, onSnapshot } from "firebase/firestore";
 const EXPLICIT_WORDS = [
   // Thai
   "ควย", "เหี้ย", "เชี่ย", "สัด", "สัส", "เย็ด", "กู", "มึง", "แม่ง", 
-  "ชิปหาย", "ฉิบหาย", "ตีน", "ส้นตีน", "กวนตีน", "แฮก", "ค_ย", "เxี้ย","หี","แตด",
+  "ชิปหาย", "ฉิบหาย", "ตีน", "ส้นตีน", "กวนตีน", "แฮก", "ค_ย", "เxี้ย", "หี", "แตด",
   // English
   "fuck", "shit", "bitch", "asshole", "cunt", "dick", "pussy", 
   "bastard", "slut", "whore", "nigger", "faggot"
@@ -35,6 +35,13 @@ const SPATIAL_SLOTS = [
   { top: 52, left: 80 },
   { top: 72, left: 82 },
 ];
+
+type PrizeItem = {
+  name: string;
+  image?: string;
+  value?: string;
+  supporter?: string;
+};
 
 type FloatingMessage = {
   id: string;
@@ -61,6 +68,10 @@ export default function LiveEventDisplayBoard() {
   // 💬 Floating Messages State
   const [floatingMessages, setFloatingMessages] = useState<FloatingMessage[]>([]);
 
+  // 🎁 Auto-Slide Prize Carousel States
+  const [allPrizes, setAllPrizes] = useState<PrizeItem[]>([]);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
   const fetchParticipants = async () => {
     try {
       const res = await fetch("/api/get-participants");
@@ -70,6 +81,19 @@ export default function LiveEventDisplayBoard() {
       }
     } catch (error) {
       console.error("Failed to load names for shuffle", error);
+    }
+  };
+
+  // 🎁 Fetch Prizes for Waiting Carousel
+  const fetchAllPrizes = async () => {
+    try {
+      const res = await fetch("/api/get-prizes");
+      const data = await res.json();
+      if (data.prizes && data.prizes.length > 0) {
+        setAllPrizes(data.prizes);
+      }
+    } catch (error) {
+      console.error("Failed to load prizes for carousel", error);
     }
   };
 
@@ -96,7 +120,7 @@ export default function LiveEventDisplayBoard() {
             (m: { text: string; sign: string }, index: number) => {
               const slot = SPATIAL_SLOTS[index];
               return {
-                id: `msg-${Date.now()}-${index}`, // Unique key forces a fresh fade-in animation on swap
+                id: `msg-${Date.now()}-${index}`,
                 text: m.text,
                 sign: m.sign,
                 top: slot.top,
@@ -118,12 +142,22 @@ export default function LiveEventDisplayBoard() {
 
   useEffect(() => {
     fetchParticipants();
+    fetchAllPrizes();
     fetchMessages();
 
     // 🎲 Rotate with a new random batch of messages every 6 seconds
     const messageInterval = setInterval(fetchMessages, 6000);
     return () => clearInterval(messageInterval);
   }, []);
+
+  // ⏱️ Auto-advance prize carousel every 3.5 seconds
+  useEffect(() => {
+    if (allPrizes.length <= 1) return;
+    const slideTimer = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % allPrizes.length);
+    }, 3500);
+    return () => clearInterval(slideTimer);
+  }, [allPrizes.length]);
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "events", "event-lucky-draw"), (docSnap) => {
@@ -159,6 +193,8 @@ export default function LiveEventDisplayBoard() {
     return () => clearInterval(interval);
   }, [isDrawing, realNamesPool]);
 
+  const activeShowcasePrize = allPrizes[currentSlideIndex];
+
   return (
     <main className="min-h-screen bg-gray-900 flex flex-col relative overflow-hidden select-none">
       
@@ -188,6 +224,16 @@ export default function LiveEventDisplayBoard() {
             transform: scale(0.95);
           }
         }
+        @keyframes slideFadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95) translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
       `}</style>
 
       {/* Background Banner */}
@@ -208,7 +254,7 @@ export default function LiveEventDisplayBoard() {
             }}
             className="absolute max-w-[200px] md:max-w-[260px] bg-white/10 backdrop-blur-md border border-white/15 px-3.5 py-2.5 rounded-2xl shadow-lg text-white transition-all duration-700"
           >
-            <p className="text-xs md:text-sm font-medium italic text-redn-200 leading-snug drop-shadow">
+            <p className="text-xs md:text-sm font-medium italic text-red-200 leading-snug drop-shadow">
               "{msg.text}"
             </p>
             <p className="text-[11px] font-bold text-gray-300 text-right mt-1 font-mono">
@@ -233,7 +279,7 @@ export default function LiveEventDisplayBoard() {
 
       {/* Main Stage Interactive Card */}
       <div className="relative z-20 flex-grow flex items-center justify-center p-4">
-        <div className={`w-full max-w-5xl backdrop-blur-lg border p-8 md:p-16 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/50 border-yellow-500/50 scale-105' : 'bg-black/40 border-white/20'}`}>
+        <div className={`w-full max-w-5xl backdrop-blur-lg border p-8 md:p-14 rounded-3xl shadow-2xl text-center transition-all duration-500 ${isGrandPrize ? 'bg-black/50 border-yellow-500/50 scale-105' : 'bg-black/40 border-white/20'}`}>
           
           {/* ----------------- STATE 1: DRAWING / SHUFFLING ----------------- */}
           {isDrawing ? (
@@ -310,13 +356,73 @@ export default function LiveEventDisplayBoard() {
             </div>
           ) : (
 
-            /* ----------------- STATE 3: WAITING / IDLE ----------------- */
-            <div>
-              <div className= "relative w-96 h-48 md:w-128 md:h-64 mx-auto mb-6 p-4 shadow-2xl flex items-center justify-center overflow-hidden"><Image src={'event-banner.jpg'} alt={"CNX"} fill className="object-contain drop-shadow-2xl" /></div>
+            /* ----------------- STATE 3: WAITING / IDLE (AUTO SLIDE PRIZES) ----------------- */
+            <div className="flex flex-col items-center">
+              
+              {/* 🎁 AUTO-SLIDING PRIZE SHOWCASE CARD */}
+              {activeShowcasePrize ? (
+                <div 
+                  key={`slide-${currentSlideIndex}`}
+                  style={{ animation: "slideFadeIn 0.5s ease-out" }}
+                  className="w-full max-w-lg bg-gradient-to-b from-white/15 to-white/5 border border-white/20 rounded-3xl p-6 shadow-2xl mb-6 relative overflow-hidden backdrop-blur-md"
+                >
+                  <div className="flex items-center justify-between mb-2 px-1">
+                    <span className="text-[11px] font-black uppercase tracking-widest px-3 py-1 bg-red-500/20 border border-red-500/40 text-red-300 rounded-full">
+                      🎁 Featured Prize ({currentSlideIndex + 1}/{allPrizes.length})
+                    </span>
+                    {activeShowcasePrize.supporter && (
+                      <span className="text-xs font-semibold text-gray-300 italic">
+                        By {activeShowcasePrize.supporter}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Prize Image Container */}
+                  <div className="relative w-full h-44 md:h-52 my-2 flex items-center justify-center">
+                    {activeShowcasePrize.image ? (
+                      <Image 
+                        src={activeShowcasePrize.image} 
+                        alt={activeShowcasePrize.name} 
+                        fill 
+                        className="object-contain drop-shadow-2xl" 
+                      />
+                    ) : (
+                      <div className="text-6xl animate-pulse">🎁</div>
+                    )}
+                  </div>
+
+                  {/* Prize Name */}
+                  <h3 className="text-xl md:text-2xl font-black text-white mt-1 drop-shadow tracking-wide truncate px-2">
+                    {activeShowcasePrize.name}
+                  </h3>
+
+                  {/* Indicator Dots */}
+                  {allPrizes.length > 1 && (
+                    <div className="flex justify-center items-center gap-1.5 mt-4">
+                      {allPrizes.map((_, dotIdx) => (
+                        <div
+                          key={dotIdx}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            dotIdx === currentSlideIndex 
+                              ? "w-6 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" 
+                              : "w-1.5 bg-white/30"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Fallback loading state */
+                <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-6 p-4 flex items-center justify-center">
+                  <div className="text-7xl animate-pulse">🎁</div>
+                </div>
+              )}
+
               <div>
-                <h2 className="text-4xl font-bold text-white mb-4">เตรียมตัวให้พร้อม!</h2>
-                <p className="text-xl text-gray-300">รอลุ้นรับรางวัลจากทาง iHAVECPU เร็วๆ นี้</p>
-                <p className="text-sm text-gray-500 mt-6 opacity-50">
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">เตรียมตัวให้พร้อม!</h2>
+                <p className="text-lg md:text-xl text-gray-300">รอลุ้นรับรางวัลจากทาง iHAVECPU เร็วๆ นี้</p>
+                <p className="text-sm text-gray-500 mt-4 opacity-50">
                   (Participants ready: {realNamesPool.length > 2 ? realNamesPool.length : 0})
                 </p>
               </div>
