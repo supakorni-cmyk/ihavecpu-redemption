@@ -68,7 +68,7 @@ export default function LiveEventDisplayBoard() {
   // 💬 Floating Messages State
   const [floatingMessages, setFloatingMessages] = useState<FloatingMessage[]>([]);
 
-  // 🎁 Auto-Slide Prize Carousel States
+  // 🎁 Auto-Slide Prize Showcase State
   const [allPrizes, setAllPrizes] = useState<PrizeItem[]>([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -84,13 +84,15 @@ export default function LiveEventDisplayBoard() {
     }
   };
 
-  // 🎁 Fetch Prizes for Waiting Carousel
+  // 🎁 Fetch Prizes for Showcase
   const fetchAllPrizes = async () => {
     try {
       const res = await fetch("/api/get-prizes");
       const data = await res.json();
       if (data.prizes && data.prizes.length > 0) {
         setAllPrizes(data.prizes);
+        // Start on a random prize
+        setCurrentSlideIndex(Math.floor(Math.random() * data.prizes.length));
       }
     } catch (error) {
       console.error("Failed to load prizes for carousel", error);
@@ -104,16 +106,12 @@ export default function LiveEventDisplayBoard() {
       const data = await res.json();
       
       if (data.messages && data.messages.length > 0) {
-        // 1. Filter out profane or explicit content
         const cleanMessages = data.messages.filter(
           (m: { text: string; sign: string }) => !isExplicit(m.text) && !isExplicit(m.sign)
         );
 
         if (cleanMessages.length > 0) {
-          // 2. Randomize/Shuffle the entire array of messages
           const shuffled = [...cleanMessages].sort(() => Math.random() - 0.5);
-
-          // 3. Take up to 8 random messages for the 8 slots
           const randomSelection = shuffled.slice(0, SPATIAL_SLOTS.length);
 
           const scheduled: FloatingMessage[] = randomSelection.map(
@@ -145,16 +143,22 @@ export default function LiveEventDisplayBoard() {
     fetchAllPrizes();
     fetchMessages();
 
-    // 🎲 Rotate with a new random batch of messages every 6 seconds
+    // 🎲 Rotate floating messages every 6 seconds
     const messageInterval = setInterval(fetchMessages, 6000);
     return () => clearInterval(messageInterval);
   }, []);
 
-  // ⏱️ Auto-advance prize carousel every 3.5 seconds
+  // 🎲 Randomly advance prize showcase every 3.5 seconds
   useEffect(() => {
     if (allPrizes.length <= 1) return;
     const slideTimer = setInterval(() => {
-      setCurrentSlideIndex((prev) => (prev + 1) % allPrizes.length);
+      setCurrentSlideIndex((prev) => {
+        let nextIndex = Math.floor(Math.random() * allPrizes.length);
+        while (allPrizes.length > 1 && nextIndex === prev) {
+          nextIndex = Math.floor(Math.random() * allPrizes.length);
+        }
+        return nextIndex;
+      });
     }, 3500);
     return () => clearInterval(slideTimer);
   }, [allPrizes.length]);
@@ -356,26 +360,23 @@ export default function LiveEventDisplayBoard() {
             </div>
           ) : (
 
-            /* ----------------- STATE 3: WAITING / IDLE (AUTO SLIDE PRIZES) ----------------- */
+            /* ----------------- STATE 3: WAITING / IDLE (RANDOM PRIZE SHOWCASE) ----------------- */
             <div className="flex flex-col items-center">
               
-              {/* 🎁 AUTO-SLIDING PRIZE SHOWCASE CARD */}
+              {/* 🎁 RANDOMLY SHIFTING PRIZE SHOWCASE CARD */}
               {activeShowcasePrize ? (
                 <div 
                   key={`slide-${currentSlideIndex}`}
                   style={{ animation: "slideFadeIn 0.5s ease-out" }}
                   className="w-full max-w-lg bg-gradient-to-b from-white/15 to-white/5 border border-white/20 rounded-3xl p-6 shadow-2xl mb-6 relative overflow-hidden backdrop-blur-md"
                 >
-                  <div className="flex items-center justify-between mb-2 px-1">
-                    <span className="text-[11px] font-black uppercase tracking-widest px-3 py-1 bg-red-500/20 border border-red-500/40 text-red-300 rounded-full">
-                      🎁 Featured Prize ({currentSlideIndex + 1}/{allPrizes.length})
-                    </span>
-                    {activeShowcasePrize.supporter && (
+                  {activeShowcasePrize.supporter && (
+                    <div className="text-right mb-2 px-1">
                       <span className="text-xs font-semibold text-gray-300 italic">
                         By {activeShowcasePrize.supporter}
                       </span>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Prize Image Container */}
                   <div className="relative w-full h-44 md:h-52 my-2 flex items-center justify-center">
@@ -395,22 +396,6 @@ export default function LiveEventDisplayBoard() {
                   <h3 className="text-xl md:text-2xl font-black text-white mt-1 drop-shadow tracking-wide truncate px-2">
                     {activeShowcasePrize.name}
                   </h3>
-
-                  {/* Indicator Dots */}
-                  {allPrizes.length > 1 && (
-                    <div className="flex justify-center items-center gap-1.5 mt-4">
-                      {allPrizes.map((_, dotIdx) => (
-                        <div
-                          key={dotIdx}
-                          className={`h-1.5 rounded-full transition-all duration-300 ${
-                            dotIdx === currentSlideIndex 
-                              ? "w-6 bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" 
-                              : "w-1.5 bg-white/30"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  )}
                 </div>
               ) : (
                 /* Fallback loading state */
