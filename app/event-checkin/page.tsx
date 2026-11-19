@@ -199,7 +199,7 @@ export default function EventCheckInPage() {
               ยืนยันตัวตนและรับสิทธิ์สำเร็จ! 🎉
             </p>
             <p className="text-xs text-gray-300">
-              iHAVECPU CHIANG MAI — Event Pass
+              iHAVECPU — Event Pass
             </p>
             {verifiedAt && (
               <p className="text-xs text-gray-400 pt-2 border-t border-white/10 font-mono">
@@ -232,7 +232,7 @@ export default function EventCheckInPage() {
       <main className="min-h-screen bg-gradient-to-b from-red-950/60 via-gray-900 to-gray-950 flex flex-col items-center justify-center p-5 text-white select-none">
         <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl text-center">
           <span className="inline-block px-4 py-1 rounded-full bg-red-600 text-white text-xs font-bold uppercase tracking-widest mb-3 shadow">
-            iHAVECPU CHIANG MAI
+            iHAVECPU EVENT
           </span>
 
           <h1 className="text-2xl font-extrabold text-white mb-1">
@@ -285,7 +285,7 @@ export default function EventCheckInPage() {
           <h1 className="text-3xl font-extrabold tracking-tight text-white">
             iHAVECPU
           </h1>
-          <p className="text-lg font-bold text-red-500">CHIANG MAI</p>
+          <p className="text-lg font-bold text-red-500">EVENT</p>
           <p className="text-sm text-gray-300 mt-2">
             กรอกอีเมลที่ใช้ลงทะเบียนเพื่อรับ QR Code สำหรับยืนยันหน้างาน
           </p>

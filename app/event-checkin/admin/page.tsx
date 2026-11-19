@@ -10,7 +10,6 @@ type Attendee = {
   rowIndex: number;
   email: string;
   name: string;
-  size: string;
   status: string;
 };
 
@@ -38,7 +37,6 @@ export default function EventCheckIn() {
   // Manual Walk-In States
   const [walkInName, setWalkInName] = useState("");
   const [walkInEmail, setWalkInEmail] = useState("");
-  const [walkInSize, setWalkInSize] = useState("M");
   const [walkInLoading, setWalkInLoading] = useState(false);
 
   // Scanner States
@@ -126,7 +124,7 @@ export default function EventCheckIn() {
         body: JSON.stringify({ action: "claim", rowIndex: attendee.rowIndex }),
       });
       if (res.ok) {
-        alert("👕 มอบเสื้อยืดเรียบร้อยสำเร็จ!");
+        alert("ยืนยันตัวตนสำเร็จ!");
         setAttendee({ ...attendee, status: "CLAIMED" });
       }
     } catch (error) { alert("Action failed"); }
@@ -143,8 +141,7 @@ export default function EventCheckIn() {
         body: JSON.stringify({
           action: "walk-in",
           name: walkInName,
-          email: walkInEmail,
-          size: walkInSize
+          email: walkInEmail
         }),
       });
       if (res.ok) {
@@ -164,9 +161,9 @@ export default function EventCheckIn() {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6 text-center text-gray-800">
         <div className="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full border">
-          <div className="text-4xl mb-3">👕🏬</div>
+          <div className="text-4xl mb-3">🏬</div>
           <h1 className="text-xl font-black text-gray-900 mb-1">iHAVECPU Staff Terminal</h1>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">ระบบสแกนรับเสื้อประจำบูธ</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">ระบบสแกนยืนยันตัวตน</p>
           
           <form onSubmit={handleVerifyPIN} className="space-y-4">
             <div>
@@ -249,10 +246,6 @@ export default function EventCheckIn() {
                   <p className="text-lg font-bold text-gray-900">{attendee.name}</p>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-xl border flex justify-between items-center">
-                  <div>
-                    <p className="text-xs text-gray-400 font-bold uppercase">Shirt Size</p>
-                    <p className="text-2xl font-black text-gray-900">{attendee.size}</p>
-                  </div>
                   <span className={`px-4 py-2 rounded-full text-xs font-black ${attendee.status === "CLAIMED" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
                     {attendee.status === "CLAIMED" ? "⛔ CLAIMED" : "✅ ELIGIBLE"}
                   </span>
@@ -262,7 +255,7 @@ export default function EventCheckIn() {
                     {claimLoading ? "Updating..." : "Confirm Handout"}
                   </button>
                 ) : (
-                  <div className="bg-red-50 p-3 rounded-xl text-center border text-red-700 text-xs font-bold">⚠️ Do Not Hand Out Secondary Shirt!</div>
+                  <div className="bg-red-50 p-3 rounded-xl text-center border text-red-700 text-xs font-bold">⚠️ Already Claimed!</div>
                 )}
               </div>
             )}
@@ -282,18 +275,8 @@ export default function EventCheckIn() {
                 <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Email Address</label>
                 <input type="email" required value={walkInEmail} onChange={(e) => setWalkInEmail(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg text-sm" placeholder="john@example.com" />
               </div>
-              <div>
-                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">T-Shirt Size Selection</label>
-                <select value={walkInSize} onChange={(e) => setWalkInSize(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg text-sm font-bold bg-white">
-                  <option value="S">S</option>
-                  <option value="M">M</option>
-                  <option value="L">L</option>
-                  <option value="XL">XL</option>
-                  <option value="XXL">XXL</option>
-                </select>
-              </div>
               <button type="submit" disabled={walkInLoading} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl text-sm uppercase tracking-wider shadow-md mt-6">
-                {walkInLoading ? "Adding to logs..." : "Register & Dispense Shirt"}
+                {walkInLoading ? "Adding to logs..." : "Register & Verify"}
               </button>
             </form>
           </div>
