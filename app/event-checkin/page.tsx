@@ -34,7 +34,8 @@ export default function EventCheckInPage() {
 
     try {
       const res = await fetch(
-        `/api/event-verify?email=${encodeURIComponent(normalized)}`
+        `/api/event-verify?email=${encodeURIComponent(normalized)}`,
+        { cache: "no-store" }
       );
       const data = await res.json();
 
@@ -59,6 +60,10 @@ export default function EventCheckInPage() {
         name: data.name,
         status: data.status || "NOT CLAIMED",
       });
+
+      if (data.status === "CLAIMED") {
+        setVerifiedAt(new Date().toISOString());
+      }
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "เกิดข้อผิดพลาดในการเชื่อมต่อ";
@@ -76,35 +81,64 @@ export default function EventCheckInPage() {
     }
   }, [session, activeEmail, attendee, errorMsg, checkRegistration]);
 
-  // ⚡ Real-time Firestore listener for instant screen switch upon staff verification
+  // ⚡ Real-time Firestore listener + 3-second backup poll while waiting on QR screen
   useEffect(() => {
-    if (!activeEmail) return;
+    if (!activeEmail || attendee?.status === "CLAIMED") return;
 
     const normalizedEmail = activeEmail.toLowerCase().trim();
+
+    const markClaimed = (name?: string, timestamp?: string) => {
+      setAttendee((prev) =>
+        prev
+          ? { ...prev, status: "CLAIMED", name: name || prev.name }
+          : {
+              found: true,
+              email: normalizedEmail,
+              name: name || "Attendee",
+              status: "CLAIMED",
+            }
+      );
+      setVerifiedAt(timestamp || new Date().toISOString());
+    };
+
+    // 1. Instant Firestore listener
     const unsub = onSnapshot(
       doc(db, "checkins", normalizedEmail),
       (docSnap) => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           if (data.status === "CLAIMED") {
-            setAttendee((prev) =>
-              prev
-                ? { ...prev, status: "CLAIMED", name: data.name || prev.name }
-                : {
-                    found: true,
-                    email: normalizedEmail,
-                    name: data.name || "Attendee",
-                    status: "CLAIMED",
-                  }
-            );
-            setVerifiedAt(data.verifiedAt || new Date().toISOString());
+            markClaimed(data.name, data.verifiedAt);
           }
         }
+      },
+      (err) => {
+        console.warn("Firestore listener fallback active:", err.message);
       }
     );
 
-    return () => unsub();
-  }, [activeEmail]);
+    // 2. Backup Google Sheets poll every 3 seconds until claimed
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/event-verify?email=${encodeURIComponent(normalizedEmail)}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.found && data.status === "CLAIMED") {
+          markClaimed(data.name);
+        }
+      } catch {
+        // Ignore transient network errors during polling
+      }
+    }, 3000);
+
+    return () => {
+      unsub();
+      clearInterval(pollInterval);
+    };
+  }, [activeEmail, attendee?.status]);
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +153,7 @@ export default function EventCheckInPage() {
     setVerifiedAt(null);
   };
 
-  // Encode verification payload into QR code (works with any QR scanner)
+  // Encode verification payload into QR code
   const qrPayload = attendee
     ? encodeURIComponent(attendee.email.toLowerCase().trim())
     : "";
@@ -132,7 +166,7 @@ export default function EventCheckInPage() {
     return (
       <main className="min-h-screen bg-gradient-to-b from-emerald-950 via-gray-900 to-gray-950 flex flex-col items-center justify-center p-5 text-white select-none">
         <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-emerald-400/50 rounded-3xl p-8 shadow-2xl text-center">
-          {/* Animated Checkmark Badge */}
+          {/* Checkmark Badge */}
           <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_35px_rgba(16,185,129,0.6)]">
             <svg
               className="w-12 h-12 text-white"
