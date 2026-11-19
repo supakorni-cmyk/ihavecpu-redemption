@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     const sheets = await getSheetsInstance();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Form Responses!A2:K", // Adjust tab name if yours is different
+      range: "Form Responses!A:K", // Adjust tab name if yours is different
     });
 
     const rows = response.data.values || []; searchParams
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     // Write "CLAIMED" directly into Column I (9th index) of that user's row
     await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,
-      range: `Form Responses!I${rowIndex}`, 
+      range: `Form Responses!K${rowIndex}`, 
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [["CLAIMED"]],
