@@ -2,7 +2,7 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
 
-const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID_EVENT; // Add this to your environment variables!
+const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID; // Add this to your environment variables!
 
 async function getSheetsInstance() {
   const formatPrivateKey = (key: string | undefined) => {
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     const sheets = await getSheetsInstance();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Form Responses 1!A2:I", // Adjust tab name if yours is different
+      range: "Form Responses 1!A2:K", // Adjust tab name if yours is different
     });
 
     const rows = response.data.values || []; searchParams
@@ -49,7 +49,7 @@ export async function GET(req: Request) {
           rowIndex: i + 2, // +2 because we skipped header row (A1) and arrays are 0-indexed
           email: rows[i][5],
           name: rows[i][1] || "N/A", // Column C
-          status: rows[i][8] || "NOT CLAIMED", // Column E
+          status: rows[i][10] || "NOT CLAIMED", // Column E
         });
       }
     }
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     // Write "CLAIMED" directly into Column I (9th index) of that user's row
     await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,
-      range: `Form Responses 1!I${rowIndex}`, 
+      range: `Form Responses!K${rowIndex}`, 
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [["CLAIMED"]],
