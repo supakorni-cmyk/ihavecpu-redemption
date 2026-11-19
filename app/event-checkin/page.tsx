@@ -54,18 +54,18 @@ export default function UserCheckupKiosk() {
         
         {/* Header branding */}
         <div className="text-center mb-6">
-          <span className="inline-block bg-red-50 text-red-600 font-black text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-2">
-            iHAVECPU Checkup Portal
+          <span className="inline-block bg-red-50 text-red-600 font-black text-xs tracking-widest px-3 py-1 rounded-full mb-2">
+            iHAVECPU EVENT CHECK-IN
           </span>
-          <h1 className="text-2xl font-black text-gray-900">รับของรางวัลประจำกิจกรรม</h1>
-          <p className="text-xs text-gray-400 mt-1">กรุณากรอกอีเมลที่ใช้ลงทะเบียนเข้าร่วมงาน เพื่อรับสิทธิ์</p>
+          <h1 className="text-2xl font-black text-gray-900">เช็คอินยืนยันเข้าร่วมกิจกรรม</h1>
+          <p className="text-xs text-gray-400 mt-1">กรุณากรอกอีเมลที่ใช้ลงทะเบียนเข้าร่วมงาน เพื่อยืนยันสิทธิ์</p>
         </div>
 
         {/* ----------------- STATE 1: INITIAL INPUT FORM ----------------- */}
         {!result && (
           <form onSubmit={handleCheckupSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-black uppercase tracking-wide text-gray-500 mb-1">Registered Email (อีเมลลงทะเบียน)</label>
+              <label className="block text-xs font-black uppercase tracking-wide text-gray-500 mb-1">Registered Email (อีเมลที่ใช้ลงทะเบียน)</label>
               <input 
                 type="email" 
                 required
