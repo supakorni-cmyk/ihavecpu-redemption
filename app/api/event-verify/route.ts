@@ -2,7 +2,8 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
 
-const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID; // Add this to your environment variables!
+const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID; // Verify this matches your Event Sheet ID in .env
+const SHEET_NAME = "Form Responses"; // Default Google Form response tab name
 
 async function getSheetsInstance() {
   const formatPrivateKey = (key: string | undefined) => {
@@ -34,31 +35,32 @@ export async function GET(req: Request) {
     const sheets = await getSheetsInstance();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Form Responses!A2:K", // Adjust tab name if yours is different
+      range: `'${SHEET_NAME}'!A2:K`,
     });
 
-    const rows = response.data.values || []; searchParams
-    
+    const rows = response.data.values || [];
+
     // Find row by email matching
     for (let i = 0; i < rows.length; i++) {
-      const rowEmail = rows[i][5]?.toLowerCase().trim(); // Column F
-      
+      const rowEmail = rows[i][5]?.toLowerCase().trim(); // Column F (index 5)
+
       if (rowEmail === email) {
         return NextResponse.json({
           found: true,
-          rowIndex: i + 2, // +2 because we skipped header row (A1) and arrays are 0-indexed
+          rowIndex: i + 2, // +2 because header is row 1 and arrays are 0-indexed
           email: rows[i][5],
-          name: rows[i][1] || "N/A", // Column C
-          status: rows[i][10] || "NOT CLAIMED", // Column E
+          name: rows[i][1] || "N/A",         // Column B (index 1)
+          status: rows[i][10] || "NOT CLAIMED", // Column K (index 10)
         });
       }
     }
 
     return NextResponse.json({ found: false, message: "User registration not found." });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Event Lookup Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to lookup attendee";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -73,10 +75,10 @@ export async function POST(req: Request) {
 
     const sheets = await getSheetsInstance();
 
-    // Write "CLAIMED" directly into Column I (9th index) of that user's row
+    // Write "CLAIMED" directly into Column K of that user's row
     await sheets.spreadsheets.values.update({
       spreadsheetId: SPREADSHEET_ID,
-      range: `Form Responses!K${rowIndex}`, 
+      range: `'${SHEET_NAME}'!K${rowIndex}`,
       valueInputOption: "USER_ENTERED",
       requestBody: {
         values: [["CLAIMED"]],
@@ -85,8 +87,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, message: "T-shirt marked as claimed successfully!" });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Event Claim Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to update claim status";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
