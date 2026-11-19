@@ -24,7 +24,6 @@ async function getSheetsInstance() {
   return google.sheets({ version: "v4", auth });
 }
 
-// Convert 0-based column index to Google Sheets letter (e.g., 10 -> "K")
 function indexToColumnLetter(index: number): string {
   let letter = "";
   let temp = index;
@@ -35,7 +34,6 @@ function indexToColumnLetter(index: number): string {
   return letter;
 }
 
-// Resolve exact tab title using gid=1030331899
 async function resolveSheetTitle(sheets: ReturnType<typeof google.sheets>) {
   if (!SPREADSHEET_ID) {
     throw new Error("Missing GOOGLE_SHEET_ID environment variable");
@@ -58,7 +56,6 @@ async function resolveSheetTitle(sheets: ReturnType<typeof google.sheets>) {
   return title;
 }
 
-// Auto-detect Name and Status column indexes from header row
 function detectColumnIndexes(headers: string[]) {
   const lowerHeaders = headers.map((h) => (h || "").toLowerCase().trim());
 
@@ -74,8 +71,8 @@ function detectColumnIndexes(headers: string[]) {
   );
 
   return {
-    nameCol: nameIdx !== -1 ? nameIdx : 1,       // Fallback: Column B
-    statusCol: statusIdx !== -1 ? statusIdx : 10, // Fallback: Column K
+    nameCol: nameIdx !== -1 ? nameIdx : 1,
+    statusCol: statusIdx !== -1 ? statusIdx : 10,
   };
 }
 
@@ -105,7 +102,6 @@ export async function GET(req: Request) {
     for (let i = 0; i < dataRows.length; i++) {
       const row = dataRows[i] || [];
 
-      // Match email in ANY column of the row
       const matchedEmailCell = row.find(
         (cell) => typeof cell === "string" && cell.toLowerCase().trim() === email
       );
@@ -113,7 +109,7 @@ export async function GET(req: Request) {
       if (matchedEmailCell) {
         return NextResponse.json({
           found: true,
-          rowIndex: i + 2, // +2 because row 1 is headers and dataRows is 0-indexed
+          rowIndex: i + 2,
           email: matchedEmailCell.trim(),
           name: row[nameCol] || row[1] || row[2] || "N/A",
           status: row[statusCol] || "NOT CLAIMED",
@@ -132,10 +128,13 @@ export async function GET(req: Request) {
   }
 }
 
-// 👕 MARK T-SHIRT AS CLAIMED & BROADCAST TO USER SCREEN
+// 👕 MARK T-SHIRT AS CLAIMED & NOTIFY USER SCREEN
 export async function POST(req: Request) {
   try {
-    const { rowIndex, email, name } = await req.json();
+    const body = await req.json();
+    const { rowIndex } = body;
+    let resolvedEmail: string | undefined = body.email;
+    let resolvedName: string | undefined = body.name;
 
     if (!rowIndex) {
       return NextResponse.json({ error: "Row index is required" }, { status: 400 });
@@ -144,14 +143,32 @@ export async function POST(req: Request) {
     const sheets = await getSheetsInstance();
     const sheetTitle = await resolveSheetTitle(sheets);
 
-    // Check headers to ensure we write to the exact Status column (defaults to K)
-    const headerRes = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `'${sheetTitle}'!A1:Z1`,
-    });
+    // Read headers and the attendee's row so email/name are always available
+    const [headerRes, rowRes] = await Promise.all([
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `'${sheetTitle}'!A1:Z1`,
+      }),
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `'${sheetTitle}'!A${rowIndex}:Z${rowIndex}`,
+      }),
+    ]);
+
     const headers = headerRes.data.values?.[0] || [];
-    const { statusCol } = detectColumnIndexes(headers);
+    const targetRow = rowRes.data.values?.[0] || [];
+    const { nameCol, statusCol } = detectColumnIndexes(headers);
     const statusColLetter = indexToColumnLetter(statusCol);
+
+    if (!resolvedEmail) {
+      const emailCell = targetRow.find(
+        (cell) => typeof cell === "string" && cell.includes("@")
+      );
+      if (emailCell) resolvedEmail = emailCell.trim();
+    }
+    if (!resolvedName) {
+      resolvedName = targetRow[nameCol] || targetRow[1] || targetRow[2] || "Attendee";
+    }
 
     // 1. Update Google Sheets
     await sheets.spreadsheets.values.update({
@@ -163,23 +180,28 @@ export async function POST(req: Request) {
       },
     });
 
-    // 2. Push real-time update to Firestore so the user's screen updates immediately
-    if (email) {
-      const normalizedEmail = email.toLowerCase().trim();
-      await setDoc(
-        doc(db, "checkins", normalizedEmail),
-        {
-          email: normalizedEmail,
-          name: name || "Attendee",
-          status: "CLAIMED",
-          verifiedAt: new Date().toISOString(),
-        },
-        { merge: true }
-      );
+    // 2. Push real-time update to Firestore
+    if (resolvedEmail) {
+      try {
+        const normalizedEmail = resolvedEmail.toLowerCase().trim();
+        await setDoc(
+          doc(db, "checkins", normalizedEmail),
+          {
+            email: normalizedEmail,
+            name: resolvedName || "Attendee",
+            status: "CLAIMED",
+            verifiedAt: new Date().toISOString(),
+          },
+          { merge: true }
+        );
+      } catch (firestoreErr) {
+        console.error("Firestore sync warning:", firestoreErr);
+      }
     }
 
     return NextResponse.json({
       success: true,
+      email: resolvedEmail,
       message: "T-shirt marked as claimed successfully!",
     });
   } catch (error: unknown) {

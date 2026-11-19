@@ -1,309 +1,374 @@
-// app/admin/event-checkin/page.tsx
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useEffect, useState, useCallback } from "react";
 import { useSession, signIn } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { Html5Qrcode } from "html5-qrcode";
+import { db } from "@/lib/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
 
-type Attendee = {
-  rowIndex: number;
+type AttendeeData = {
+  found: boolean;
+  rowIndex?: number;
   email: string;
   name: string;
-  size: string;
   status: string;
 };
 
-export default function EventCheckIn() {
-  const { data: session, status } = useSession();
-  
-  // 🔑 NEW: Shared Terminal Access States
-  const [inputPIN, setInputPIN] = useState("");
-  const [isTerminalUnlocked, setIsTerminalUnlocked] = useState(false);
-  const [pinError, setPinError] = useState(false);
+export default function EventCheckInPage() {
+  const { data: session, status: sessionStatus } = useSession();
 
-  // Define your on-site master passcode here
-  const MASTER_EVENT_PIN = "iHAVECPU2026"; 
+  const [inputEmail, setInputEmail] = useState("");
+  const [activeEmail, setActiveEmail] = useState<string | null>(null);
+  const [attendee, setAttendee] = useState<AttendeeData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [verifiedAt, setVerifiedAt] = useState<string | null>(null);
 
-  // Terminal Mode Toggle: "scan" or "walk-in"
-  const [panelMode, setPanelMode] = useState<"scan" | "walk-in">("scan");
+  // 🔍 Lookup attendee registration from Google Sheets via /api/event-verify
+  const checkRegistration = useCallback(async (emailToCheck: string) => {
+    const normalized = emailToCheck.toLowerCase().trim();
+    if (!normalized) return;
 
-  // Search/Scan States
-  const [searchEmail, setSearchEmail] = useState("");
-  const [attendee, setAttendee] = useState<Attendee | null>(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [claimLoading, setClaimLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+    setLoading(true);
+    setErrorMsg(null);
 
-  // Manual Walk-In States
-  const [walkInName, setWalkInName] = useState("");
-  const [walkInEmail, setWalkInEmail] = useState("");
-  const [walkInSize, setWalkInSize] = useState("M");
-  const [walkInLoading, setWalkInLoading] = useState(false);
-
-  // Scanner States
-  const [isScanning, setIsScanning] = useState(false);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const SCANNER_ELEMENT_ID = "webcam-scanner-view";
-
-  useEffect(() => { return () => { stopScanner(); }; }, []);
-
-  // Handle PIN entry validation
-  const handleVerifyPIN = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (inputPIN === MASTER_EVENT_PIN) {
-      setIsTerminalUnlocked(true);
-      setPinError(false);
-    } else {
-      setPinError(true);
-    }
-  };
-
-  const executeLookup = async (emailToSearch: string) => {
-    if (!emailToSearch) return;
-    setSearchLoading(true);
-    setAttendee(null);
-    setMessage(null);
     try {
-      const res = await fetch(`/api/event-verify?email=${encodeURIComponent(emailToSearch.trim())}`);
+      const res = await fetch(
+        `/api/event-verify?email=${encodeURIComponent(normalized)}`,
+        { cache: "no-store" }
+      );
       const data = await res.json();
-      if (data.found) setAttendee(data);
-      else setMessage(data.message || "❌ ไม่พบข้อมูลการลงทะเบียน");
-    } catch (error) { setMessage("⚠️ Connection error."); }
-    finally { setSearchLoading(false); }
-  };
 
-  const handleManualSearch = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    executeLookup(searchEmail);
-  };
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to verify registration");
+      }
 
-  const startScanner = async () => {
-    setIsScanning(true);
-    setAttendee(null);
-    setMessage(null);
-    setTimeout(async () => {
-      try {
-        const html5QrCode = new Html5Qrcode(SCANNER_ELEMENT_ID);
-        scannerRef.current = html5QrCode;
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 230, height: 230 } },
-          (decodedText) => {
-            let extractedEmail = decodedText;
-            if (decodedText.includes("email=")) {
-              const urlParams = new URLSearchParams(decodedText.split("?")[1]);
-              extractedEmail = urlParams.get("email") || decodedText;
-            }
-            setSearchEmail(extractedEmail);
-            stopScanner();
-            executeLookup(extractedEmail);
-          },
-          () => {}
+      if (!data.found) {
+        setAttendee(null);
+        setActiveEmail(null);
+        setErrorMsg(
+          `ไม่พบอีเมล "${normalized}" ในรายชื่อผู้ลงทะเบียน กรุณาตรวจสอบอีเมลที่ใช้สมัครอีกครั้ง`
         );
-      } catch (err) {
-        setMessage("❌ Could not open camera.");
-        setIsScanning(false);
+        return;
       }
-    }, 200);
-  };
 
-  const stopScanner = async () => {
-    if (scannerRef.current && scannerRef.current.isScanning) {
-      await scannerRef.current.stop();
+      setActiveEmail(normalized);
+      setAttendee({
+        found: true,
+        rowIndex: data.rowIndex,
+        email: data.email,
+        name: data.name,
+        status: data.status || "NOT CLAIMED",
+      });
+
+      if (data.status === "CLAIMED") {
+        setVerifiedAt(new Date().toISOString());
+      }
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "เกิดข้อผิดพลาดในการเชื่อมต่อ";
+      setErrorMsg(message);
+    } finally {
+      setLoading(false);
     }
-    scannerRef.current = null;
-    setIsScanning(false);
-  };
+  }, []);
 
-  const handleClaimTshirt = async () => {
-    if (!attendee) return;
-    setClaimLoading(true);
-    try {
-      const res = await fetch("/api/event-verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "claim", rowIndex: attendee.rowIndex }),
-      });
-      if (res.ok) {
-        alert("👕 มอบเสื้อยืดเรียบร้อยสำเร็จ!");
-        setAttendee({ ...attendee, status: "CLAIMED" });
+  // Auto-check if user is already signed in with Google
+  useEffect(() => {
+    if (session?.user?.email && !activeEmail && !attendee && !errorMsg) {
+      setInputEmail(session.user.email);
+      checkRegistration(session.user.email);
+    }
+  }, [session, activeEmail, attendee, errorMsg, checkRegistration]);
+
+  // ⚡ Real-time Firestore listener + 3-second backup poll while waiting on QR screen
+  useEffect(() => {
+    if (!activeEmail || attendee?.status === "CLAIMED") return;
+
+    const normalizedEmail = activeEmail.toLowerCase().trim();
+
+    const markClaimed = (name?: string, timestamp?: string) => {
+      setAttendee((prev) =>
+        prev
+          ? { ...prev, status: "CLAIMED", name: name || prev.name }
+          : {
+              found: true,
+              email: normalizedEmail,
+              name: name || "Attendee",
+              status: "CLAIMED",
+            }
+      );
+      setVerifiedAt(timestamp || new Date().toISOString());
+    };
+
+    // 1. Instant Firestore listener
+    const unsub = onSnapshot(
+      doc(db, "checkins", normalizedEmail),
+      (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.status === "CLAIMED") {
+            markClaimed(data.name, data.verifiedAt);
+          }
+        }
+      },
+      (err) => {
+        console.warn("Firestore listener fallback active:", err.message);
       }
-    } catch (error) { alert("Action failed"); }
-    finally { setClaimLoading(false); }
-  };
+    );
 
-  const handleWalkInSubmit = async (e: React.SyntheticEvent) => {
+    // 2. Backup Google Sheets poll every 3 seconds until claimed
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `/api/event-verify?email=${encodeURIComponent(normalizedEmail)}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.found && data.status === "CLAIMED") {
+          markClaimed(data.name);
+        }
+      } catch {
+        // Ignore transient network errors during polling
+      }
+    }, 3000);
+
+    return () => {
+      unsub();
+      clearInterval(pollInterval);
+    };
+  }, [activeEmail, attendee?.status]);
+
+  const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setWalkInLoading(true);
-    try {
-      const res = await fetch("/api/event-verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "walk-in",
-          name: walkInName,
-          email: walkInEmail,
-          size: walkInSize
-        }),
-      });
-      if (res.ok) {
-        alert("🎉 ลงทะเบียน Walk-In เรียบร้อย!");
-        setWalkInName("");
-        setWalkInEmail("");
-        setPanelMode("scan");
-      }
-    } catch (error) { alert("Failed to log walk-in."); }
-    finally { setWalkInLoading(false); }
+    if (!inputEmail.trim()) return;
+    checkRegistration(inputEmail);
   };
 
-  if (status === "loading") return <div className="p-10 text-center">Loading Verification Interface...</div>;
+  const handleReset = () => {
+    setActiveEmail(null);
+    setAttendee(null);
+    setErrorMsg(null);
+    setVerifiedAt(null);
+  };
 
-  // ⚡ LOCK SCREEN: If the terminal hasn't been unlocked with the passcode yet, show the access pad
-  if (!isTerminalUnlocked) {
+  // Encode verification payload into QR code
+  const qrPayload = attendee
+    ? encodeURIComponent(attendee.email.toLowerCase().trim())
+    : "";
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=${qrPayload}`;
+
+  // ============================================================================
+  // ✅ VIEW 1: VERIFIED / CLAIMED SCREEN (Switched automatically in real-time)
+  // ============================================================================
+  if (attendee && attendee.status === "CLAIMED") {
     return (
-      <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6 text-center text-gray-800">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full border">
-          <div className="text-4xl mb-3">👕🏬</div>
-          <h1 className="text-xl font-black text-gray-900 mb-1">iHAVECPU Staff Terminal</h1>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">ระบบสแกนรับเสื้อประจำบูธ</p>
-          
-          <form onSubmit={handleVerifyPIN} className="space-y-4">
-            <div>
-              <input 
-                type="password" 
-                required
-                placeholder="กรอกรหัสผ่านประจำบูธ" 
-                value={inputPIN}
-                onChange={(e) => setInputPIN(e.target.value)}
-                className="w-full p-3.5 border border-gray-300 rounded-xl text-center font-bold tracking-widest text-lg outline-none focus:ring-2 focus:ring-gray-900"
-              />
-            </div>
-            
-            <button 
-              type="submit"
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow"
+      <main className="min-h-screen bg-gradient-to-b from-emerald-950 via-gray-900 to-gray-950 flex flex-col items-center justify-center p-5 text-white select-none">
+        <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-emerald-400/50 rounded-3xl p-8 shadow-2xl text-center">
+          {/* Checkmark Badge */}
+          <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_35px_rgba(16,185,129,0.6)]">
+            <svg
+              className="w-12 h-12 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={3}
             >
-              Unlock Terminal (เปิดเครื่องสแกน)
-            </button>
-          </form>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
 
-          {pinError && (
-            <p className="text-xs text-red-600 font-bold mt-3 animate-pulse">❌ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>
-          )}
+          <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4">
+            Verified & Claimed
+          </span>
+
+          <h1 className="text-3xl font-extrabold tracking-tight text-white mb-1">
+            {attendee.name}
+          </h1>
+          <p className="text-sm text-gray-300 font-mono mb-6">
+            {attendee.email}
+          </p>
+
+          <div className="bg-black/40 border border-emerald-500/30 rounded-2xl p-5 mb-6 space-y-2">
+            <p className="text-lg font-bold text-emerald-300">
+              ยืนยันตัวตนและรับสิทธิ์สำเร็จ! 🎉
+            </p>
+            <p className="text-xs text-gray-300">
+              iHAVECPU CHIANG MAI — Event Pass
+            </p>
+            {verifiedAt && (
+              <p className="text-xs text-gray-400 pt-2 border-t border-white/10 font-mono">
+                เวลาที่ยืนยัน:{" "}
+                {new Date(verifiedAt).toLocaleTimeString("th-TH", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={handleReset}
+            className="text-xs text-gray-400 hover:text-white underline transition-colors"
+          >
+            ตรวจสอบอีเมลอื่น
+          </button>
         </div>
-      </div>
+      </main>
     );
   }
 
-  // --- Beyond this point, the main operational dashboard renders normally ---
-  return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4 sm:px-6 lg:px-8 text-gray-800">
-      <div className="max-w-md mx-auto">
-        
-        {/* Operations Header */}
-        <div className="bg-gray-900 text-white p-5 rounded-t-2xl shadow-md text-center">
-          <h1 className="text-xl font-black">iHAVECPU Check-in Master Terminal</h1>
-          <div className="flex mt-4 bg-gray-800 p-1 rounded-xl text-xs font-bold border border-gray-700">
-            <button onClick={() => { setPanelMode("scan"); stopScanner(); setAttendee(null); }} className={`flex-1 py-2 rounded-lg transition-all ${panelMode === "scan" ? "bg-red-600 text-white shadow" : "text-gray-400"}`}>
-              🔍 Scan & Search Pass
-            </button>
-            <button onClick={() => { setPanelMode("walk-in"); stopScanner(); setAttendee(null); }} className={`flex-1 py-2 rounded-lg transition-all ${panelMode === "walk-in" ? "bg-blue-600 text-white shadow" : "text-gray-400"}`}>
-              ➕ Add Walk-In Guest
-            </button>
+  // ============================================================================
+  // 📱 VIEW 2: QR CODE PASS (Waiting for Staff Scan & Verification)
+  // ============================================================================
+  if (attendee && attendee.found) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-red-950/60 via-gray-900 to-gray-950 flex flex-col items-center justify-center p-5 text-white select-none">
+        <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl text-center">
+          <span className="inline-block px-4 py-1 rounded-full bg-red-600 text-white text-xs font-bold uppercase tracking-widest mb-3 shadow">
+            iHAVECPU CHIANG MAI
+          </span>
+
+          <h1 className="text-2xl font-extrabold text-white mb-1">
+            {attendee.name}
+          </h1>
+          <p className="text-sm text-gray-300 font-mono mb-6">
+            {attendee.email}
+          </p>
+
+          {/* QR Code Box */}
+          <div className="bg-white p-4 rounded-2xl inline-block shadow-xl mb-5">
+            <img
+              src={qrImageUrl}
+              alt="Attendee Check-in QR Code"
+              className="w-56 h-56 object-contain"
+            />
           </div>
+
+          <div className="bg-black/40 border border-white/10 rounded-2xl p-4 mb-6">
+            <div className="flex items-center justify-center gap-2 text-amber-300 text-sm font-semibold mb-1">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+              <span>รอเจ้าหน้าที่สแกนเพื่อยืนยันสิทธิ์</span>
+            </div>
+            <p className="text-xs text-gray-400">
+              หน้าจอนี้จะเปลี่ยนเป็นสีเขียวอัตโนมัติทันทีที่เจ้าหน้าที่กดยืนยัน
+            </p>
+          </div>
+
+          <button
+            onClick={handleReset}
+            className="text-xs text-gray-400 hover:text-white underline transition-colors"
+          >
+            เปลี่ยนอีเมลลงทะเบียน
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // ============================================================================
+  // 🔐 VIEW 3: EMAIL LOOKUP / GOOGLE SIGN-IN SCREEN
+  // ============================================================================
+  return (
+    <main className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-5 text-white">
+      <div className="w-full max-w-md bg-black/50 backdrop-blur-lg border border-white/15 rounded-3xl p-8 shadow-2xl">
+        <div className="text-center mb-6">
+          <span className="inline-block px-3.5 py-1 rounded-full bg-red-600/20 border border-red-500/40 text-red-400 text-xs font-bold uppercase tracking-widest mb-3">
+            Event Check-In
+          </span>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">
+            iHAVECPU
+          </h1>
+          <p className="text-lg font-bold text-red-500">CHIANG MAI</p>
+          <p className="text-sm text-gray-300 mt-2">
+            กรอกอีเมลที่ใช้ลงทะเบียนเพื่อรับ QR Code สำหรับยืนยันหน้างาน
+          </p>
         </div>
 
-        {/* MODE A: SCANNER / SEARCH VIEW */}
-        {panelMode === "scan" && (
-          <>
-            <div className="bg-white p-6 shadow-md border-b border-gray-100 space-y-4">
-              {!isScanning ? (
-                <button type="button" onClick={startScanner} className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-black text-sm uppercase tracking-wider transition-all shadow-sm">
-                  📷 Open QR Code Scanner
-                </button>
-              ) : (
-                <div className="space-y-3">
-                  <div id={SCANNER_ELEMENT_ID} className="w-full overflow-hidden rounded-xl border border-blue-500 bg-black" />
-                  <button type="button" onClick={stopScanner} className="w-full bg-gray-200 text-gray-700 font-bold py-2 rounded-lg text-xs">Cancel Scan</button>
-                </div>
-              )}
+        {/* Error Alert */}
+        {errorMsg && (
+          <div className="mb-5 p-3.5 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-sm text-center">
+            {errorMsg}
+          </div>
+        )}
 
-              <form onSubmit={handleManualSearch} className="pt-2">
-                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Manual Email Lookup</label>
-                <div className="flex gap-2">
-                  <input type="email" required placeholder="name@example.com" value={searchEmail} onChange={(e) => setSearchEmail(e.target.value)} className="flex-grow p-3 border border-gray-300 rounded-lg text-sm font-medium outline-none" />
-                  <button type="submit" disabled={searchLoading || isScanning} className="bg-gray-900 text-white px-5 rounded-lg text-sm font-bold disabled:opacity-50">
-                    {searchLoading ? "..." : "Verify"}
-                  </button>
-                </div>
-              </form>
-              {message && <div className="p-3 bg-red-50 text-red-700 text-sm font-bold rounded-lg text-center border">{message}</div>}
+        {/* Email Form */}
+        <form onSubmit={handleManualSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1.5"
+            >
+              อีเมลที่ลงทะเบียน (Registered Email)
+            </label>
+            <input
+              id="email"
+              type="email"
+              required
+              value={inputEmail}
+              onChange={(e) => setInputEmail(e.target.value)}
+              placeholder="example@gmail.com"
+              disabled={loading}
+              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading || !inputEmail.trim()}
+            className="w-full py-3.5 px-4 rounded-xl bg-red-600 hover:bg-red-500 disabled:bg-gray-700 disabled:text-gray-400 font-bold text-white shadow-lg transition-all cursor-pointer"
+          >
+            {loading ? "กำลังตรวจสอบข้อมูล..." : "รับ QR Code เข้างาน"}
+          </button>
+        </form>
+
+        {/* Divider & Google Sign-In Option */}
+        {sessionStatus !== "authenticated" && (
+          <>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/15" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-gray-900 px-3 text-gray-400">หรือ</span>
+              </div>
             </div>
 
-            {/* Attendance Badge Display Result Panel Card */}
-            {attendee && (
-              <div className="bg-white p-6 rounded-b-2xl shadow-md space-y-4 border-t">
-                <div>
-                  <p className="text-xs text-gray-400 font-bold uppercase">Name</p>
-                  <p className="text-lg font-bold text-gray-900">{attendee.name}</p>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-xl border flex justify-between items-center">
-                  <div>
-                    <p className="text-xs text-gray-400 font-bold uppercase">Shirt Size</p>
-                    <p className="text-2xl font-black text-gray-900">{attendee.size}</p>
-                  </div>
-                  <span className={`px-4 py-2 rounded-full text-xs font-black ${attendee.status === "CLAIMED" ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
-                    {attendee.status === "CLAIMED" ? "⛔ CLAIMED" : "✅ ELIGIBLE"}
-                  </span>
-                </div>
-                {attendee.status !== "CLAIMED" ? (
-                  <button onClick={handleClaimTshirt} disabled={claimLoading} className="w-full bg-green-600 text-white font-bold py-3.5 rounded-xl shadow text-sm uppercase tracking-wider">
-                    {claimLoading ? "Updating..." : "Confirm Handout"}
-                  </button>
-                ) : (
-                  <div className="bg-red-50 p-3 rounded-xl text-center border text-red-700 text-xs font-bold">⚠️ Do Not Hand Out Secondary Shirt!</div>
-                )}
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => signIn("google")}
+              disabled={loading}
+              className="w-full py-3 px-4 rounded-xl bg-white text-gray-900 hover:bg-gray-100 font-bold text-sm flex items-center justify-center gap-2.5 shadow transition-all cursor-pointer"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"
+                />
+              </svg>
+              เข้าสู่ระบบด้วย Google
+            </button>
           </>
         )}
-
-        {/* MODE B: ON-THE-SPOT WALK-IN REGISTRATION FORM */}
-        {panelMode === "walk-in" && (
-          <div className="bg-white p-6 rounded-b-2xl shadow-md">
-            <h2 className="text-sm font-black uppercase text-gray-400 mb-4 border-b pb-2">Walk-In Registration Entry</h2>
-            <form onSubmit={handleWalkInSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Full Name (ชื่อ-นามสกุล)</label>
-                <input type="text" required value={walkInName} onChange={(e) => setWalkInName(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg text-sm" placeholder="John Doe" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Email Address</label>
-                <input type="email" required value={walkInEmail} onChange={(e) => setWalkInEmail(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg text-sm" placeholder="john@example.com" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase text-gray-500 mb-1">T-Shirt Size Selection</label>
-                <select value={walkInSize} onChange={(e) => setWalkInSize(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg text-sm font-bold bg-white">
-                  <option value="S">S</option>
-                  <option value="M">M</option>
-                  <option value="L">L</option>
-                  <option value="XL">XL</option>
-                  <option value="XXL">XXL</option>
-                </select>
-              </div>
-              <button type="submit" disabled={walkInLoading} className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl text-sm uppercase tracking-wider shadow-md mt-6">
-                {walkInLoading ? "Adding to logs..." : "Register & Dispense Shirt"}
-              </button>
-            </form>
-          </div>
-        )}
-
-        <div className="text-center mt-6">
-          <Link href="/admin" className="text-xs text-gray-400 font-bold hover:text-gray-600">&larr; Main Console</Link>
-        </div>
-
       </div>
-    </div>
+    </main>
   );
 }
