@@ -2,7 +2,7 @@
 import { google } from "googleapis";
 import { NextResponse } from "next/server";
 
-const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
+const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID_EVENT;
 const TARGET_GID = 1030331899; // From your sheet URL (#gid=1030331899)
 
 async function getSheetsInstance() {
