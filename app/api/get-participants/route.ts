@@ -30,7 +30,8 @@ export async function GET() {
     for (let i = 0; i < rows.length; i++) {
       const name = rows[i][1];
       const winnerStatus = rows[i][8];
-      if (name && !winnerStatus) {
+      const verifiedStatus = rows[i][10]; // Column K for verification status
+      if (name && !winnerStatus && verifiedStatus === "CLAIMED") {
         participants.push(name);
       }
     }
