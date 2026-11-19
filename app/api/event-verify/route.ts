@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     const sheets = await getSheetsInstance();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
-      range: "Form Responses!A:K", // Adjust tab name if yours is different
+      range: "Form Responses!A2:K", // Adjust tab name if yours is different
     });
 
     const rows = response.data.values || []; searchParams
